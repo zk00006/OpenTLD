@@ -3,7 +3,7 @@ TLD v1.0
 
 This is the official source code to the TLD algorithm. TLD is an algorithm for tracking of unknown objects in unconstrained video streams. The object of interest is defined by a bounding box in a single frame. TLD simultaneously tracks the object, learns its appearance and detects it whenever it appears in the video. 
 
-You are allowed to use TLD under the terms of the GPL version 3.0. It means that any distributed project that includes or links any portion of TLD source code has to be released with the source code under the GPL version 3.0 license or later. The details of the license can be found in file LICENCE. If you wish to use this code or any of its part for commercial purposes contact zdenek.kalal@gmail.com.
+You are allowed to use TLD under the terms of the GPL version 3.0. It means that any distributed project that includes or links any portion of TLD source code has to be released with the source code under the GPL version 3.0 license or later. The details of the license can be found in file LICENSE. If you wish to use this code or any of its part for commercial purposes contact zdenek.kalal@gmail.com.
 
 Current code is written partially in C and Matlab and was developed under Windows. Therefore the highest priority is to:
 	- port current code to Linux and Mac (straightforward)
