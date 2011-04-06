@@ -1,5 +1,7 @@
-TLD v1.0 
-========
+TLD source code
+===============
+
+Join supporting discussion group at http://groups.google.com/group/opentld
 
 This is the official source code to the TLD algorithm. TLD is an algorithm for tracking of unknown objects in unconstrained video streams. The object of interest is defined by a bounding box in a single frame. TLD simultaneously tracks the object, learns its appearance and detects it whenever it appears in the video. 
 
