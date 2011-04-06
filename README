@@ -1,0 +1,33 @@
+TLD v1.0 
+========
+
+This is the official source code to the TLD algorithm. TLD is an algorithm for tracking of unknown objects in unconstrained video streams. The object of interest is defined by a bounding box in a single frame. TLD simultaneously tracks the object, learns its appearance and detects it whenever it appears in the video. 
+
+You are allowed to use TLD under the terms of the GPL version 3.0. It means that any distributed project that includes or links any portion of TLD source code has to be released with the source code under the GPL version 3.0 license or later. The details of the license can be found in file LICENCE. If you wish to use this code or any of its part for commercial purposes contact zdenek.kalal@gmail.com.
+
+Current code is written partially in C and Matlab and was developed under Windows. Therefore the highest priority is to:
+	- port current code to Linux and Mac (straightforward)
+	- get rid of Matlab and re-implement the code into C
+	- port to Andriod, iPhone.
+
+Please cite our CVPR'10 paper if you use the code for academic purposes.
+  
+@article{Kalal2010,
+   author = {Kalal, Z and Matas, J and Mikolajczyk, K},
+   journal = {Conference on Computer Vision and Pattern Recognition},
+   title = {{P-N Learning: Bootstrapping Binary Classifiers by Structural Constraints}},
+   year = {2010}
+} 
+
+              
+INSTALATION
+===========
+
+1. Compile mex files: edit and execute "compile.m"
+   Requires: OpenCV 2.2 (make sure to compile opencv first if you run on 64bit platform)
+   Tested using MS Visual Studio 2010 compiler and OpenCV2.2
+2. Execute "run_TLD.m" with default parameters. The TLD should track a motorbike
+   from "_input" and store the results to "_output".
+
+Copyright 2011 Zdenek Kalal 
+
