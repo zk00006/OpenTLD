@@ -22,7 +22,7 @@ Please cite our CVPR'10 paper if you use the code for academic purposes.
 } 
 
               
-INSTALATION
+INSTALLATION
 ===========
 
 1. Compile mex files: edit and execute "compile.m"

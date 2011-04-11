@@ -1,0 +1,7 @@
+1.) Make sure the 'OPENCV_HOME' environment variable is set to the directory where OpenCV is installed.
+2.) Verify all paths in compile.m are correct.
+
+Tested with:
+- Snow Leopard 10.6.6
+- Matlab 7.11.0.584 (R2010b)
+- gcc 4.2.1
