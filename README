@@ -7,11 +7,6 @@ This is the official source code to the TLD algorithm. TLD is an algorithm for t
 
 You are allowed to use TLD under the terms of the GPL version 3.0. It means that any distributed project that includes or links any portion of TLD source code has to be released with the source code under the GPL version 3.0 license or later. The details of the license can be found in file LICENSE. If you wish to use this code or any of its part for commercial purposes contact zdenek.kalal@gmail.com.
 
-Current code is written in C and Matlab and was developed under Windows. Therefore the highest priority is to:
-	- port current code to Linux and Mac (straightforward)
-	- get rid of Matlab and re-implement the code into C
-	- port to Andriod, iPhone.
-
 Please cite our CVPR'10 paper if you use the code for academic purposes.
   
 @article{Kalal2010,
@@ -21,15 +16,22 @@ Please cite our CVPR'10 paper if you use the code for academic purposes.
    year = {2010}
 } 
 
-              
-INSTALATION
-===========
+             
+INSTALLATION 
+============
 
-1. Compile mex files: edit and execute "compile.m"
-   Requires: OpenCV 2.2 (make sure to compile opencv first if you run on 64bit platform)
-   Tested using MS Visual Studio 2010 compiler and OpenCV2.2
-2. Execute "run_TLD.m" with default parameters. The TLD should track a motorbike
-   from "_input" and store the results to "_output".
+1. Windows
+    1.1 Install OpenCV2.2
+        a) make sure to compile opencv if you run on 64bit platform
+        b) make sure that system variable PATH includes the directory to the OpenCV DLLs 
+    1.2 Check paths in 'compile.m' file
+    1.3 run 'compile.m', if you get errors go to OpenTLD discussion group
+    1.4 run 'run_TLD.m', TLD should track a motorbike
+2. Mac
+    ...
+3. Linux
+   ...
+
 
 Copyright 2011 Zdenek Kalal 
 
