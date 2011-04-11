@@ -39,25 +39,41 @@ if ispc
 
 elseif ismac
     disp('Mac');
-    
-    include = ' -I/opt/local/include/opencv/ -I/opt/local/include/'; % /opt/local -> /usr/local 
-    libpath = '/opt/local/lib/'; % /opt/local -> /usr/local 
+    prefix = '/opt/local/'; % /opt/local -> /usr/local 
+    include = [' -I' prefix 'include/opencv/' ' -I' prefix 'include/'];
+    libpath = [prefix 'lib/'];
     
     files = dir([libpath 'libopencv*.dylib']);
     
     lib = [];
-    for i = 1:length(files),
-        lib = [lib ' ' libpath files(i).name];
-    end
-    
-    eval(['mex lk.cpp -O' include lib]);
-    mex -O -c tld.cpp
-    mex -O fern.cpp tld.o
-    mex -O linkagemex.cpp
-    mex -O bb_overlap.cpp
-    mex -O warp.cpp
-    mex -O distance.cpp
+    if exist('OCTAVE_VERSION')
+        disp('octave');
+        for i = 1:length(files),
+            file = files(i).name;
+            file = substr(file, 4, length(file) - 9);
+            lib = [lib ' -l' file];
+        end
 
+        eval(['mex lk.cpp' include ' -L' libpath lib]);
+        mex -c tld.cpp
+        mex fern.cpp tld.o
+        mex linkagemex.cpp
+        mex bb_overlap.cpp
+        mex warp.cpp
+        mex distance.cpp
+    else
+        for i = 1:length(files),
+            lib = [lib ' ' libpath files(i).name];
+        end
+
+        eval(['mex lk.cpp -O' include lib]);
+        mex -O -c tld.cpp
+        mex -O fern.cpp tld.o
+        mex -O linkagemex.cpp
+        mex -O bb_overlap.cpp
+        mex -O warp.cpp
+        mex -O distance.cpp
+    end
 else
     disp('Unix');
     % to come
