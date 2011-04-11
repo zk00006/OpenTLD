@@ -63,7 +63,23 @@ end
 
 if isunix
     disp('Unix');
-    % to come
+    include = ' -I/usr/include/opencv/ -I/usr/include/'; % /opt/local -> /usr/local
+    libpath = '/usr/lib/'; % /opt/local -> /usr/local
+
+    files = dir([libpath 'libcv.so']);
+
+    lib = [];
+    for i = 1:length(files),
+        lib = [lib ' ' libpath files(i).name];
+        disp(lib);
+    end
+    eval(['mex lk.cpp ' include lib]);
+    mex  -c tld.cpp
+    mex  fern.cpp tld.o
+    mex  linkagemex.cpp
+    mex  bb_overlap.cpp
+    mex  warp.cpp
+    mex  distance.cpp
 end
 
 

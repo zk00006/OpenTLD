@@ -16,9 +16,9 @@
 // along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "cv.h"
-#include "highgui.h"
 #include "math.h"
 #include <limits>
+#include <stdio.h>
 #ifdef _CHAR16T
 #define CHAR16_T
 #endif

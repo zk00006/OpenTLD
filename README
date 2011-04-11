@@ -31,6 +31,8 @@ INSTALLATION
    ...
 3. Linux
    ...
+   1,1, Install Octave & OpenCV
+      sudo apt-get install octave3.2 octave3.2-headers libcv-dev
 
 
 Copyright 2011 Zdenek Kalal 
