@@ -1,3 +1,6 @@
+README.MAC
+==========
+
 1.) Make sure the 'OPENCV_HOME' environment variable is set to the directory where OpenCV is installed.
 2.) Verify all paths in compile.m are correct.
 
