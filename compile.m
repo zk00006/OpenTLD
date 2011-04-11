@@ -36,9 +36,8 @@ if ispc
     mex -O bb_overlap.cpp
     mex -O warp.cpp
     mex -O distance.cpp
-end
 
-if ismac
+elseif ismac
     disp('Mac');
     
     include = ' -I/opt/local/include/opencv/ -I/opt/local/include/'; % /opt/local -> /usr/local 
@@ -58,10 +57,8 @@ if ismac
     mex -O bb_overlap.cpp
     mex -O warp.cpp
     mex -O distance.cpp
-    
-end
 
-if isunix
+else
     disp('Unix');
     % to come
 end
