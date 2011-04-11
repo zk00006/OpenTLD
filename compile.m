@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-% Compiles mex files.
+% Compiles mex files
 clc; clear all; cd mex;
 
 if ispc
