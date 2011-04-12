@@ -90,6 +90,9 @@ elseif ismac
     end
 else
     disp('Unix');
+	% The following code could be prettier (see the mac section above). For some
+	% reason I couldn't get the prefix version to work :-(
+
     include = ' -I/usr/include/opencv/ -I/usr/include/'; % /opt/local -> /usr/local
 
 	if  isoctave

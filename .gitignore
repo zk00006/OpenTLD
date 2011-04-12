@@ -1,6 +1,9 @@
 
+
+# mex files on different platforms. add as needed
 *.mex
 *.mexglx
+*.mexmaci64
 
 # Misc. files #
 ###################
@@ -12,6 +15,7 @@
 *.depend
 *.mo
 *.pot
+/NOTES
 
 # ignore Mac OS X finder metadata files
 .DS_Store
