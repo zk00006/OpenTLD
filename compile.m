@@ -59,7 +59,7 @@ elseif ismac
     
     lib = [];
 
-    if exist('OCTAVE_VERSION')
+    if isoctave
         disp('octave');
         for i = 1:length(files),
             file = files(i).name;
@@ -74,7 +74,8 @@ elseif ismac
         mex bb_overlap.cpp
         mex warp.cpp
         mex distance.cpp
-    else
+    elseif ismatlab
+		disp('matlab')
         for i = 1:length(files),
             lib = [lib ' ' libpath files(i).name];
         end
