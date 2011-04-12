@@ -24,9 +24,13 @@ end
 
 csize = 6*sigma;
 
-shift = (csize - 1)/2;
-
-h = FSPECIAL('gaussian',csize,sigma);
+if exist('OCTAVE_VERSION')
+    shift = idivide(csize - 1, 2);
+    h = fspecial('gaussian',csize,sigma);
+else
+    shift = (csize - 1)/2;
+    h = FSPECIAL('gaussian',csize,sigma);
+end
 
 M = conv2(M,h);
 M = M(1+shift:end-shift,1+shift:end-shift);
