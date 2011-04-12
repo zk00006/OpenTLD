@@ -1,0 +1,72 @@
+
+*.mex
+*.mexglx
+
+# Misc. files #
+###################
+*.bak
+*~
+*#
+*.swp
+*.layout
+*.depend
+*.mo
+*.pot
+
+# ignore Mac OS X finder metadata files
+.DS_Store
+
+# no CVS or SVN
+CVS/
+.svn/
+
+.frag
+.xml
+
+# general generated data
+*.a
+*.o
+*.dylib
+*.d
+
+# XCode specific files
+build/
+*.mode1v3
+*.pbxuser
+*.perspectivev3
+xcuserdata/
+
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.so
+
+# Packages #
+############
+# it's better to unpack these files and commit the raw source
+# git has its own built in compression methods
+*.7z
+*.dmg
+*.gz
+*.iso
+*.jar
+*.rar
+*.tar
+*.zip
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+
+# OS generated files #
+######################
+.DS_Store?
+ehthumbs.db
+Icon?
+Thumbs.db
+
