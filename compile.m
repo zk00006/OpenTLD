@@ -18,6 +18,18 @@
 % Compiles mex files
 clc; clear all; cd mex;
 
+%get a version string to discriminate between Matlab and Octave code
+v=ver(); 
+isoctave=0;
+ismatlab=0;
+if  strcmp(tolower(v(1).Name),'octave')
+   	isoctave=1;
+	disp(sprintf('This is %s, Version %s',v(1).Name, v(1).Version))
+elseif strcmp(tolower(v(1).Name),'matlab')
+	ismatlab=1;
+	disp(sprintf('This is %s, Version %s',v(1).Name, v(1).Version))
+end
+
 if ispc
     disp('PC');
     include = ' -Ic:\OpenCV2.2\include\opencv\ -Ic:\OpenCV2.2\include\';
