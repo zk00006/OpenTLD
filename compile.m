@@ -76,7 +76,13 @@ end
 if isunix
     disp('Unix');
     include = ' -I/usr/include/opencv/ -I/usr/include/'; % /opt/local -> /usr/local
-    libpath = '/usr/lib/'; % /opt/local -> /usr/local
+
+	if  isoctave
+    	libpath = '-l/usr/lib/'; % /opt/local -> /usr/local
+		% mkoctfile wants a different syntax than mex - "-l" prepended
+	elseif ismatlab
+		libpath = '/usr/lib/'; % /opt/local -> /usr/local
+	end
 
     files = dir([libpath 'libcv.so']);
 
