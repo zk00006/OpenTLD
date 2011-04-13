@@ -36,21 +36,37 @@ if ispc
     mex -O bb_overlap.cpp
     mex -O warp.cpp
     mex -O distance.cpp
-end
-
-if ismac
+elseif ismac
     disp('Mac');
+    % Tested on MacOs 10.6.7
+    % with matlab R2010a maci64
+    % with g++ (GCC) 4.0.1 (Apple Inc. build 5494)
+    %
+    % brew install opencv
+    %
+    prefix = '/usr/local/'; % /opt/local -> /usr/local
+    include = [' -I' prefix 'include/' ' -I' prefix 'include/opencv/']; 
+    libpath = [' -L' prefix 'lib/'];
+    lib = ' -lopencv_core -lopencv_imgproc -lopencv_video';
     
-    include = ' -I/opt/local/include/opencv/ -I/opt/local/include/'; % /opt/local -> /usr/local 
-    libpath = '/opt/local/lib/'; % /opt/local -> /usr/local 
-    
-    files = dir([libpath 'libopencv*.dylib']);
-    
-    lib = [];
-    for i = 1:length(files),
-        lib = [lib ' ' libpath files(i).name];
-    end
-    
+    eval(['mex -O lk.cpp' include libpath lib]);
+    mex -O -c tld.cpp
+    mex -O fern.cpp tld.o
+    mex -O linkagemex.cpp
+    mex -O bb_overlap.cpp
+    mex -O warp.cpp
+    mex -O distance.cpp
+elseif isunix
+    disp('Unix');
+    % Tested on Ubuntu maverick (10.10)
+    % with matlab R2010a glnx86
+    % with gcc (Ubuntu/Linaro 4.4.4-14ubuntu5) 4.4.5
+    %
+    % apt-get install libcv-dev libhighgui-dev
+    %
+    include = ' -I/usr/include/opencv/';
+    lib = ' -lcxcore -lcv';
+
     eval(['mex lk.cpp -O' include lib]);
     mex -O -c tld.cpp
     mex -O fern.cpp tld.o
@@ -58,12 +74,6 @@ if ismac
     mex -O bb_overlap.cpp
     mex -O warp.cpp
     mex -O distance.cpp
-    
-end
-
-if isunix
-    disp('Unix');
-    % to come
 end
 
 
