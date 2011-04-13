@@ -11,6 +11,9 @@
 *.mexw32
 *.mexw64
 
+# Octave core dump
+octave-core
+
 # Misc. files #
 ###################
 *.bak
