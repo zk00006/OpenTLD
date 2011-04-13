@@ -96,28 +96,38 @@ else
 	% reason I couldn't get the prefix version to work :-(
 
     include = ' -I/usr/include/opencv/ -I/usr/include/'; % /opt/local -> /usr/local
-
-	if  isoctave
-    	libpath = '-l/usr/lib/'; % /opt/local -> /usr/local
-		% mkoctfile wants a different syntax than mex - "-l" prepended
-	elseif ismatlab
-		libpath = '/usr/lib/'; % /opt/local -> /usr/local
-	end
+	libpath = '/usr/lib/'; % /opt/local -> /usr/local
 
     files = dir([libpath 'libcv.so']);
 
     lib = [];
-    for i = 1:length(files),
-        lib = [lib ' ' libpath files(i).name];
-        disp(lib);
+    if isoctave
+        disp('octave'); 
+%         for i = 1:length(files),
+%             lib = [lib ' ' libpath files(i).name];
+%             disp(lib);
+%         end
+        lib=' -lcv'; %mkoctfile has a more picky syntax than matlab-mex concerning included libraries
+        eval(['mex -v lk.cpp ' include ' -L' libpath lib]);
+        mex  -v -c tld.cpp
+        mex  -v fern.cpp tld.o
+        mex  -v linkagemex.cpp
+        mex  -v bb_overlap.cpp
+        mex  -v warp.cpp
+        mex  -v distance.cpp
+    elseif ismatlab
+        for i = 1:length(files),
+            lib = [lib ' ' libpath files(i).name];
+            disp(lib);
+        end
+        eval(['mex lk.cpp ' include lib]);
+        mex  -c tld.cpp
+        mex  fern.cpp tld.o
+        mex  linkagemex.cpp
+        mex  bb_overlap.cpp
+        mex  warp.cpp
+        mex  distance.cpp
     end
-    eval(['mex lk.cpp ' include lib]);
-    mex  -c tld.cpp
-    mex  fern.cpp tld.o
-    mex  linkagemex.cpp
-    mex  bb_overlap.cpp
-    mex  warp.cpp
-    mex  distance.cpp
 end
 
 
