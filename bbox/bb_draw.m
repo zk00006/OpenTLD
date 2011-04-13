@@ -27,7 +27,7 @@ end
 for i = 1:length(idx)
     bb = bb1(:,idx(i));
     if bb(3)-bb(1) > 0 && bb(4)-bb(2)>0
-        rectangle('Position',[bb(1) bb(2) bb(3)-bb(1) bb(4)-bb(2)],varargin{:})
+        %rectangle('Position',[bb(1) bb(2) bb(3)-bb(1) bb(4)-bb(2)],varargin{:})
         
         if size(bb,1) == 5
             cp = bb_center(bb);

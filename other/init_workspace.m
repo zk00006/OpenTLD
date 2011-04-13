@@ -15,7 +15,9 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-if ~isunix
+if exist('OCTAVE_VERSION')
+    beep_on_error(0);
+else
     beep off;
 end
 clc; clf;
