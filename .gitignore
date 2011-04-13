@@ -2,14 +2,14 @@
 
 # mex files on different platforms.
 *.mex
-*.mexglx  #glnx86
-*.mexa64  #glnxa64
-*.mexmac  #mac
-*.mexmaci  #maci
-*.mexmaci64  #maci64
-*.mexs64  #sol64
-*.mexw32  #win32
-*.mexw64  #win64
+*.mexglx
+*.mexa64
+*.mexmac
+*.mexmaci
+*.mexmaci64
+*.mexs64
+*.mexw32
+*.mexw64
 
 # Misc. files #
 ###################
