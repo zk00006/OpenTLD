@@ -98,7 +98,7 @@ else
     include = ' -I/usr/include/opencv/ -I/usr/include/'; % /opt/local -> /usr/local
 	libpath = '/usr/lib/'; % /opt/local -> /usr/local
 
-    files = dir([libpath 'libcv.so']);
+    files = [dir([libpath 'libcv.so']) dir([libpath 'libcxcore.so'])];
 
     lib = [];
     if isoctave
@@ -107,7 +107,7 @@ else
 %             lib = [lib ' ' libpath files(i).name];
 %             disp(lib);
 %         end
-        lib=' -lcv'; %mkoctfile has a more picky syntax than matlab-mex concerning included libraries
+        lib=' -lcv -lcxcore'; %mkoctfile has a more picky syntax than matlab-mex concerning included libraries
         eval(['mex -v lk.cpp ' include ' -L' libpath lib]);
         mex  -v -c tld.cpp
         mex  -v fern.cpp tld.o
