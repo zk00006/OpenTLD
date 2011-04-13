@@ -27,7 +27,13 @@ end
 for i = 1:length(idx)
     bb = bb1(:,idx(i));
     if bb(3)-bb(1) > 0 && bb(4)-bb(2)>0
-        %rectangle('Position',[bb(1) bb(2) bb(3)-bb(1) bb(4)-bb(2)],varargin{:})
+		if exist('OCTAVE_VERSION')
+			% do nothing
+			% in the future draw rectangle manually. no additional properties given yet
+			% not working yet: line([bb(1),bb(3)],[bb(2),bb(4)])...
+		else
+        	rectangle('Position',[bb(1) bb(2) bb(3)-bb(1) bb(4)-bb(2)],varargin{:})
+		end
         
         if size(bb,1) == 5
             cp = bb_center(bb);
