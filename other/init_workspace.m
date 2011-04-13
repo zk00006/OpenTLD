@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-if !isunix
+if ~isunix
     beep off;
 end
 clc; clf;
