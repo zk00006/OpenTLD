@@ -18,19 +18,20 @@
 % Compiles mex files
 clc; clear all; cd mex;
 
-%get a version string to discriminate between Matlab and Octave code
-v=ver(); 
-isoctave=0;
-ismatlab=0;
-for k=1:length(v)
-   if strcmpi(v(k).Name,'octave')
-   	isoctave=1;
-	disp(sprintf('This is %s, Version %s',v(k).Name, v(k).Version))
-   elseif strcmp(v(k).Name, 'MATLAB')
-    ismatlab=1;
-    disp(sprintf('This is %s, Version %s',v(k).Name, v(k).Version))
-   end
-end
+% "if exist('OCTAVE_VERSION')" is better after all. No global vars needed.
+% %get a version string to discriminate between Matlab and Octave code
+% v=ver(); 
+% isoctave=0;
+% ismatlab=0;
+% for k=1:length(v)
+%    if strcmpi(v(k).Name,'octave')
+%    	isoctave=1;
+% 		disp(sprintf('This is %s, Version %s',v(k).Name, v(k).Version))
+%    elseif strcmp(v(k).Name, 'MATLAB')
+%     ismatlab=1;
+%     disp(sprintf('This is %s, Version %s',v(k).Name, v(k).Version))
+%    end
+% end
 
 if ispc
     disp('PC');
@@ -61,7 +62,7 @@ elseif ismac
     
     lib = [];
 
-    if isoctave
+    if exist('OCTAVE_VERSION')
         disp('octave');
         for i = 1:length(files),
             file = files(i).name;
@@ -76,7 +77,7 @@ elseif ismac
         mex bb_overlap.cpp
         mex warp.cpp
         mex distance.cpp
-    elseif ismatlab
+    else
 		disp('matlab')
         for i = 1:length(files),
             lib = [lib ' ' libpath files(i).name];
@@ -101,7 +102,7 @@ else
     files = [dir([libpath 'libcv.so']) dir([libpath 'libcxcore.so'])];
 
     lib = [];
-    if isoctave
+    if exist('OCTAVE_VERSION')
         disp('octave'); 
         %mkoctfile has a more picky syntax than matlab-mex concerning included libraries
         for i = 1:length(files)
@@ -119,7 +120,7 @@ else
         mex  -v bb_overlap.cpp
         mex  -v warp.cpp
         mex  -v distance.cpp
-    elseif ismatlab
+    else
         for i = 1:length(files),
             lib = [lib ' ' libpath files(i).name];
             disp(lib);
