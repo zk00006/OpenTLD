@@ -1,9 +1,15 @@
 
 
-# mex files on different platforms. add as needed
+# mex files on different platforms.
 *.mex
-*.mexglx
-*.mexmaci64
+*.mexglx  #glnx86
+*.mexa64  #glnxa64
+*.mexmac  #mac
+*.mexmaci  #maci
+*.mexmaci64  #maci64
+*.mexs64  #sol64
+*.mexw32  #win32
+*.mexw64  #win64
 
 # Misc. files #
 ###################
