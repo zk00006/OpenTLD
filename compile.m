@@ -22,12 +22,14 @@ clc; clear all; cd mex;
 v=ver(); 
 isoctave=0;
 ismatlab=0;
-if  strcmpi(v(1).Name,'octave')
+for k=1:length(v)
+   if strcmpi(v(k).Name,'octave')
    	isoctave=1;
-	disp(sprintf('This is %s, Version %s',v(1).Name, v(1).Version))
-elseif strcmpi(v(1).Name,'matlab')
-	ismatlab=1;
-	disp(sprintf('This is %s, Version %s',v(1).Name, v(1).Version))
+	disp(sprintf('This is %s, Version %s',v(k).Name, v(k).Version))
+   elseif strcmp(v(k).Name, 'MATLAB')
+    ismatlab=1;
+    disp(sprintf('This is %s, Version %s',v(k).Name, v(k).Version))
+   end
 end
 
 if ispc
