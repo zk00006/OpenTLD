@@ -103,11 +103,15 @@ else
     lib = [];
     if isoctave
         disp('octave'); 
-%         for i = 1:length(files),
-%             lib = [lib ' ' libpath files(i).name];
-%             disp(lib);
-%         end
-        lib=' -lcv -lcxcore'; %mkoctfile has a more picky syntax than matlab-mex concerning included libraries
+        %mkoctfile has a more picky syntax than matlab-mex concerning included libraries
+        for i = 1:length(files)
+            file = files(i).name;
+            ind=rindex(file,'.');
+            file = substr(file, 4, ind-4);
+            lib = [lib ' -l' file];
+        end
+%         lib=' -lcv -lcxcore'; %hard-coded library arguments
+        disp(lib);
         eval(['mex -v lk.cpp ' include ' -L' libpath lib]);
         mex  -v -c tld.cpp
         mex  -v fern.cpp tld.o
