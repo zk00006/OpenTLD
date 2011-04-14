@@ -33,7 +33,7 @@ end
 for k = 1:1 % Bootstrap
    for i = 1:length(y)
        
-       [conf1,~,isin] = tldNN(x(:,i),tld); % measure Relative similarity
+       [conf1,dummy5,isin] = tldNN(x(:,i),tld); % measure Relative similarity
        
        % Positive
        if y(i) == 1 && conf1 <= tld.model.thr_nn % 0.65

@@ -41,7 +41,7 @@ if tld.control.maxbbox > 0 && medFB > 10, BB2 = []; return; end  % too unstable 
 
 % estimate confidence and validity
 patchJ   = tldGetPattern(tld.img{J},BB2,tld.model.patchsize); % sample patch in current image
-[~,Conf] = tldNN(patchJ,tld); % estimate its Conservative Similarity (considering 50% of positive patches only)
+[dummy7,Conf] = tldNN(patchJ,tld); % estimate its Conservative Similarity (considering 50% of positive patches only)
 
 % Validity
 Valid    = tld.valid(I); % copy validity from previous frame

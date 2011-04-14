@@ -21,13 +21,13 @@ pX   = [];
 pEx  = [];%zeros(prod(tld.patchsize),numWarps);
 
 % Get closest bbox
-[~,idxP] = max(overlap);
+[dummy3,idxP] = max(overlap);
 bbP0 =  tld.grid(1:4,idxP);
 
 % Get overlapping bboxes
 idxP = find(overlap > 0.6);
 if length(idxP) > p_par.num_closest
-    [~,sIdx] = sort(overlap(idxP),'descend');    
+    [dummy4,sIdx] = sort(overlap(idxP),'descend');    
     idxP = idxP(sIdx(1:p_par.num_closest));
 end
 bbP  = tld.grid(:,idxP);

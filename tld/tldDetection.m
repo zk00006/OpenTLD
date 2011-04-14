@@ -29,7 +29,7 @@ fern(4,img,tld.control.maxbbox,tld.var,tld.tmp.conf,tld.tmp.patt); % evaluates E
 idx_dt = find(tld.tmp.conf > tld.model.num_trees*tld.model.thr_fern); % get indexes of bounding boxes that passed throu the Ensemble Classifier
 
 if length(idx_dt) > 100 % speedup: if there are more than 100 detections, pict 100 of the most confident only
-    [~,sIdx] = sort(tld.tmp.conf(idx_dt),'descend');
+    [dummy8,sIdx] = sort(tld.tmp.conf(idx_dt),'descend');
     idx_dt = idx_dt(sIdx(1:100));
 end
 
