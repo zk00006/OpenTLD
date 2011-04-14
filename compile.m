@@ -76,7 +76,7 @@ elseif ismac
         %    file = substr(file, 4, length(file) - 9);
         %    lib = [lib ' -l' file];
         %end
-		lib = ' -lopencv_core -lopencv_imgproc -lopencv_video';
+		lib = ' -lopencv_core -lopencv_imgproc -lopencv_video'; %Is this opencv 2.2?
 
         eval(['mex lk.cpp' include ' -L' libpath lib]);
         mex -c tld.cpp
@@ -109,6 +109,14 @@ elseif isunix
     %
     % apt-get install libcv-dev libhighgui-dev
     %
+	%[bilderbuchi]:
+    % Also tested on Ubuntu maverick (10.10)
+    % with matlab R20009a glnx86 (replaced ~ with dummy variables, don't expect performance impact)
+	% with gcc 4:4.4.4-1ubuntu2
+	% with opencv 2.1.0-2
+	%
+	% Also runs with (self-compile) octave 3.4 (possibly with 3.2 now, too)
+	% Tracking doesn't work, though
 
     prefix = '/usr/'; %OpenCV 2.1 libraries
     include = [' -I' prefix 'include/opencv/' ' -I' prefix 'include/']; %OpenCV 2.1 libraries
