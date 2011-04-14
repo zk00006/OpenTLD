@@ -1,34 +1,34 @@
 TLD source code
 ===============
 
-Join supporting discussion group at http://groups.google.com/group/opentld
-
-This is the official source code to the TLD algorithm. TLD is an algorithm for tracking of unknown objects in unconstrained video streams. The object of interest is defined by a bounding box in a single frame. TLD simultaneously tracks the object, learns its appearance and detects it whenever it appears in the video. 
-
-You are allowed to use TLD under the terms of the GPL version 3.0. It means that any distributed project that includes or links any portion of TLD source code has to be released with the source code under the GPL version 3.0 license or later. The details of the license can be found in file LICENSE. If you wish to use this code or any of its part for commercial purposes contact zdenek.kalal@gmail.com.
-
-Please cite our CVPR'10 paper if you use the code for academic purposes.
-  
-@article{Kalal2010,
+- This is the official source code to the TLD tracker released under the GPL version 3.0. 
+- For commercial licenses contact the main author: zdenek.kalal@gmail.com.
+- Join supporting discussion group at http://groups.google.com/group/opentld.
+- Cite the following paper if you use the code for academic purposes.
+ 
+  @article{Kalal2010,
    author = {Kalal, Z and Matas, J and Mikolajczyk, K},
    journal = {Conference on Computer Vision and Pattern Recognition},
    title = {{P-N Learning: Bootstrapping Binary Classifiers by Structural Constraints}},
    year = {2010}
-} 
+  } 
 
              
-INSTALLATION 
+Installation 
 ============
 
 1. Windows
-    1.1 Install OpenCV2.2
-        a) make sure to compile opencv if you run on 64bit platform
-        b) make sure that system variable PATH includes the directory to the OpenCV DLLs 
-    1.2 Check paths in 'compile.m' file
-    1.3 run 'compile.m', if you get errors go to OpenTLD discussion group
-    1.4 run 'run_TLD.m', TLD should track a motorbike
+	Tested on: Matlab R2010a, VS2010, Windows 7 (32-bit, 64-bit), OpenCV2.2
+	1.1 Install OpenCV
+	    a) make sure to compile opencv 
+	    b) make sure that system variable PATH includes the directory to the OpenCV DLLs 
+	1.2 Check paths in 'compile.m' file
+	1.3 run 'compile.m', if you get errors go to OpenTLD discussion group
+	1.4 run 'run_TLD.m', TLD should track a motorbike
+ 
 2. Mac
    ...
+
 3. Linux
 	1.1 Install OpenCV
 		sudo apt-get install libcv-dev (this will most probably be 2.1)
@@ -41,5 +41,4 @@ INSTALLATION
     1.5 run 'run_TLD.m', TLD should track a motorbike
 
 
-Copyright 2011 Zdenek Kalal
-
+(c) 2011 Zdenek Kalal, zdenek.kalal@gmail.com

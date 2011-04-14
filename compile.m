@@ -18,20 +18,9 @@
 % Compiles mex files
 clc; clear all; cd mex;
 
-% "if exist('OCTAVE_VERSION')" is better after all. No global vars needed.
-% %get a version string to discriminate between Matlab and Octave code
-% v=ver(); 
-% isoctave=0;
-% ismatlab=0;
-% for k=1:length(v)
-%    if strcmpi(v(k).Name,'octave')
-%    	isoctave=1;
-% 		disp(sprintf('This is %s, Version %s',v(k).Name, v(k).Version))
-%    elseif strcmp(v(k).Name, 'MATLAB')
-%     ismatlab=1;
-%     disp(sprintf('This is %s, Version %s',v(k).Name, v(k).Version))
-%    end
-% end
+% BEFORE EXECUTION:
+% Check prefix and files lines if they correspond to your system.
+% (Un)comment as necessary.
 
 if ispc
     disp('PC');
@@ -55,23 +44,26 @@ if ispc
 elseif ismac
     disp('Mac');
 	% [bilderbuchi] Please test this again. Also, octave if possible
+	%
     % Tested on MacOs 10.6.7
     % with matlab R2010a maci64
     % with g++ (GCC) 4.0.1 (Apple Inc. build 5494)
     %
     % brew install opencv
     %
+
+	% prefix = '/opt/local/'; %zdenek's prefix (opencv2.2?)
     prefix = '/usr/local/'; % /opt/local -> /usr/local
     include = [' -I' prefix 'include/' ' -I' prefix 'include/opencv/']; 
     libpath = [prefix 'lib/'];
     
-    %files = dir([libpath 'libopencv*.dylib']);
+    files = dir([libpath 'libopencv*.dylib']);
     
     lib = [];
 
     if exist('OCTAVE_VERSION')
         disp('octave');
-        %for i = 1:length(files),
+        %for i = 1:length(files), %parser not working I think. look in the unix section.
         %    file = files(i).name;
         %    file = substr(file, 4, length(file) - 9);
         %    lib = [lib ' -l' file];
@@ -87,10 +79,10 @@ elseif ismac
         mex distance.cpp
     else
 		disp('matlab')
-        %for i = 1:length(files),
-        %    lib = [lib ' ' libpath files(i).name];
-        %end
-		lib = ' -lopencv_core -lopencv_imgproc -lopencv_video';
+        for i = 1:length(files),
+            lib = [lib ' ' libpath files(i).name];
+        end
+		%lib = ' -lopencv_core -lopencv_imgproc -lopencv_video';
 
         eval(['mex lk.cpp -O' include ' -L' libpath lib]);
         mex -O -c tld.cpp
@@ -119,9 +111,11 @@ elseif isunix
 	% Tracking doesn't work, though
 
     prefix = '/usr/'; %OpenCV 2.1 libraries
+    %prefix = '/usr/local'; %OpenCV 2.2 libraries?
     include = [' -I' prefix 'include/opencv/' ' -I' prefix 'include/']; %OpenCV 2.1 libraries
 	libpath = [prefix 'lib/']; %OpenCV 2.1 libraries
     files = [dir([libpath 'libcv.so']) dir([libpath 'libcxcore.so'])]; %OpenCV 2.1 libraries
+    %files = dir([libpath 'libopencv*.so.2.2']); %OpenCV 2.2 libraries?
 
     lib = [];
     if exist('OCTAVE_VERSION')
