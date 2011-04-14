@@ -30,10 +30,16 @@ INSTALLATION
 2. Mac
    ...
 3. Linux
-   ...
-   1,1, Install Octave & OpenCV
-      sudo apt-get install octave3.2 octave3.2-headers libcv-dev
+	1.1 Install OpenCV
+		sudo apt-get install libcv-dev (this will most probably be 2.1)
+	1.2a Install Matlab (>= R2009b). Possibly you will need some extension toolboxes (which?)
+	1.2b There are efforts underway to make TLD work with Octave, an open source alternative to Matlab
+		You will need to install octave >=3.4.
+		Also, install octave extension packages miscellaneous, image, statistics from http://octave.sourceforge.net/packages.php
+    1.3 Check paths in 'compile.m' file
+    1.4 run 'compile.m', (either in matlab or octave). If you get errors go to OpenTLD discussion group
+    1.5 run 'run_TLD.m', TLD should track a motorbike
 
 
-Copyright 2011 Zdenek Kalal 
+Copyright 2011 Zdenek Kalal
 
