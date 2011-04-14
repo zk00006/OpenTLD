@@ -131,12 +131,12 @@ elseif isunix
         disp(lib);
 
         eval(['mex -v lk.cpp ' include ' -L' libpath lib]);
-        mex  -v -c tld.cpp
-        mex  -v fern.cpp tld.o
-        mex  -v linkagemex.cpp
-        mex  -v bb_overlap.cpp
-        mex  -v warp.cpp
-        mex  -v distance.cpp
+        mex  -c tld.cpp
+        mex  fern.cpp tld.o
+        mex  linkagemex.cpp
+        mex  bb_overlap.cpp
+        mex  warp.cpp
+        mex  distance.cpp
     else
         for i = 1:length(files),
             lib = [lib ' ' libpath files(i).name];
