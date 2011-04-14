@@ -140,8 +140,9 @@ elseif isunix
     else
         for i = 1:length(files),
             lib = [lib ' ' libpath files(i).name];
-            disp(lib);
         end
+		disp(lib);
+
 		% -O is default option for mex in Matlab
         eval(['mex lk.cpp ' include lib]);
         mex  -c tld.cpp
