@@ -93,13 +93,11 @@ elseif ismac
     end
 else
     disp('Unix');
-	% The following code could be prettier (see the mac section above). For some
-	% reason I couldn't get the prefix version to work :-(
 
-    include = ' -I/usr/include/opencv/ -I/usr/include/'; % /opt/local -> /usr/local
-	libpath = '/usr/lib/'; % /opt/local -> /usr/local
-
-    files = [dir([libpath 'libcv.so']) dir([libpath 'libcxcore.so'])];
+    prefix = '/usr/'; %OpenCV 2.1 libraries
+    include = [' -I' prefix 'include/opencv/' ' -I' prefix 'include/']; %OpenCV 2.1 libraries
+	libpath = [prefix 'lib/']; %OpenCV 2.1 libraries
+    files = [dir([libpath 'libcv.so']) dir([libpath 'libcxcore.so'])]; %OpenCV 2.1 libraries
 
     lib = [];
     if exist('OCTAVE_VERSION')
@@ -107,12 +105,13 @@ else
         %mkoctfile has a more picky syntax than matlab-mex concerning included libraries
         for i = 1:length(files)
             file = files(i).name;
-            ind=rindex(file,'.');
+            ind=index(file,'.'); %Find first occurence of . to correctly parse filenames like libopencv.so.2.2
             file = substr(file, 4, ind-4);
             lib = [lib ' -l' file];
         end
 %         lib=' -lcv -lcxcore'; %hard-coded library arguments
         disp(lib);
+
         eval(['mex -v lk.cpp ' include ' -L' libpath lib]);
         mex  -v -c tld.cpp
         mex  -v fern.cpp tld.o
