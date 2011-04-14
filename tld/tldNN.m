@@ -44,7 +44,7 @@ for i = 1:size(x,2) % fore every patch that is tested
     
     % set isin
     if any(nccP > tld.model.ncc_thesame), isin(1,i) = 1;  end % IF the query patch is highly correlated with any positive patch in the model THEN it is considered to be one of them
-    [~,isin(2,i)] = max(nccP); % get the index of the maximall correlated positive patch
+    [dummy6,isin(2,i)] = max(nccP); % get the index of the maximall correlated positive patch
     if any(nccN > tld.model.ncc_thesame), isin(3,i) = 1;  end % IF the query patch is highly correlated with any negative patch in the model THEN it is considered to be one of them
     
     % measure Relative Similarity

@@ -23,7 +23,7 @@ img   = tld.img{I}; % current image
 % Check consistency -------------------------------------------------------
 
 pPatt  = tldGetPattern(img,bb,tld.model.patchsize); % get current patch
-[pConf1,~,pIsin] = tldNN(pPatt,tld); % measure similarity to model
+[pConf1,dummy9,pIsin] = tldNN(pPatt,tld); % measure similarity to model
 
 if pConf1 < 0.5, disp('Fast change.'); tld.valid(I) = 0; return; end % too fast change of appearance
 if var(pPatt) < tld.var, disp('Low variance.'); tld.valid(I) = 0; return; end % too low variance of the patch
