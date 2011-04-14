@@ -54,21 +54,29 @@ if ispc
 
 elseif ismac
     disp('Mac');
-    prefix = '/opt/local/'; % /opt/local -> /usr/local 
-    include = [' -I' prefix 'include/opencv/' ' -I' prefix 'include/'];
+	% [bilderbuchi] Please test this again. Also, octave if possible
+    % Tested on MacOs 10.6.7
+    % with matlab R2010a maci64
+    % with g++ (GCC) 4.0.1 (Apple Inc. build 5494)
+    %
+    % brew install opencv
+    %
+    prefix = '/usr/local/'; % /opt/local -> /usr/local
+    include = [' -I' prefix 'include/' ' -I' prefix 'include/opencv/']; 
     libpath = [prefix 'lib/'];
     
-    files = dir([libpath 'libopencv*.dylib']);
+    %files = dir([libpath 'libopencv*.dylib']);
     
     lib = [];
 
     if exist('OCTAVE_VERSION')
         disp('octave');
-        for i = 1:length(files),
-            file = files(i).name;
-            file = substr(file, 4, length(file) - 9);
-            lib = [lib ' -l' file];
-        end
+        %for i = 1:length(files),
+        %    file = files(i).name;
+        %    file = substr(file, 4, length(file) - 9);
+        %    lib = [lib ' -l' file];
+        %end
+		lib = ' -lopencv_core -lopencv_imgproc -lopencv_video';
 
         eval(['mex lk.cpp' include ' -L' libpath lib]);
         mex -c tld.cpp
@@ -79,11 +87,12 @@ elseif ismac
         mex distance.cpp
     else
 		disp('matlab')
-        for i = 1:length(files),
-            lib = [lib ' ' libpath files(i).name];
-        end
+        %for i = 1:length(files),
+        %    lib = [lib ' ' libpath files(i).name];
+        %end
+		lib = ' -lopencv_core -lopencv_imgproc -lopencv_video';
 
-        eval(['mex lk.cpp -O' include lib]);
+        eval(['mex lk.cpp -O' include ' -L' libpath lib]);
         mex -O -c tld.cpp
         mex -O fern.cpp tld.o
         mex -O linkagemex.cpp
@@ -91,8 +100,15 @@ elseif ismac
         mex -O warp.cpp
         mex -O distance.cpp
     end
-else
+
+elseif isunix
     disp('Unix');
+    % Tested on Ubuntu maverick (10.10)
+    % with matlab R2010a glnx86
+    % with gcc (Ubuntu/Linaro 4.4.4-14ubuntu5) 4.4.5
+    %
+    % apt-get install libcv-dev libhighgui-dev
+    %
 
     prefix = '/usr/'; %OpenCV 2.1 libraries
     include = [' -I' prefix 'include/opencv/' ' -I' prefix 'include/']; %OpenCV 2.1 libraries
@@ -124,6 +140,7 @@ else
             lib = [lib ' ' libpath files(i).name];
             disp(lib);
         end
+		% -O is default option for mex in Matlab
         eval(['mex lk.cpp ' include lib]);
         mex  -c tld.cpp
         mex  fern.cpp tld.o
