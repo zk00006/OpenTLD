@@ -1,6 +1,13 @@
 TLD source code
 ===============
 
+################################################################################
+# ATTENTION:
+# This branch of the source code is a development version including octave 
+# compatibility measures, and is not an official version!
+# Tracking is non-functional for now, the code executes.
+################################################################################
+
 - This is the official source code to the TLD tracker released under the GPL version 3.0. 
 - For commercial licenses contact the main author: zdenek.kalal@gmail.com.
 - Join supporting discussion group at http://groups.google.com/group/opentld.
