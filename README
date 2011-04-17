@@ -40,7 +40,14 @@ Installation
 3. Linux
 	1.1 Install OpenCV
 		sudo apt-get install libcv-dev (this will most probably be 2.1)
-	1.2a Install Matlab (>= R2009b). Possibly you will need some extension toolboxes (which?)
+	1.2a Install Matlab (>= R2009b). Possibly you will need some extension toolboxes
+            include:
+                Image Acquisition Toolbox
+                Image Processing Toolbox
+                Signal Processing Blockset
+                Signal Processing Toolbox
+                Statistics Toolbox
+                Video and Image Processing Blockset
 	1.2b There are efforts underway to make TLD work with Octave, an open source alternative to Matlab
 		You will need to install octave >=3.4.
 		Also, install octave extension packages miscellaneous, image, statistics from http://octave.sourceforge.net/packages.php
