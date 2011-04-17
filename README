@@ -1,4 +1,4 @@
-TLD (aka Pradator)
+TLD (aka Predator)
 ----------------------------------------------------------------------------
 
 TLD is an algorithm for tracking of unknown objects in unconstrained video streams. The object of interest is defined by a bounding box in a single frame. TLD simultaneously tracks the object, learns its appearance and detects it whenever it appears in the video.
