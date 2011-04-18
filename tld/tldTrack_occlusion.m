@@ -66,7 +66,7 @@ end
 
 % Output
 ex       = tldGetPattern(tld.img{J},BB2,tld.model.patchsize);
-[~,Conf] = tldNN(ex,tld);
+[dummy11,Conf] = tldNN(ex,tld);
 Valid    = tld.valid(I);
 
 if tld.control.maxbbox > 0

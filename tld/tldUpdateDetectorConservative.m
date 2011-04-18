@@ -23,7 +23,7 @@ img   = tld.img{I};
 % Consistency =============================================================
 
 pPatt  = tldGetPattern(img,bb,tld.model.patchsize);
-[pConf1,~,pIsin] = tldNN(pPatt,tld);
+[pConf1,dummy13,pIsin] = tldNN(pPatt,tld);
 
 % Inconsistency: colildes with negative
 if pConf1 < 0.5

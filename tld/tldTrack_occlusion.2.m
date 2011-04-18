@@ -57,7 +57,7 @@ end
 
 % Output
 ex       = tldGetPattern(tld.img{J},BB2,tld.model.patchsize);
-[~,Conf] = tldNN(ex,tld);
+[dummy12,Conf] = tldNN(ex,tld);
 Valid    = tld.valid(I);
 
 % if sum(idxOCC)/length(idxOCC) >= .20

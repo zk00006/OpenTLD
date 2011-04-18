@@ -124,7 +124,7 @@ while 1
     
 end % end while 1
 
-    function handleKey(~, evnt)
+    function handleKey(dummy10, evnt)
         switch evnt.Character
             case '1'
                 tld.control.maxbbox = 0.2;
