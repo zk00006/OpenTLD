@@ -23,7 +23,10 @@ BB2    = []; % estimated bounding
 Conf   = []; % confidence of prediction
 Valid  = 0;  % is the predicted bounding box valid? if yes, learning will take place ...
 
-if isempty(BB1) || ~bb_isdef(BB1), return; end % exit function if BB1 is not defined
+if isempty(BB1) || ~bb_isdef(BB1)
+    printf("Detector [%d]: FAIL - No initial Bounding Box\n",I);
+    return;
+end % exit function if BB1 is not defined
 
 % estimate BB2
 xFI    = bb_points(BB1,10,10,5); % generate 10x10 grid of points within BB1 with margin 5 px
@@ -36,8 +39,24 @@ BB2    = bb_predict(BB1,xFI(:,idxF),xFJ(1:2,idxF)); % estimate BB2 using the rel
 tld.xFJ = xFJ(:,idxF); % save selected points (only for display purposes)
 
 % detect failures
-if ~bb_isdef(BB2) || bb_isout(BB2,tld.imgsize), BB2 = []; return; end % bounding box out of image
-if tld.control.maxbbox > 0 && medFB > 10, BB2 = []; return; end  % too unstable predictions
+if ~bb_isdef(BB2)
+	  printf("Detector [%d]: FAIL - No Prediction Bounding Box\n",I);
+    BB2 = [];
+return;
+end % bounding box out of image
+
+if bb_isout(BB2,tld.imgsize)
+	  printf("Detector [%d]: FAIL - Bounding Box out of bounds\n",I);
+    BB2 = [];
+    return;
+end % bounding box out of image
+
+
+if tld.control.maxbbox > 0 && medFB > 10
+	  printf("Detector [%d]: FAIL - Forward Backward Error %f>10\n",I,medFB);
+    BB2 = [];
+    return;
+end  % too unstable predictions
 
 % estimate confidence and validity
 patchJ   = tldGetPattern(tld.img{J},BB2,tld.model.patchsize); % sample patch in current image

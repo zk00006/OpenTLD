@@ -84,12 +84,16 @@ pY = ones(1,size(pX,2));
 % disp(['# P patterns: ' num2str(size(pX,2))]);
 % disp(['# P patches : ' num2str(size(pEx,2))]);
 
+printf("Original Bounding Box: (%f,%f) (%f,%f)\n",
+   tld.source.bb(1),tld.source.bb(2),tld.source.bb(3),tld.source.bb(4));
 % Correct initial bbox
 tld.bb(:,1) = bbP(1:4,:);
+printf("New Bounding Box: (%f,%f) (%f,%f)\n",
+   bbP(1),bbP(2),bbP(3),bbP(4));
 
 % Variance threshold
 tld.var = var(pEx(:,1))/2;
-% disp(['Variance : ' num2str(tld.var)]);
+disp(['Variance : ' num2str(tld.var)]);
 
 % Generate Negative Examples
 [nX,nEx] = tldGenerateNegativeData(tld,overlap,tld.img{1});
@@ -133,8 +137,11 @@ tld.model.num_init = size(tld.pex,2);
 % Fern
 conf_fern = fern(3,nX2);
 tld.model.thr_fern = max(max(conf_fern)/tld.model.num_trees,tld.model.thr_fern);
+printf("Fern Threshold: %f\n",tld.model.thr_fern);
 
 % Nearest neighbor
 conf_nn = tldNN(nEx2,tld);
 tld.model.thr_nn = max(tld.model.thr_nn,max(conf_nn));
 tld.model.thr_nn_valid = max(tld.model.thr_nn_valid,tld.model.thr_nn);
+
+printf("Nearest Neighbor Threshold: %f\n",tld.model.thr_nn);
