@@ -40,21 +40,29 @@ if TR % if tracker is defined
     tld.conf(I)  = tConf;
     tld.size(I)  = 1;
     tld.valid(I) = tValid;
-    printf("Status [%d]: Tracking is occuring\n",I);
+    if tld.PRINT_DEBUG==1
+        fprintf('Status [%d]: Tracking is occuring\n',I);
+    end
     if DT % if detections are also defined
-        printf("Status [%d]: Detection is occuring\n",I);
+        if tld.PRINT_DEBUG==1
+            fprintf('Status [%d]: Detection is occuring\n',I);
+        end
         [cBB,cConf,cSize] = bb_cluster_confidence(dBB,dConf); % cluster detections
         id = bb_overlap(tld.bb(:,I),cBB) < 0.5 & cConf > tld.conf(I); % get indexes of all clusters that are far from tracker and are more confident then the tracker
         
         if sum(id) == 1 % if there is ONE such a cluster, re-initialize the tracker
-            printf("Status [%d]: Re-Init BB\n",I);            
+            if tld.PRINT_DEBUG==1
+                fprintf('Status [%d]: Re-Init BB\n',I);
+            end
             tld.bb(:,I)  = cBB(:,id);
             tld.conf(I)  = cConf(:,id);
             tld.size(I)  = cSize(:,id);
             tld.valid(I) = 0; 
             
         else % othervide adjust the tracker's trajectory
-            printf("Status [%d]: Average BB\n",I);            
+            if tld.PRINT_DEBUG==1
+                fprintf('Status [%d]: Average BB\n',I);
+            end
             idTr = bb_overlap(tBB,tld.dt{I}.bb) > 0.7;  % get indexes of close detections
             tld.bb(:,I) = mean([repmat(tBB,1,10) tld.dt{I}.bb(:,idTr)],2);  % weighted average trackers trajectory with the close detections
             
@@ -63,11 +71,15 @@ if TR % if tracker is defined
     
 else % if tracker is not defined
     if DT % and detector is defined
-        printf("Status [%d]: Detection is occuring\n",I);        
+        if tld.PRINT_DEBUG==1
+            fprintf('Status [%d]: Detection is occuring\n',I);
+        end
         [cBB,cConf,cSize] = bb_cluster_confidence(dBB,dConf); % cluster detections
         
         if length(cConf) == 1 % and if there is just a single cluster, re-initalize the tracker
-            printf("Status [%d]: Re-Init BB\n",I);
+            if tld.PRINT_DEBUG==1
+                fprintf('Status [%d]: Re-Init BB\n',I);
+            end
             tld.bb(:,I)  = cBB;
             tld.conf(I)  = cConf;
             tld.size(I)  = cSize;
@@ -84,7 +96,9 @@ end
 
 % display drawing: get center of bounding box and save it to a drawn line
 if ~isnan(tld.bb(1,I))
-		printf("Status [%d]:Learning is Occuring\n",I);
+        if tld.PRINT_DEBUG==1
+            fprintf('Status [%d]:Learning is Occuring\n',I);
+        end
     tld.draw(:,end+1) = bb_center(tld.bb(:,I));
     if tld.plot.draw == 0, tld.draw(:,end) = nan; end
 else

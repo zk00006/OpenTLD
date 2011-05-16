@@ -24,7 +24,8 @@ global tld; % holds results and temporal variables
 opt.source = tldInitSource(opt.source); % select data source, camera/directory
 
 figure(2); set(2,'KeyPressFcn', @handleKey); % open figure for display of results
-finish = 0; function handleKey(dummy1,dummy2), finish = 1; end % by pressing any key, the process will exit
+finish = 0; 
+function handleKey(dummy1,dummy2), finish = 1;if (opt.PRINT_DEBUG==1) fprintf('Execution interrupted by keypress.\n'); end; end % by pressing any key, the process will exit
 
 while 1
     source = tldInitFirstFrame(tld,opt.source,opt.model.min_win); % get initial bounding box, return 'empty' if bounding box is too small

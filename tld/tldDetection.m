@@ -27,7 +27,9 @@ img  = tld.img{I};
 
 fern(4,img,tld.control.maxbbox,tld.var,tld.tmp.conf,tld.tmp.patt); % evaluates Ensemble Classifier: saves sum of posteriors to 'tld.tmp.conf', saves measured codes to 'tld.tmp.patt', does not considers patches with variance < tmd.var
 idx_dt = find(tld.tmp.conf > tld.model.num_trees*tld.model.thr_fern); % get indexes of bounding boxes that passed throu the Ensemble Classifier
-printf("Detector [Frame %d]: %d Bounding Boxes Found\n",I,length(idx_dt));
+if tld.PRINT_DEBUG==1
+    fprintf('Detector [Frame %d]: %d Bounding Boxes Found\n',I,length(idx_dt));
+end
 if length(idx_dt) > 100 % speedup: if there are more than 100 detections, pict 100 of the most confident only
     [dummy8,sIdx] = sort(tld.tmp.conf(idx_dt),'descend');
     idx_dt = idx_dt(sIdx(1:100));
@@ -36,7 +38,9 @@ end
 num_dt = length(idx_dt); % get the number detected bounding boxes so-far 
 if num_dt == 0
     tld.dt{I} = dt;
-    printf("Detector [Frame %d]: No Bounding Boxes\n",I);
+    if tld.PRINT_DEBUG==1
+        fprintf('Detector [Frame %d]: No Bounding Boxes\n',I);
+    end
 return; 
 end % if nothing detected, return
 
@@ -59,8 +63,9 @@ for i = 1:num_dt % for every remaining detection
     dt.conf2(i)   = conf2;
     dt.isin(:,i)  = isin;
     dt.patch(:,i) = ex;
-    printf("Detector [Frame %d]: Testing Feature %d/%d - %f Conf1 cmp %f\n",
-			I,i,num_dt,conf1,tld.model.thr_nn);
+    if tld.PRINT_DEBUG==1
+        fprintf('Detector [Frame %d]: Testing Feature %d/%d - %f Conf1 cmp %f\n',I,i,num_dt,conf1,tld.model.thr_nn);
+    end
 end
 
 idx = dt.conf1 > tld.model.thr_nn; % get all indexes that made it through the nearest neighbour
