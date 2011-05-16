@@ -27,7 +27,7 @@ if isempty(BB1) || ~bb_isdef(BB1), return; end % exit function if BB1 is not def
 
 % estimate BB2
 xFI    = bb_points(BB1,10,10,5); % generate 10x10 grid of points within BB1 with margin 5 px
-xFJ    = lk(2,tld.img{I}.input,tld.img{J}.input,xFI,xFI); % track all points by Lucas-Kanade tracker from frame I to frame J, estimate Forward-Backward error, and NCC for each point
+xFJ    = lk(2,tld.img{I}.input,tld.img{J}.input,xFI,xFI,3); % track all points by Lucas-Kanade tracker from frame I to frame J, estimate Forward-Backward error, and NCC for each point
 medFB  = median2(xFJ(3,:)); % get median of Forward-Backward error
 medNCC = median2(xFJ(4,:)); % get median for NCC
 idxF   = xFJ(3,:) <= medFB & xFJ(4,:)>= medNCC; % get indexes of reliable points
