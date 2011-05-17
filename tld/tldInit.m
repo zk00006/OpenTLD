@@ -96,7 +96,7 @@ end
 % Variance threshold
 tld.var = var(pEx(:,1))/2;
 if opt.PRINT_DEBUG==1
-    fprintf('Variance : %s', num2str(tld.var));
+    fprintf('Variance : %s\n', num2str(tld.var));
 end
 
 % Generate Negative Examples
