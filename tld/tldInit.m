@@ -153,3 +153,30 @@ tld.model.thr_nn_valid = max(tld.model.thr_nn_valid,tld.model.thr_nn);
 if opt.PRINT_DEBUG==1
     fprintf('Nearest Neighbor Threshold: %f\n',tld.model.thr_nn);
 end
+
+% Save ground truth data
+if (opt.SAVEGROUNDTRUTH==1)
+    grid = tld.grid; %#ok<NASGU>
+    features = tld.features; %#ok<NASGU>
+    pex = tld.pex; %#ok<NASGU>
+    nex = tld.nex; %#ok<NASGU>
+
+    save([opt.output 'grid.txt'],'grid','-ascii')
+    save([opt.output 'feature.txt'],'features') %not possible to save as an ascii file
+
+    save([opt.output 'pex.txt'],'pex','-ascii')
+    save([opt.output 'nex.txt'],'nex','-ascii')
+
+    save([opt.output 'pX.txt'],'pX','-ascii')
+    save([opt.output 'nX1.txt'],'nX1','-ascii')
+    save([opt.output 'nX2.txt'],'nX2','-ascii')
+
+    save([opt.output 'pEx.txt'],'pEx','-ascii')
+    save([opt.output 'nEx1.txt'],'nEx1','-ascii')
+    save([opt.output 'nEx2.txt'],'nEx2','-ascii')
+
+    save([opt.output 'conf_fern.txt'],'conf_fern','-ascii')
+    save([opt.output 'conf_nn.txt'],'conf_nn','-ascii')
+    
+    fprintf('\nGround truth data saved!\n\n');
+end
