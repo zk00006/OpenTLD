@@ -61,7 +61,7 @@ elseif ismac
     
     lib = [];
 
-    if exist('OCTAVE_VERSION')
+    if exist('OCTAVE_VERSION','builtin')
         disp('octave');
         %for i = 1:length(files), %parser not working I think. look in the unix section.
         %    file = files(i).name;
@@ -118,7 +118,7 @@ elseif isunix
     %files = dir([libpath 'libopencv*.so.2.2']); %OpenCV 2.2 libraries?
 
     lib = [];
-    if exist('OCTAVE_VERSION')
+    if exist('OCTAVE_VERSION','builtin')
         disp('octave'); 
         %mkoctfile has a more picky syntax than matlab-mex concerning included libraries
         for i = 1:length(files)

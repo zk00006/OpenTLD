@@ -15,7 +15,7 @@
 % You should have received a copy of the GNU General Public License
 % along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
-if exist('OCTAVE_VERSION')
+if exist('OCTAVE_VERSION','builtin')
     beep_on_error(0);
 else
     beep off;

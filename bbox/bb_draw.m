@@ -27,7 +27,7 @@ end
 for i = 1:length(idx)
     bb = bb1(:,idx(i));
     if bb(3)-bb(1) > 0 && bb(4)-bb(2)>0
-		if exist('OCTAVE_VERSION')
+		if exist('OCTAVE_VERSION','builtin')
 			% draw yellow rectangle manually. no line width variation yet
             line([bb(1),bb(3),bb(3),bb(1),bb(1)],[bb(4),bb(4),bb(2),bb(2),bb(4)],'color','yellow')
 		else
