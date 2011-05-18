@@ -24,7 +24,7 @@ end
 
 csize = 6*sigma;
 
-if exist('OCTAVE_VERSION')
+if exist('OCTAVE_VERSION','builtin')
     shift = idivide(csize - 1, 2);
     h = fspecial('gaussian',csize,sigma);
 else

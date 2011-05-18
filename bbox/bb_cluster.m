@@ -33,7 +33,11 @@ switch size(bb2,2)
     otherwise
         bbd = bb_distance(bb2);
         Z = linkagemex(bbd,'si');
-        T = cluster(Z,'cutoff', SPACE_THR,'criterion','distance');
+        if exist('OCTAVE_VERSION','builtin')
+            T = cluster_oct(Z,'cutoff', SPACE_THR,'criterion','distance');
+        else
+            T = cluster(Z,'cutoff', SPACE_THR,'criterion','distance');
+        end
 end
 uT = unique(T);
 

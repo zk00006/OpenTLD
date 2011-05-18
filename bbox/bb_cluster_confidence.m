@@ -39,7 +39,11 @@ switch size(iBB,2)
     otherwise
         bbd = bb_distance(iBB);
         Z = linkagemex(bbd,'si');
-        T = cluster(Z,'cutoff', SPACE_THR,'criterion','distance');
+        if exist('OCTAVE_VERSION','builtin')
+            T = cluster_oct(Z,'cutoff', SPACE_THR,'criterion','distance');
+        else
+            T = cluster(Z,'cutoff', SPACE_THR,'criterion','distance');
+        end
 end
 
 idx_cluster  = unique(T);

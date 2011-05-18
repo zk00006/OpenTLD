@@ -24,7 +24,7 @@ ext = {'*.jpeg','*.jpg','*.png','*.pgm'};
 
 images = [];
 for i = 1:length(ext)
-    if exist('OCTAVE_VERSION')
+    if exist('OCTAVE_VERSION','builtin')
         dir_list = dir([path ext{i}]);
         if length(dir_list) > 0
             images = [images dir_list];
