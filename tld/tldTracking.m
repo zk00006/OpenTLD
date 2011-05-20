@@ -32,7 +32,11 @@ end % exit function if BB1 is not defined
 
 % estimate BB2
 xFI    = bb_points(BB1,10,10,5); % generate 10x10 grid of points within BB1 with margin 5 px
-xFJ    = lk(2,tld.img{I}.input,tld.img{J}.input,xFI,xFI,3); % track all points by Lucas-Kanade tracker from frame I to frame J, estimate Forward-Backward error, and NCC for each point
+if exist('OCTAVE_VERSION','builtin') % The last argument has been added to enable correct tracking in octave. Why this is necessary is an ongoing question. 
+    xFJ    = lk(2,tld.img{I}.input,tld.img{J}.input,xFI,xFI,3);
+else % preserve original version of the code for Matlab users.
+    xFJ    = lk(2,tld.img{I}.input,tld.img{J}.input,xFI,xFI); % track all points by Lucas-Kanade tracker from frame I to frame J, estimate Forward-Backward error, and NCC for each point
+end
 medFB  = median2(xFJ(3,:)); % get median of Forward-Backward error
 medNCC = median2(xFJ(4,:)); % get median for NCC
 idxF   = xFJ(3,:) <= medFB & xFJ(4,:)>= medNCC; % get indexes of reliable points
