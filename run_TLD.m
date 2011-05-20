@@ -18,8 +18,8 @@
 addpath(genpath('.')); init_workspace; 
 
 %Debugging flags
-opt.PRINT_DEBUG=1; %Print debug info to console
-opt.SAVEGROUNDTRUTH=1; %Save ground truth data to files.
+opt.PRINT_DEBUG=0; %Print debug info to console
+opt.SAVEGROUNDTRUTH=0; %Save ground truth data to files.
 
 opt.source          = struct('camera',0,'input','_input/','bb0',[]); % camera/directory swith, directory_name, initial_bounding_box (if empty, it will be selected by the user)
 opt.output          = '_output/'; mkdir(opt.output); % output directory that will contain bounding boxes + confidence
