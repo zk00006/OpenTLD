@@ -59,6 +59,7 @@ xcuserdata/
 *.dll
 *.exe
 *.so
+bin/
 
 # Packages #
 ############
