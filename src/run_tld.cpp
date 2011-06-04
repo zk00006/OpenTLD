@@ -60,6 +60,8 @@ int main(int argc, char * argv[]){
     if (cvWaitKey(33) == 'q')
 	    break;
   }
+  //remove callback
+  cvSetMouseCallback( "TLD", NULL, NULL );
   //save init frame
   imwrite("init.jpg",gray);    
   //train classifier
