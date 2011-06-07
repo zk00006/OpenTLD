@@ -1,6 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <tld_utils.h>
 #include <iostream>
+#include <LKTracker.h>
 using namespace cv;
 
 CvRect box;
@@ -44,11 +45,14 @@ int main(int argc, char * argv[]){
 	cout << "capture device failed to open!" << endl;
     return 1;
   }
-  
   Mat frame;
   //Register mouse callback to draw the bounding box
   cvNamedWindow("TLD",CV_WINDOW_AUTOSIZE);
   cvSetMouseCallback( "TLD", mouseHandler, NULL );
+  //Feature Detector: FAST corner detector
+  DynamicAdaptedFeatureDetector detector(new FastAdjuster(20,true),80,120,10);
+  //Tracker
+  LKTracker tracker;
   //Initialization
   while(!gotBB)
   {
@@ -63,18 +67,29 @@ int main(int argc, char * argv[]){
   //remove callback
   cvSetMouseCallback( "TLD", NULL, NULL );
   //save init frame
-  imwrite("init.jpg",gray);    
-  //train classifier
-  //train(gray,box,params);
+  imwrite("init.jpg",gray);
+  //Corner detection
+  vector<KeyPoint> points;
+  //Extract Features within the Bounding Box
+  Mat mask = createMask(gray,box);
+  detector.detect(gray,points,mask);    
+  //Initialize tracker
+  //tracker.init(gray,points);
+  //Train classifier
+  //FernClassifier fernc;
+  //fernClassifier.train(gray,box,params);
+  
   //Run-time
   while(true)
   {
 	  //get frame
       capture >> frame;
       cvtColor(frame, gray, CV_RGB2GRAY);
+      //Forward-Backward tracking
+      //tracker.trackf2f(gray,);
       //evaluate classifier
       //estimate errors
-	  //update classifier
+      //update classifier
       //display
       imshow("TLD", gray);
       if (cvWaitKey(33) == 'q')
