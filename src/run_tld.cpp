@@ -7,7 +7,7 @@ using namespace cv;
 CvRect box;
 bool drawing_box = false;
 bool gotBB = false;	
-Mat gray;
+Mat last_gray;
 //bounding box mouse callback
 void mouseHandler(int event, int x, int y, int flags, void *param){
   switch( event ){
@@ -53,47 +53,53 @@ int main(int argc, char * argv[]){
   DynamicAdaptedFeatureDetector detector(new FastAdjuster(20,true),80,120,10);
   //Tracker
   LKTracker tracker;
-  //Initialization
+  ///Initialization
+  //Get the Bounding Box
   while(!gotBB)
   {
-    //get frame
     capture >> frame;
-    cvtColor(frame, gray, CV_RGB2GRAY);
-    drawBox(gray,box);
-    imshow("TLD", gray);
+    cvtColor(frame, last_gray, CV_RGB2GRAY);
+    drawBox(frame,box);
+    imshow("TLD", frame);
     if (cvWaitKey(33) == 'q')
 	    break;
   }
   //remove callback
   cvSetMouseCallback( "TLD", NULL, NULL );
-  //save init frame
-  imwrite("init.jpg",gray);
-  //Corner detection
-  vector<KeyPoint> points;
   //Extract Features within the Bounding Box
-  Mat mask = createMask(gray,box);
-  detector.detect(gray,points,mask);    
-  //Initialize tracker
-  //tracker.init(gray,points);
+  vector<KeyPoint> kpts;
+  Mat mask = createMask(last_gray,box);
+  detector.detect(last_gray,kpts,mask);
+  vector<Point2f> pts[2];
+  KeyPoint::convert(kpts,pts[0]);
+  cout << "Puntos iniciales detectados:" << pts[0].size() << endl;
+  //save init frame with detected points
+  drawPoints(frame,pts[0]);
+  imwrite("init.jpg",last_gray);
   //Train classifier
   //FernClassifier fernc;
   //fernClassifier.train(gray,box,params);
-  
-  //Run-time
-  while(true)
-  {
-	  //get frame
-      capture >> frame;
-      cvtColor(frame, gray, CV_RGB2GRAY);
-      //Forward-Backward tracking
-      //tracker.trackf2f(gray,);
-      //evaluate classifier
-      //estimate errors
-      //update classifier
-      //display
-      imshow("TLD", gray);
-      if (cvWaitKey(33) == 'q')
-	    break;
+  ///Run-time
+  Mat current_gray;
+  while(true){
+    //get frame
+    capture >> frame;
+    cvtColor(frame, current_gray, CV_RGB2GRAY);
+    //Forward-Backward frame-to-frame tracking
+    tracker.trackf2f(last_gray,current_gray,pts[0],pts[1]);
+    //Draw Points
+    drawPoints(frame,pts[1]);
+    cout << "Tracked points: " << pts[1].size() << endl;
+    //evaluate classifier
+    //estimate errors
+    //update classifier
+    //display
+    imshow("TLD", frame);
+    //swap points and images
+    swap(last_gray,current_gray);
+    std::swap(pts[0],pts[1]);
+    if (cvWaitKey(33) == 'q')
+      break;
   }
   return 0;
 }
