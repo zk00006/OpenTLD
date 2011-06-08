@@ -53,6 +53,8 @@ int main(int argc, char * argv[]){
   DynamicAdaptedFeatureDetector detector(new FastAdjuster(20,true),80,120,10);
   //Tracker
   LKTracker tracker;
+  //Classifier
+  //FernClassifier classifier;
   ///Initialization
   //Get the Bounding Box
   while(!gotBB)
@@ -77,7 +79,7 @@ int main(int argc, char * argv[]){
   drawPoints(frame,pts[0]);
   imwrite("init.jpg",last_gray);
   //Train classifier
-  //FernClassifier fernc;
+
   //fernClassifier.train(gray,box,params);
   ///Run-time
   Mat current_gray;
