@@ -16,7 +16,7 @@ private:
   void filterPts(vector<cv::Point2f>& points2);
 public:
   LKTracker();
-  void trackf2f(const cv::Mat& img1, const cv::Mat& img2, vector<cv::Point2f> &points1, vector<cv::Point2f> &points2);
+  void trackf2f(const cv::Mat& img1, const cv::Mat& img2, const vector<cv::Point2f> &points1, vector<cv::Point2f> &points2);
 };
 
 
