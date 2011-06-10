@@ -1,13 +1,12 @@
 #include <opencv2/opencv.hpp>
 #include <tld_utils.h>
 #include <iostream>
-#include <LKTracker.h>
+#include <TLD.h>
 using namespace cv;
 
 CvRect box;
 bool drawing_box = false;
 bool gotBB = false;	
-Mat last_gray;
 //bounding box mouse callback
 void mouseHandler(int event, int x, int y, int flags, void *param){
   switch( event ){
@@ -46,15 +45,16 @@ int main(int argc, char * argv[]){
     return 1;
   }
   Mat frame;
+  Mat last_gray;
   //Register mouse callback to draw the bounding box
   cvNamedWindow("TLD",CV_WINDOW_AUTOSIZE);
   cvSetMouseCallback( "TLD", mouseHandler, NULL );
   //Feature Detector: FAST corner detector
   DynamicAdaptedFeatureDetector detector(new FastAdjuster(20,true),80,120,10);
-  //Tracker
-  LKTracker tracker;
-  //Classifier
-  //FernClassifier classifier;
+  //TLD framework
+  TLD tld;
+  //Read parameters file
+  //tld.read(argv[0]);
   ///Initialization
   //Get the Bounding Box
   while(!gotBB)
@@ -77,24 +77,24 @@ int main(int argc, char * argv[]){
   cout << "Puntos iniciales detectados:" << pts[0].size() << endl;
   //save init frame with detected points
   drawPoints(frame,pts[0]);
-  imwrite("init.jpg",last_gray);
-  //Train classifier
+  imwrite("init.jpg",frame);
+  //Initialize TLD -> train from first frame
+  //tld.init(last_gray,pts[0]);
 
-  //fernClassifier.train(gray,box,params);
   ///Run-time
   Mat current_gray;
   while(true){
     //get frame
     capture >> frame;
     cvtColor(frame, current_gray, CV_RGB2GRAY);
-    //Forward-Backward frame-to-frame tracking
-    tracker.trackf2f(last_gray,current_gray,pts[0],pts[1]);
-    //Draw Points
-    drawPoints(frame,pts[1]);
-    cout << "Tracked points: " << pts[1].size() << endl;
+    //Track
+    tld.track(last_gray,current_gray,pts[0],pts[1]);
     //evaluate classifier
     //estimate errors
     //update classifier
+    //Draw Points
+    drawPoints(frame,pts[1]);
+    cout << "Tracked points: " << pts[1].size() << endl;
     //display
     imshow("TLD", frame);
     //swap points and images
