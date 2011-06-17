@@ -97,7 +97,7 @@ void TLD::generatePositiveData(const Mat& frame, const PatchGenerator& patchGene
      if (i>0)
        patchGenerator(frame,pt,warped,bbhull.size(),rng);
      for (int b=0;b<good_boxes.size();b++){
-         classifier.getFeatures(img,good_boxes[b],sgidx[b]);
+         classifier.getFeatures(img,good_boxes[b],good_boxes[b].sidx,ferns,1);
      }
   }
 }
@@ -142,7 +142,7 @@ void TLD::generateNegativeData(const Mat& frame, const PatchGenerator& patchGene
           if (boxvar<var)
             continue;
       }
-      classifier.getFeatures(frame,bad_boxes[i],sbidx[i]);
+      classifier.getFeatures(frame,bad_boxes[i],bad_boxes[i].sidx,ferns,0);
       a++;
   }
   printf("Negative examples generated: %d \n",a);
@@ -332,8 +332,10 @@ void TLD::buildGrid(const cv::Mat& img, const cv::Rect& box){
                           0.57870,0.69444,0.83333,1,1.20000,1.44000,1.72800,
                           2.07360,2.48832,2.98598,3.58318,4.29982,5.15978,6.19174};
   int width, height, min_bb_side;
-  Rect bbox;
+  //Rect bbox;
+  BoundingBox bbox;
   Size scale;
+  int sc=0;
   for (int s=0;s<21;s++){
     width = round(box.width*SCALES[s]);
     height = round(box.height*SCALES[s]);
@@ -345,15 +347,20 @@ void TLD::buildGrid(const cv::Mat& img, const cv::Rect& box){
     scales.push_back(scale);
     for (int y=1;y<img.rows-height;y+=round(SHIFT*min_bb_side)){
       for (int x=1;x<img.cols-width;x+=round(SHIFT*min_bb_side)){
-        bbox = Rect(x,y,width,height);
+        bbox.x = x;
+        bbox.y = y;
+        bbox.width = width;
+        bbox.height = height;
+        bbox.overlap = bbOverlap(bbox,BoundingBox(box));
+        bbox.sidx = sc;
         grid.push_back(bbox);
-        sidx.push_back(s);
       }
     }
+    sc++;
   }
 }
 
-float TLD::bbOverlap(const cv::Rect& box1,const cv::Rect& box2){
+float TLD::bbOverlap(const BoundingBox& box1,const BoundingBox& box2){
   if (box1.x > box2.x+box2.width) { return 0.0; }
   if (box1.y > box2.y+box2.height) { return 0.0; }
   if (box1.x+box1.width < box2.x) { return 0.0; }
@@ -367,46 +374,32 @@ float TLD::bbOverlap(const cv::Rect& box1,const cv::Rect& box2){
   float area2 = box2.width*box2.height;
   return intersection / (area1 + area2 - intersection);
 }
-
+bool bbcomparator ( const BoundingBox& bb1,const BoundingBox& bb2){
+  return bb1.overlap > bb2.overlap;
+}
 
 void TLD::getOverlappingBoxes(const cv::Rect& box1,int num_closest){
   float max_overlap = 0;
-  pair<float,cv::Rect> ov_box;
-  vector<pair<float,cv::Rect> > good_ov;
-  float overlap;
   for (int i=0;i<grid.size();i++){
-      overlap=bbOverlap(box1,grid[i]);
-      if (overlap > max_overlap) {
-          max_overlap = overlap;
+      if (grid[i].overlap > max_overlap) {
+          max_overlap = grid[i].overlap;
           best_box = grid[i];
       }
-      if (overlap > 0.6){ //TODO: Read from parameters file
-          ov_box.first = overlap;
-          ov_box.second = grid[i];
-          good_ov.push_back(ov_box);
+      if (grid[i].overlap > 0.6){ //TODO: Read from parameters file
+          good_boxes.push_back(grid[i]);
       }
-      else if (overlap < bad_overlap){
+      else if (grid[i].overlap < bad_overlap){
           bad_boxes.push_back(grid[i]);
-          sbidx.push_back(sidx[i]); //bad boxes scale indexes
       }
   }
   //Get the best num_closest (10) boxes and puts them in good_boxes
-  if (good_ov.size()>num_closest)
-    std::nth_element(good_ov.begin(),good_ov.begin()+num_closest,good_ov.end(),comparator);
-  else
-    num_closest= good_ov.size();
-  for (int i = 0;i<num_closest;i++){
-      good_boxes.push_back(good_ov[i].second);
-      //NOTE: this is a very ugly hack. Find other way to assing indexes (Create a BBox struct?)
-      for (int s=0;s<scales.size();s++){//good boxes scale indexes
-          if (good_ov[i].second.width == scales[s].width){
-              sgidx.push_back(s);
-          }
-      }
+  if (good_boxes.size()>num_closest){
+    std::nth_element(good_boxes.begin(),good_boxes.begin()+num_closest,good_boxes.end(),bbcomparator);
+    good_boxes.resize(num_closest);
   }
 }
 
-void TLD::getBBHull(const vector<cv::Rect>& boxes,cv::Rect& bbhull){
+void TLD::getBBHull(const vector<BoundingBox>& boxes,BoundingBox& bbhull){
   int x1=INT_MAX, x2=0;
   int y1=INT_MAX, y2=0;
   for (int i=0;i<boxes.size();i++){

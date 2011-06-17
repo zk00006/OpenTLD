@@ -3,13 +3,22 @@
 #include <LKTracker.h>
 #include <FerNNClassifier.h>
 
+
+//Bounding Boxes
+  struct BoundingBox : public cv::Rect {
+    BoundingBox(){}
+    BoundingBox(cv::Rect r): cv::Rect(r){}
+    //cv::Rect bbox;
+  public:
+    float overlap;
+    int sidx; //scale index
+  };
+
+
 class TLD{
 private:
   FerNNClassifier classifier;
   LKTracker tracker;
-  vector<cv::Rect> grid;
-  vector<int> sidx; //scale index for grid
-  vector<cv::Size> scales;
   int min_win;
   int patch_size;
   float ncc_thesame;
@@ -46,6 +55,20 @@ public:
   TLD();
   TLD(const cv::FileNode& file);
   void read(const cv::FileNode& file);
+
+  vector<BoundingBox> grid;
+  vector<cv::Size> scales;
+  vector<BoundingBox> good_boxes; //bboxes with overlap > 0.6
+  vector<BoundingBox> bad_boxes; //bboxes with overlap < 0.2
+  BoundingBox bbhull; // hull of good_boxes
+  BoundingBox best_box; // maximum overlapping bbox
+  void buildGrid(const cv::Mat& img, const cv::Rect& box);
+  float bbOverlap(const BoundingBox& box1,const BoundingBox& box2);
+  void getOverlappingBoxes(const cv::Rect& box1,int num_closest);
+  void getBBHull(const vector<BoundingBox>& boxes, BoundingBox& bbhull);
+  void getPattern(const cv::Mat& img, cv::Mat& pattern,cv::Scalar& mean,cv::Scalar& stdev);
+
+ //Methods
   void init(const cv::Mat& frame1,const cv::Rect &box);
   void generatePositiveData(const cv::Mat& frame, const cv::PatchGenerator& patchGenerator);
   void generateNegativeData(const cv::Mat& frame, const cv::PatchGenerator& patchGenerator);
@@ -54,21 +77,11 @@ public:
   void detect(const cv::Mat& frame,vector<cv::KeyPoint>& points, vector<float>& confidence);
   void evaluate();//compare tacked pts with detected pts
   void learn(); // lear from correct detections and from errors
-  //Tools
-  void buildGrid(const cv::Mat& img, const cv::Rect& box);
-  float bbOverlap(const cv::Rect& box1,const cv::Rect& box2);
-  void getOverlappingBoxes(const cv::Rect& box1,int num_closest);
-  void getBBHull(const vector<cv::Rect>& boxes, cv::Rect& bbhull);
-  void getPattern(const cv::Mat& img, cv::Mat& pattern,cv::Scalar& mean,cv::Scalar& stdev);
+  vector<pair<vector<int>,int> > ferns; //ferns,labels
+
+  //Other
   void splitKeyPoints(const vector<cv::KeyPoint>& kpts, const cv::Rect& bbox,vector<cv::KeyPoint>& good_pts,vector<cv::KeyPoint>& bad_pts);
 
-  //void detect(const cv::Mat& frame, vector<cv::Point2f> &detected_pts);
-  vector<cv::Rect> good_boxes; //bboxes with overlap > 0.6
-  vector<int> sgidx; //scale index
-  vector<cv::Rect> bad_boxes; //bboxes with overlap < 0.2
-  vector<int> sbidx; //scale index
-  cv::Rect bbhull; // hull of good_boxes
-  cv::Rect best_box; // maximum overlapping bbox
 };
 
 

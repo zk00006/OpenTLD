@@ -6,7 +6,7 @@ private:
   int nstructs;
 public:
   void prepare(int num_trees, int num_features,const vector<cv::Size>& scales);
-  void getFeatures(const cv::Mat& image,const cv::Rect& box, int scale_idx);
+  void getFeatures(const cv::Mat& image,const cv::Rect& box, int scale_idx,vector<pair<vector<int>,int> > ferns, int label);
   void trainFromSingleView();
   void evaluate();
   void update();
@@ -25,7 +25,7 @@ public:
   vector<cv::Mat> pEx; //NN positive examples
   vector<cv::Mat> nEx; //NN negative examples
   vector<vector<Feature> > features; //Ferns features (one vector for each scale)
-  vector<vector<int> > ferns; // Ferns measurments (one vector for each patch)
+  //vector<vector<int> > ferns; //Ferns measurments (one vector for each patch)
   vector< vector<int> > nCounter; //negative counter
   vector< vector<int> > pCounter; //positive counter
   vector< vector<int> > posteriors; //Ferns posteriors

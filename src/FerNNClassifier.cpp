@@ -35,7 +35,7 @@ void FerNNClassifier::prepare(int num_trees, int num_features, const vector<Size
   //Initialize
 }
 
-void FerNNClassifier::getFeatures(const cv::Mat& image,const cv::Rect& box, int scale_idx){
+void FerNNClassifier::getFeatures(const cv::Mat& image,const cv::Rect& box, int scale_idx,vector<pair<vector<int>,int> > ferns,int label){
   vector<int> fern(nstructs);
   int leaf;
   for (int t=0;t<nstructs;t++){
@@ -45,7 +45,7 @@ void FerNNClassifier::getFeatures(const cv::Mat& image,const cv::Rect& box, int 
       }
       fern[t]=leaf;
   }
-  ferns.push_back(fern);
+  ferns.push_back(make_pair(fern,label));
 }
 
 void FerNNClassifier::trainFromSingleView(){
