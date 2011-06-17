@@ -19,8 +19,9 @@ include_directories (${PROJECT_SOURCE_DIR}/../include	${OpenCV_INCLUDE_DIRS})
 #libraries
 add_library(tld_utils tld_utils.cpp)
 add_library(LKTracker LKTracker.cpp)
+add_library(ferNN FerNNClassifier.cpp)
 add_library(tld TLD.cpp)
 #executables
 add_executable(run_tld run_tld.cpp)
 #link the libraries
-target_link_libraries(run_tld tld LKTracker tld_utils ${OpenCV_LIBS})
+target_link_libraries(run_tld tld LKTracker ferNN tld_utils ${OpenCV_LIBS})

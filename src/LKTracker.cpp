@@ -20,7 +20,6 @@ void LKTracker::trackf2f(const Mat& img1, const Mat& img2,const vector<Point2f> 
   //Filter out points with FB_error[i] > median(FB_error) && points with sim_error[i] > median(sim_error)
   //NOTE: Instead of the original similarity measure (normCrossCorrelation) I'm using the measure given by OpenCV's L-K algorithm
   filterPts(points2);
-
 }
 
 void LKTracker::filterPts(vector<Point2f>& points2){

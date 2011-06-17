@@ -20,10 +20,11 @@ function [nX,nEx] = tldGenerateNegativeData(tld,overlap,img)
 % Measure patterns on all bboxes that are far from initial bbox
 
 idxN        = find(overlap<tld.n_par.overlap);
+fprintf('bad boxes init %d %d\n',size(idxN,1),size(idxN,2));
 [nX,status] = fern(5,img,idxN,tld.var/2);
 idxN        = idxN(status==1); % bboxes far and with big variance
 nX          = nX(:,status==1);
-
+fprintf('bad boxes %d %d\n',size(idxN,1),size(idxN,2));
 % Randomly select 'num_patches' bboxes and measure patches
 idx = randvalues(1:length(idxN),tld.n_par.num_patches);
 bb  = tld.grid(:,idxN(idx));

@@ -25,3 +25,16 @@ float median(vector<float> v)
     nth_element(v.begin(), v.begin()+n, v.end());
     return v[n];
 }
+
+bool comparator ( const pair<float,cv::Rect>& item1,const pair<float,cv::Rect>& item2){
+  return item1.first > item2.first;
+}
+
+vector<int> index_shuffle(int begin,int end){
+  vector<int> indexes;
+  for (int i=begin;i<end;i++){
+    indexes.push_back(i);
+  }
+  random_shuffle(indexes.begin(),indexes.end());
+  return indexes;
+}

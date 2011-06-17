@@ -4,35 +4,35 @@
 #include <TLD.h>
 using namespace cv;
 
-CvRect box;
+Rect box;
 bool drawing_box = false;
 bool gotBB = false;	
 //bounding box mouse callback
 void mouseHandler(int event, int x, int y, int flags, void *param){
   switch( event ){
-    case CV_EVENT_MOUSEMOVE: 
-      if( drawing_box ){
+  case CV_EVENT_MOUSEMOVE:
+    if( drawing_box ){
         box.width = x-box.x;
         box.height = y-box.y;
-      }
-      break;
-	case CV_EVENT_LBUTTONDOWN:
-      drawing_box = true;
-      box = cvRect( x, y, 0, 0 );
-      break;
-    case CV_EVENT_LBUTTONUP:
-      drawing_box = false;
-      if( box.width < 0 ){
+    }
+    break;
+  case CV_EVENT_LBUTTONDOWN:
+    drawing_box = true;
+    box = Rect( x, y, 0, 0 );
+    break;
+  case CV_EVENT_LBUTTONUP:
+    drawing_box = false;
+    if( box.width < 0 ){
         box.x += box.width;
         box.width *= -1;
-      }
-      if( box.height < 0 ){
+    }
+    if( box.height < 0 ){
         box.y += box.height;
         box.height *= -1;
-      }
-      gotBB = true;
-      break;
-	}
+    }
+    gotBB = true;
+    break;
+  }
 }
 
 int main(int argc, char * argv[]){
@@ -49,14 +49,15 @@ int main(int argc, char * argv[]){
   //Register mouse callback to draw the bounding box
   cvNamedWindow("TLD",CV_WINDOW_AUTOSIZE);
   cvSetMouseCallback( "TLD", mouseHandler, NULL );
-  //Feature Detector: FAST corner detector
-  DynamicAdaptedFeatureDetector detector(new FastAdjuster(20,true),80,120,10);
   //TLD framework
   TLD tld;
   //Read parameters file
-  //tld.read(argv[0]);
+  FileStorage fs(argv[1], FileStorage::READ);
+  tld.read(fs.getFirstTopLevelNode());
+
   ///Initialization
-  //Get the Bounding Box
+GETBOUNDINGBOX:
+gotBB=false;
   while(!gotBB)
   {
     capture >> frame;
@@ -64,22 +65,15 @@ int main(int argc, char * argv[]){
     drawBox(frame,box);
     imshow("TLD", frame);
     if (cvWaitKey(33) == 'q')
-	    break;
+	    return 0;
   }
-  //remove callback
+  if (min(box.width,box.height)<24){
+      cout << "Bounding box too small, try again." << endl;
+      goto GETBOUNDINGBOX;
+  }
+  //Remove callback
   cvSetMouseCallback( "TLD", NULL, NULL );
-  //Extract Features within the Bounding Box
-  vector<KeyPoint> kpts;
-  Mat mask = createMask(last_gray,box);
-  detector.detect(last_gray,kpts,mask);
-  vector<Point2f> pts[2];
-  KeyPoint::convert(kpts,pts[0]);
-  cout << "Puntos iniciales detectados:" << pts[0].size() << endl;
-  //save init frame with detected points
-  drawPoints(frame,pts[0]);
-  imwrite("init.jpg",frame);
-  //Initialize TLD -> train from first frame
-  //tld.init(last_gray,pts[0]);
+  tld.init(last_gray,box);
 
   ///Run-time
   Mat current_gray;
@@ -88,18 +82,21 @@ int main(int argc, char * argv[]){
     capture >> frame;
     cvtColor(frame, current_gray, CV_RGB2GRAY);
     //Track
-    tld.track(last_gray,current_gray,pts[0],pts[1]);
-    //evaluate classifier
-    //estimate errors
-    //update classifier
+    //tld.track(last_gray,current_gray,pts[0],pts[1]);
+    //Detect using classifier
+    //tld.detect()
+    //Estimate errors
+    //tld.evaluate();
+    //Update classifier
+    //tld.learn();
     //Draw Points
-    drawPoints(frame,pts[1]);
-    cout << "Tracked points: " << pts[1].size() << endl;
-    //display
+    //drawPoints(frame,pts[1]);
+    //cout << "Tracked points: " << pts[1].size() << endl;
+    //Display
     imshow("TLD", frame);
     //swap points and images
     swap(last_gray,current_gray);
-    std::swap(pts[0],pts[1]);
+    //std::swap(pts[0],pts[1]);
     if (cvWaitKey(33) == 'q')
       break;
   }
