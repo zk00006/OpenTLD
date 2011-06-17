@@ -63,7 +63,16 @@ void TLD::init(const Mat& frame1,const Rect& box){
   generatePositiveData(frame1,generator);
   // Generate negative data
   generateNegativeData(frame1,generator);
-  //TODO!: Split Negative examples 50/50
+  //Split Negative Ferns into Training and Testing sets (they are already shuffled)
+  int half = (int)nX.size()*0.5f;
+  nXT.assign(nX.begin()+half,nX.end());
+  nX.resize(half);
+  printf("half = %d training set size = %d testing size = %d \n",half,(int)nX.size(),(int)nXT.size());
+  fflush(stdout);
+  //Split Negative NN Examples into Training and Testing sets
+  half = (int)nEx.size()*0.5f;
+  nExT.assign(nEx.begin()+half,nEx.end());
+  nEx.resize(half);
   //TODO!: Train Ferns
   //TODO!: Train NN
   classifier.trainFromSingleView();
@@ -97,7 +106,7 @@ void TLD::generatePositiveData(const Mat& frame, const PatchGenerator& patchGene
      if (i>0)
        patchGenerator(frame,pt,warped,bbhull.size(),rng);
      for (int b=0;b<good_boxes.size();b++){
-         classifier.getFeatures(img,good_boxes[b],good_boxes[b].sidx,ferns,1);
+         classifier.getFeatures(img,good_boxes[b],good_boxes[b].sidx,pX,1);
      }
   }
 }
@@ -142,7 +151,7 @@ void TLD::generateNegativeData(const Mat& frame, const PatchGenerator& patchGene
           if (boxvar<var)
             continue;
       }
-      classifier.getFeatures(frame,bad_boxes[i],bad_boxes[i].sidx,ferns,0);
+      classifier.getFeatures(frame,bad_boxes[i],bad_boxes[i].sidx,nX,0);
       a++;
   }
   printf("Negative examples generated: %d \n",a);

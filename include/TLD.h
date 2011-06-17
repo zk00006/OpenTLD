@@ -45,9 +45,14 @@ private:
   //parameters for negative examples
   float bad_overlap;
   float bad_patches;
-  //members
-  cv::Mat pEx;
-  vector<cv::Mat> nEx;
+  //Training data
+  vector<pair<vector<int>,int> > pX; //positive ferns <features,labels=1>
+  vector<pair<vector<int>,int> > nX; // negative ferns <features,labels=0>
+  cv::Mat pEx;  //positive NN example
+  vector<cv::Mat> nEx; //negative NN examples
+  //Test data
+  vector<pair<vector<int>,int> > nXT; //negative data to Test
+  vector<cv::Mat> nExT; //negative NN examples to Test
   float var;
   vector<float> dconfidence;
   vector<float> tconfidence;
@@ -55,7 +60,7 @@ public:
   TLD();
   TLD(const cv::FileNode& file);
   void read(const cv::FileNode& file);
-
+//Bounding Boxes
   vector<BoundingBox> grid;
   vector<cv::Size> scales;
   vector<BoundingBox> good_boxes; //bboxes with overlap > 0.6
@@ -77,7 +82,7 @@ public:
   void detect(const cv::Mat& frame,vector<cv::KeyPoint>& points, vector<float>& confidence);
   void evaluate();//compare tacked pts with detected pts
   void learn(); // lear from correct detections and from errors
-  vector<pair<vector<int>,int> > ferns; //ferns,labels
+
 
   //Other
   void splitKeyPoints(const vector<cv::KeyPoint>& kpts, const cv::Rect& bbox,vector<cv::KeyPoint>& good_pts,vector<cv::KeyPoint>& bad_pts);
