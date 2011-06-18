@@ -21,13 +21,6 @@ private:
   LKTracker tracker;
   int min_win;
   int patch_size;
-  float ncc_thesame;
-  float valid;
-  int num_trees;
-  int num_features;
-  float thr_fern;
-  float thr_nn;
-  float thr_nn_valid;
   //initial parameters for positive examples
   int num_closest_init;
   int num_warps_init;
@@ -77,7 +70,6 @@ public:
   void init(const cv::Mat& frame1,const cv::Rect &box);
   void generatePositiveData(const cv::Mat& frame, const cv::PatchGenerator& patchGenerator);
   void generateNegativeData(const cv::Mat& frame, const cv::PatchGenerator& patchGenerator);
-  void trainFromSingleView(const cv::Mat& frame1, const cv::Rect& bbox, const vector<cv::KeyPoint>& kpts,vector<cv::Point2f>& pts);
   void track(const cv::Mat& img1, const cv::Mat& img2,const vector<cv::Point2f> &points1, vector<cv::Point2f> &points2);
   void detect(const cv::Mat& frame,vector<cv::KeyPoint>& points, vector<float>& confidence);
   void evaluate();//compare tacked pts with detected pts
@@ -86,7 +78,6 @@ public:
 
   //Other
   void splitKeyPoints(const vector<cv::KeyPoint>& kpts, const cv::Rect& bbox,vector<cv::KeyPoint>& good_pts,vector<cv::KeyPoint>& bad_pts);
-
 };
 
 

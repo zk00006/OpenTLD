@@ -36,6 +36,10 @@ void mouseHandler(int event, int x, int y, int flags, void *param){
 }
 
 int main(int argc, char * argv[]){
+  if(argc<2){
+    printf("use:\n     %s /path/parameters.yml\n",argv[0]);
+    return 0;
+  }
   //Init camera
   VideoCapture capture;
   capture.open(0);

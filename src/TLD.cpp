@@ -16,18 +16,11 @@ TLD::TLD(const FileNode& file){
 }
 
 void TLD::read(const FileNode& file){
-  ///Read Parameters
-  //model parameters
+  ///Bounding Box Parameters
   min_win = (int)file["min_win"];
-  patch_size = (int)file["patch_size"];
-  ncc_thesame = (float)file["ncc_thesame"];
-  valid = (float)file["valid"];
-  num_trees = (int)file["num_trees"];
-  num_features = (int)file["num_features"];
-  thr_fern = (float)file["thr_fern"];
-  thr_nn = (float)file["thr_nn"];
-  thr_nn_valid = (float)file["thr_nn_valid"];
+  ///Genarator Parameters
   //initial parameters for positive examples
+  patch_size = (int)file["patch_size"];
   num_closest_init = (int)file["num_closest_init"];
   num_warps_init = (int)file["num_warps_init"];
   noise_init = (int)file["noise_init"];
@@ -44,9 +37,11 @@ void TLD::read(const FileNode& file){
   //parameters for negative examples
   bad_overlap = (float)file["overlap"];
   bad_patches = (int)file["num_patches"];
+  classifier.read(file);
 }
 
 void TLD::init(const Mat& frame1,const Rect& box){
+  ///Preparation
   //Get Bounding Boxes
   buildGrid(frame1,box);
   printf("Created %d bounding boxes\n",(int)grid.size());
@@ -56,9 +51,10 @@ void TLD::init(const Mat& frame1,const Rect& box){
   getBBHull(good_boxes,bbhull);
   printf("Bounding box hull: %d %d %d %d\n",bbhull.x,bbhull.y,bbhull.width,bbhull.height);
   //Prepare Classifier
-  classifier.prepare(num_trees,num_features,scales);
+  classifier.prepare(scales);
   //Init Generator
   PatchGenerator generator(0,0,noise_init,true,1-scale_init,1+scale_init,-angle_init*CV_PI/180,angle_init*CV_PI/180,-angle_init*CV_PI/180,angle_init*CV_PI/180);
+  ///Generate Data
   // Generate positive data
   generatePositiveData(frame1,generator);
   // Generate negative data
@@ -67,17 +63,33 @@ void TLD::init(const Mat& frame1,const Rect& box){
   int half = (int)nX.size()*0.5f;
   nXT.assign(nX.begin()+half,nX.end());
   nX.resize(half);
-  printf("half = %d training set size = %d testing size = %d \n",half,(int)nX.size(),(int)nXT.size());
-  fflush(stdout);
-  //Split Negative NN Examples into Training and Testing sets
+  ///Split Negative NN Examples into Training and Testing sets
   half = (int)nEx.size()*0.5f;
   nExT.assign(nEx.begin()+half,nEx.end());
   nEx.resize(half);
-  //TODO!: Train Ferns
-  //TODO!: Train NN
-  classifier.trainFromSingleView();
-  //TODO!: Estimate thresholds on validation Set
-  classifier.evaluate();
+  //Merge Negative Data with Positive Data and shuffle it
+  vector<pair<vector<int>,int> > ferns_data(nX.size()+pX.size());
+  vector<int> idx = index_shuffle(0,ferns_data.size());
+  int a=0;
+  for (int i=0;i<pX.size();i++){
+      ferns_data[idx[a]] = pX[i];
+      a++;
+  }
+  for (int i=0;i<nX.size();i++){
+      ferns_data[idx[a]] = nX[i];
+      a++;
+  }
+  //Data already have been shuffled, just putting it in the same vector
+  vector<cv::Mat> nn_data(nEx.size()+1);
+  nn_data[0] = pEx;
+  for (int i=0;i<nEx.size();i++){
+      nn_data[i+1]= nEx[i];
+  }
+  ///Training
+  classifier.trainF(ferns_data,2); //bootstrap = 2
+  classifier.trainNN(nn_data);
+  ///Threshold Evaluation on testing sets
+  classifier.evaluateTh(nXT,nExT);
 }
 
 /* Generate Positive data
@@ -109,6 +121,7 @@ void TLD::generatePositiveData(const Mat& frame, const PatchGenerator& patchGene
          classifier.getFeatures(img,good_boxes[b],good_boxes[b].sidx,pX,1);
      }
   }
+  printf("Positive fern examples generated: %d\n",(int)pX.size());
 }
 
 void TLD::getPattern(const Mat& img, Mat& pattern,Scalar& mean,Scalar& stdev){
@@ -164,26 +177,6 @@ void TLD::generateNegativeData(const Mat& frame, const PatchGenerator& patchGene
   }
 }
 
-
-void TLD::trainFromSingleView(const Mat& frame1, const Rect& bbox, const vector<KeyPoint>& kpts, vector<Point2f>& pts){
-  //NOTE: Implement training from single frame
-  /*Input:
-   * -Image
-   * -Bounding Box
-   * -KeyPoints
-   * Output
-   * -Trained Fern classifier
-   * -Trained Nearest Neightbors classifier
-   */
-  //Split into good keypoints (within the bounding box) and bad keypoints (far from the bounding box)
-  vector<KeyPoint> good_pts;
-  vector<KeyPoint> bad_pts;
-  splitKeyPoints(kpts,bbox,good_pts,bad_pts);
-  KeyPoint::convert(good_pts,pts);
-  //Init Classifier
-  classifier.trainFromSingleView();
-
-}
 
 void TLD::track(const Mat& img1, const Mat& img2,const vector<Point2f> &points1, vector<Point2f> &points2){
   //Frame-to-frame tracking with forward-backward error cheking
