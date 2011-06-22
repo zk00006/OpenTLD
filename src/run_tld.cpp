@@ -81,26 +81,24 @@ gotBB=false;
 
   ///Run-time
   Mat current_gray;
+  BoundingBox pbox;
+  vector<Point2f> pts;
+  bool status=true;
   while(true){
     //get frame
     capture >> frame;
     cvtColor(frame, current_gray, CV_RGB2GRAY);
-    //Track
-    //tld.track(last_gray,current_gray,pts[0],pts[1]);
-    //Detect using classifier
-    //tld.detect()
-    //Estimate errors
-    //tld.evaluate();
-    //Update classifier
-    //tld.learn();
+    //Process Frame
+    tld.processFrame(last_gray,current_gray,pts,pbox,status);
     //Draw Points
-    //drawPoints(frame,pts[1]);
-    //cout << "Tracked points: " << pts[1].size() << endl;
+    if (status){
+      drawPoints(frame,pts);
+      drawBox(frame,pbox);
+    }
     //Display
     imshow("TLD", frame);
     //swap points and images
     swap(last_gray,current_gray);
-    //std::swap(pts[0],pts[1]);
     if (cvWaitKey(33) == 'q')
       break;
   }

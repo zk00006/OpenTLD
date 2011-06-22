@@ -11,12 +11,15 @@ private:
   vector<uchar> FB_status;
   vector<float> sim_error;
   vector<float> FB_error;
+  float simmed;
+  float fbmed;
   cv::TermCriteria term_criteria;
   float lambda;
-  void filterPts(vector<cv::Point2f>& points2);
+  bool filterPts(vector<cv::Point2f>& points1,vector<cv::Point2f>& points2);
 public:
   LKTracker();
-  void trackf2f(const cv::Mat& img1, const cv::Mat& img2, const vector<cv::Point2f> &points1, vector<cv::Point2f> &points2);
+  bool trackf2f(const cv::Mat& img1, const cv::Mat& img2,
+                vector<cv::Point2f> &points1, vector<cv::Point2f> &points2);
+  float getFB(){return fbmed;}
 };
-
 

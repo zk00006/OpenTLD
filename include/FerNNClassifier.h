@@ -9,27 +9,31 @@
 
 class FerNNClassifier{
 private:
-  //Parameters
   float thr_fern;
   int structSize;
   int nstructs;
   float valid;
   float ncc_thesame;
   float thr_nn;
-  float thr_nn_valid;
 
 public:
+  //Parameters
+  float thr_nn_valid;
+
   void read(const cv::FileNode& file);
   void prepare(const vector<cv::Size>& scales);
-  void getFeatures(const cv::Mat& image,const cv::Rect& box, int scale_idx,vector<pair<vector<int>,int> >& ferns, int label);
+  void getFeatures(const cv::Mat& image,const cv::Rect& box,const int& scale_idx,vector<int>& fern);
   void update(vector<int> fern, int C, int N);
   float measure_forest(vector<int> fern);
   void trainF(const vector<pair<vector<int>,int> >& ferns,int resample);
   void trainNN(const vector<cv::Mat>& nn_examples);
-  float NNConf(const cv::Mat& example,vector<int>& isin);
+  void NNConf(const cv::Mat& example,vector<int>& isin,float& rsconf,float& csconf);
   void evaluateTh(const vector<pair<vector<int>,int> >& nXT,const vector<cv::Mat>& nExT);
 
   //Ferns Members
+  int getNumStructs(){return nstructs;}
+  float getFernTh(){return thr_fern;}
+  float getNNTh(){return thr_nn;}
   struct Feature
       {
           uchar x1, y1, x2, y2;

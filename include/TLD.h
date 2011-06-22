@@ -3,7 +3,6 @@
 #include <LKTracker.h>
 #include <FerNNClassifier.h>
 
-
 //Bounding Boxes
   struct BoundingBox : public cv::Rect {
     BoundingBox(){}
@@ -47,12 +46,27 @@ private:
   vector<pair<vector<int>,int> > nXT; //negative data to Test
   vector<cv::Mat> nExT; //negative NN examples to Test
   float var;
-  vector<float> dconfidence;
-  vector<float> tconfidence;
+
 public:
+//Constructors
   TLD();
   TLD(const cv::FileNode& file);
   void read(const cv::FileNode& file);
+//Last frame data
+  BoundingBox lastbox;
+  bool lastvalid;
+  float lastconf;
+//Current frame data
+  //Tracker data
+  BoundingBox tbb;
+  bool tvalid;
+  float tconf;
+  //Detector data
+  vector<BoundingBox> dbb;
+  vector<bool> dvalid;
+  vector<float> dconf;
+  bool detected;
+
 //Bounding Boxes
   vector<BoundingBox> grid;
   vector<cv::Size> scales;
@@ -65,19 +79,25 @@ public:
   void getOverlappingBoxes(const cv::Rect& box1,int num_closest);
   void getBBHull(const vector<BoundingBox>& boxes, BoundingBox& bbhull);
   void getPattern(const cv::Mat& img, cv::Mat& pattern,cv::Scalar& mean,cv::Scalar& stdev);
+  void bbPoints(vector<cv::Point2f>& points, const BoundingBox& bb,int pts,int margin);
+  void bbPredict(const vector<cv::Point2f>& points1,const vector<cv::Point2f>& points2,
+                 const BoundingBox& bb1,BoundingBox& bb2);
+  float getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
 
+  bool bbComp(const BoundingBox& bb1,const BoundingBox& bb2);
  //Methods
   void init(const cv::Mat& frame1,const cv::Rect &box);
   void generatePositiveData(const cv::Mat& frame, const cv::PatchGenerator& patchGenerator);
   void generateNegativeData(const cv::Mat& frame, const cv::PatchGenerator& patchGenerator);
-  void track(const cv::Mat& img1, const cv::Mat& img2,const vector<cv::Point2f> &points1, vector<cv::Point2f> &points2);
-  void detect(const cv::Mat& frame,vector<cv::KeyPoint>& points, vector<float>& confidence);
+
+  void processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<cv::Point2f>& points,
+                    BoundingBox& bbnext,bool& lastboxfound);
+  void track(const cv::Mat& img1, const cv::Mat& img2,vector<cv::Point2f>& points2);
+  void detect(const cv::Mat& frame);
+  void clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,vector<BoundingBox>& cbb,vector<float>& cconf);
   void evaluate();//compare tacked pts with detected pts
-  void learn(); // lear from correct detections and from errors
+  void learn(const Mat& img); // lear from correct detections and from errors
 
-
-  //Other
-  void splitKeyPoints(const vector<cv::KeyPoint>& kpts, const cv::Rect& bbox,vector<cv::KeyPoint>& good_pts,vector<cv::KeyPoint>& bad_pts);
 };
 
 
