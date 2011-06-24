@@ -1,14 +1,6 @@
-
-################################################################################
-# ATTENTION:
-# This branch of the source code is a development version including Octave
-# (http://www.gnu.org/software/octave/) compatibility measures, and is not 
-# an official version!
-# Tracking is  working in Octave now, with some changes w.r.t. Zdenek's branch
-# See https://github.com/bilderbuchi/OpenTLD/issues/2 for more information.
-################################################################################
-
-TLD (aka Predator)
+This will be a C++ implementations of the TLD (aka Predator)
+----------------------------------------------------------------------------
+This is a work in progress, as of right now the code is functional but it has several performance and detection issues.
 ----------------------------------------------------------------------------
 
 TLD is an algorithm for tracking of unknown objects in unconstrained video streams. The object of interest is defined by a bounding box in a single frame. TLD simultaneously tracks the object, learns its appearance and detects it whenever it appears in the video.
@@ -43,41 +35,15 @@ In case you use TLD in an academic work, please cite the following paper:
  title = {{P-N Learning: Bootstrapping Binary Classifiers by Structural Constraints}},
  year = {2010}
 } 
-
              
-Installation 
+Installation Notes
 ============
+git clone git@github.com:alantrrs/OpenTLD.git
+cd OpenTLD
+mkdir build
+cd build
+cmake ../src/
+make
+cd ../bin/
+./run_tld ../parameters.yml
 
-1. Windows
-	Tested on: Matlab R2010a, VS2010, Windows 7 (32-bit, 64-bit), OpenCV2.2
-	1.1 Install OpenCV
-	    a) make sure to compile opencv 
-	    b) make sure that system variable PATH includes the directory to the OpenCV DLLs 
-	1.2 Check paths in 'compile.m' file
-	1.3 run 'compile.m', if you get errors go to OpenTLD discussion group
-	1.4 run 'run_TLD.m', TLD should track a motorbike
- 
-2. Mac
-   ...
-
-3. Linux
-	1.1 Install OpenCV
-		sudo apt-get install libcv-dev (this will most probably be 2.1)
-	1.2a Install Matlab (>= R2009b). Possibly you will need some extension toolboxes
-            include:
-                Image Acquisition Toolbox
-                Image Processing Toolbox
-                Signal Processing Toolbox
-                Statistics Toolbox
-	1.2b There are efforts underway to make TLD work with Octave, an open source alternative to Matlab
-		You will need to install octave >=3.4.
-		Also, install octave extension packages miscellaneous, image, statistics from http://octave.sourceforge.net/packages.php
-    1.3 Check paths in 'compile.m' file
-    1.4 run 'compile.m', (either in matlab or octave). If you get errors go to OpenTLD discussion group
-    1.5 run 'run_TLD.m', TLD should track a motorbike
-
-
-
-----------------------------------------------------------------------------
-
-(c) 2011 Zdenek Kalal, zdenek.kalal@gmail.com
