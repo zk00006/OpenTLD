@@ -426,7 +426,7 @@ void TLD::detect(const cv::Mat& frame){
   if (dbb.size()>0){
       printf("Found %d NN matches\n",(int)dbb.size());
       detected=true;
-      imshow("Detection",dbb[0]);
+      //imshow("Detection",frame(dbb[0]));
   }
   else{
       printf("No NN matches found.\n");
