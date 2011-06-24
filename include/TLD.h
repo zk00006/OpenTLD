@@ -7,24 +7,41 @@
 struct BoundingBox : public cv::Rect {
   BoundingBox(){}
   BoundingBox(cv::Rect r): cv::Rect(r){}
-  //cv::Rect bbox;
 public:
-  float overlap;
-  int sidx; //scale index
-  float fernConf;
-  float NNConf1;
-  float NNConf2;
-  int label;
+  float overlap;        //Overlap with current Bounding Box
+  int sidx;             //scale index
 };
 
-struct Comparator{
-  Comparator(const vector<BoundingBox>& _grid):grid(_grid){}
+//Detection structure
+struct DetStruct {
+    vector<int> bb;
+    vector<vector<int> > patt;
+    vector<float> conf1;
+    vector<float> conf2;
+    vector<vector<int> > isin;
+    vector<cv::Mat> patch;
+  };
+//Temporal structure
+  struct TempStruct {
+    vector<vector<int> > patt;
+    vector<float> conf;
+  };
+
+struct OComparator{
+  OComparator(const vector<BoundingBox>& _grid):grid(_grid){}
   vector<BoundingBox> grid;
   bool operator()(int idx1,int idx2){
     return grid[idx1].overlap > grid[idx2].overlap;
   }
-
 };
+struct CComparator{
+  CComparator(const vector<float>& _conf):conf(_conf){}
+  vector<float> conf;
+  bool operator()(int idx1,int idx2){
+    return conf[idx1]> conf[idx2];
+  }
+};
+
 
 class TLD{
 private:
@@ -32,6 +49,7 @@ private:
   FerNNClassifier classifier;
   LKTracker tracker;
   ///Parameters
+  int bbox_step;
   int min_win;
   int patch_size;
   //initial parameters for positive examples
@@ -75,11 +93,13 @@ private:
   bool tvalid;
   float tconf;
   //Detector data
-  vector<float> tmpconf;
+  TempStruct tmp;
+  DetStruct dt;
   vector<BoundingBox> dbb;
   vector<bool> dvalid;
   vector<float> dconf;
   bool detected;
+
 
   //Bounding Boxes
   vector<BoundingBox> grid;
@@ -116,7 +136,6 @@ public:
       const BoundingBox& bb1,BoundingBox& bb2);
   float getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
   bool bbComp(const BoundingBox& bb1,const BoundingBox& bb2);
- // friend Comparator;
 };
 
 

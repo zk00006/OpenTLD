@@ -51,10 +51,14 @@ void TLD::init(const Mat& frame1,const Rect& box){
   iisqsum.create(frame1.rows+1,frame1.cols+1,CV_64F);
   dconf.reserve(100);
   dbb.reserve(100);
-  tmpconf.reserve(grid.size());
+  bbox_step =7;
+  tmp.conf.reserve(grid.size());
+  tmp.patt.reserve(grid.size());
+  dt.bb.reserve(grid.size());
   good_boxes.reserve(grid.size());
   bad_boxes.reserve(grid.size());
   pEx.create(patch_size,patch_size,CV_32F);
+
   //Init Generator
   generator = PatchGenerator (0,0,noise_init,true,1-scale_init,1+scale_init,-angle_init*CV_PI/180,angle_init*CV_PI/180,-angle_init*CV_PI/180,angle_init*CV_PI/180);
   getOverlappingBoxes(box,num_closest_init);
@@ -170,14 +174,15 @@ void TLD::generateNegativeData(const Mat& frame){
   nX.reserve(num);
   for (int j=0;j<num;j++){
       idx = bad_boxes[j];
-          if (getVar(grid[idx],iisum,iisqsum)<var/2)
+          if (getVar(grid[idx],iisum,iisqsum)<var*0.5f)
             continue;
       classifier.getFeatures(frame,grid[idx],grid[idx].sidx,fern);
       nX.push_back(make_pair(fern,0));
       a++;
   }
   printf("Negative examples generated: %d \n",a);
-  random_shuffle(bad_boxes.begin(),bad_boxes.begin()+bad_patches);//Randomly selects 'bad_patches' and get the patterns for NN;
+  fflush(stdout);
+  //random_shuffle(bad_boxes.begin(),bad_boxes.begin()+bad_patches);//Randomly selects 'bad_patches' and get the patterns for NN;
   Mat negExample;
   Scalar dum1, dum2;
   nEx.reserve(bad_patches);
@@ -198,10 +203,10 @@ float TLD::getVar(const BoundingBox& box,const Mat& sum,const Mat& sqsum){
    * double v = ELEM(float,myMatrix.data,myMatrix.step(),myMatrix.elemSize,x,y);    // Moderately speedy access
    * double v = ELEM(float,myMatrix.data,2560,4,x,y);                               // Even faster access
    */
-  Point br(box.br().x+1,box.br().x+1);
-  Point bl(box.x+1,box.y+box.height+1);
-  Point tr(box.x +box.width+1,box.y+1);
-  Point tl(box.x+1,box.y+1);
+  Point br(box.br().x,box.br().x);
+  Point bl(box.x,box.y+box.height);
+  Point tr(box.x +box.width,box.y);
+  Point tl(box.x,box.y);
   float mean = (sum.at<double>(br)+sum.at<double>(tl)-sum.at<double>(tr)-sum.at<double>(bl))/box.area();
   float sqmean = (sqsum.at<double>(br)+sqsum.at<double>(tl)-sqsum.at<double>(tr)-sqsum.at<double>(bl))/box.area();
   return sqmean-mean*mean;
@@ -350,92 +355,74 @@ void TLD::bbPredict(const vector<cv::Point2f>& points1,const vector<cv::Point2f>
   bb2.height = round(bb1.height*s);
 }
 
-bool compare_conf ( const pair<int,float>& idx1,const pair<int,float>& idx2){
-  return idx1.second > idx2.second;
-}
-
 void TLD::detect(const cv::Mat& frame){
   double t = (double)getTickCount();
-  int bbox_step =7;
-  Mat img;//TODO:preallocate
+  Mat img(frame.rows,frame.cols,CV_8U);
   integral(frame,iisum,iisqsum);
   GaussianBlur(frame,img,Size(9,9),1.5);
   int numtrees = classifier.getNumStructs();
   float fern_th = classifier.getFernTh();
-  vector<int> ferns(numtrees);
   float conf;
-  vector<pair<int,float> > conf_idxs;
-  //tmpconf.clear();
-  conf_idxs.reserve(grid.size()/bbox_step);
-//TODO: blur img
-  int a=0;
+  vector <int> ferns(10);
   for (int i=0;i<grid.size();i+=bbox_step){//FIXME: BottleNeck
       if (getVar(grid[i],iisum,iisqsum)>var){
           classifier.getFeatures(img,grid[i],grid[i].sidx,ferns);
           conf = classifier.measure_forest(ferns);
+          tmp.conf.push_back(conf);
+          tmp.patt.push_back(ferns);
           if (conf>numtrees*fern_th){
-              conf_idxs.push_back(make_pair(i,conf));
-              a++;
+              dt.bb.push_back(i);
           }
       }
   }
-  if (conf_idxs.size()>100){
-      nth_element(conf_idxs.begin(),conf_idxs.begin()+100,conf_idxs.end(),compare_conf);
-      conf_idxs.resize(100);
+  int detections = dt.bb.size();
+  if (detections>100){
+      nth_element(dt.bb.begin(),dt.bb.begin()+100,dt.bb.end(),CComparator(tmp.conf));
+      dt.bb.resize(100);
   }
-  if (conf_idxs.size()==0){
+  if (detections==0){
       detected=false;
       return;
   }
-  printf("Fern detector made %d detections ",(int)conf_idxs.size());
+  printf("Fern detector made %d detections ",detections);
   t=(double)getTickCount()-t;
   printf("in %gms\n", t*1000/getTickFrequency());
-//TODO!: implement detection structure
-//  % initialize detection structure
-//  dt.bb     = tld.grid(1:4,idx_dt); % bounding boxes
-//  dt.patt   = tld.tmp.patt(:,idx_dt); % corresponding codes of the Ensemble Classifier
-//  dt.idx    = find(idx_dt); % indexes of detected bounding boxes within the scanning grid
-//  dt.conf1  = nan(1,num_dt); % Relative Similarity (for final nearest neighbour classifier)
-//  dt.conf2  = nan(1,num_dt); % Conservative Similarity (for integration with tracker)
-//  dt.isin   = nan(3,num_dt); % detected (isin=1) or rejected (isin=0) by nearest neighbour classifier
-//  dt.patch  = nan(prod(tld.model.patchsize),num_dt); % Corresopnding patches
-  //  for i = 1:num_dt % for every remaining detection
-  //      ex   = tldGetPattern(img,dt.bb(:,i),tld.model.patchsize); % measure patch
-  //      [conf1, conf2, isin] = tldNN(ex,tld); % evaluate nearest neighbour classifier
-  //      % fill detection structure
-  //      dt.conf1(i)   = conf1;
-  //      dt.conf2(i)   = conf2;
-  //      dt.isin(:,i)  = isin;
-  //      dt.patch(:,i) = ex;
-  //      if tld.PRINT_DEBUG==1
-  //          fprintf('Detector [Frame %d]: Testing Feature %d/%d - %f Conf1 cmp %f\n',I,i,num_dt,conf1,tld.model.thr_nn);
-  //      end
-  //  end
-Mat pattern(patch_size,patch_size,CV_32F);
-vector<int> isin(3,-1);
-a=0;
-float conf1,conf2;
-float nn_th = classifier.getNNTh();
-Scalar mean,stdev;
-dbb.clear();
-dconf.clear();
-  for (int i=0;i<conf_idxs.size();i++){
-    getPattern(frame(grid[conf_idxs[i].first]),pattern,mean,stdev);
-    classifier.NNConf(pattern,isin,conf1,conf2);
-    if (conf1>nn_th){                                              //  idx = dt.conf1 > tld.model.thr_nn; % get all indexes that made it through the nearest neighbour
-      dbb.push_back(grid[conf_idxs[i].first]);                     //  BB    = dt.bb(:,idx); % bounding boxes
-      dconf.push_back(conf2);                                      //  Conf  = dt.conf2(:,idx); % conservative confidences
-      a++;
-    }
-}
-                                                                   //  tld.dt{I} = dt; % save the whole detection structure
-  if (a>0){
-      printf("Found %d NN matches\n",a);
-    detected=true;
+                                                                       //  % initialize detection structure
+  dbb.clear();
+  dconf.clear();
+                                                                       //  dt.bb     = tld.grid(1:4,idx_dt); % bounding boxes
+  dt.patt = vector<vector<int> >(detections,vector<int>(10,0));        //  dt.patt   = tld.tmp.patt(:,idx_dt); % corresponding codes of the Ensemble Classifier
+                                                                       //  dt.idx    = find(idx_dt); % indexes of detected bounding boxes within the scanning grid
+  dt.conf1 = vector<float>(detections);                                //  dt.conf1  = nan(1,num_dt); % Relative Similarity (for final nearest neighbour classifier)
+  dt.conf2 =vector<float>(detections);                                 //  dt.conf2  = nan(1,num_dt); % Conservative Similarity (for integration with tracker)
+  dt.isin = vector<vector<int> >(detections,vector<int>(3,-1));        //  dt.isin   = nan(3,num_dt); % detected (isin=1) or rejected (isin=0) by nearest neighbour classifier
+  dt.patch = vector<Mat>(detections,Mat(patch_size,patch_size,CV_32F));//  dt.patch  = nan(prod(tld.model.patchsize),num_dt); % Corresopnding patches
+  int idx;
+  Scalar mean, stdev;
+  float nn_th = classifier.getNNTh();
+  for (int i=0;i<detections;i++){                                      //  for i = 1:num_dt % for every remaining detection
+      idx=dt.bb[i];
+      getPattern(frame(grid[idx]),dt.patch[i],mean,stdev);                  //   ex   = tldGetPattern(img,dt.bb(:,i),tld.model.patchsize); % measure patch
+      classifier.NNConf(dt.patch[i],dt.isin[i],dt.conf1[i],dt.conf2[i]);    //      [conf1, conf2, isin] = tldNN(ex,tld); % evaluate nearest neighbour classifier
+                                                                            //      % fill detection structure
+      dt.patt[i]=tmp.patt[idx];
+                                                                            //      dt.conf1(i)   = conf1;
+                                                                            //      dt.conf2(i)   = conf2;
+                                                                            //      dt.isin(:,i)  = isin;
+                                                                            //      dt.patch(:,i) = ex;
+      if (dt.conf1[i]>nn_th){                                                     //  idx = dt.conf1 > tld.model.thr_nn; % get all indexes that made it through the nearest neighbour
+          dbb.push_back(grid[idx]);                                //  BB    = dt.bb(:,idx); % bounding boxes
+          dconf.push_back(dt.conf2[i]);                                           //  Conf  = dt.conf2(:,idx); % conservative confidences
+      }
+  }                                                                         //  end
+                                                                            //  tld.dt{I} = dt; % save the whole detection structure
+  if (dbb.size()>0){
+      printf("Found %d NN matches\n",(int)dbb.size());
+      detected=true;
   }
   else{
       printf("No NN matches found.\n");
-    detected=false;
+      detected=false;
   }
 }
 
@@ -474,18 +461,29 @@ if(isin[2]==1){                                    //if pIsin(3) == 1  return;
 for (int i=0;i<grid.size();i++){                   //  overlap  = bb_overlap(bb,tld.grid); % measure overlap of the current bounding box with the bounding boxes on the grid
     grid[i].overlap = bbOverlap(lastbox,grid[i]);
 }
+vector<pair<vector<int>,int> > fern_examples;
 good_boxes.clear();
 bad_boxes.clear();
 getOverlappingBoxes(lastbox,num_closest_update);
 generatePositiveData(img,num_warps_update);        //  [pX,pEx] = tldGeneratePositiveData(tld,overlap,img,tld.p_par_update); % generate positive examples from all bounding boxes that are highly overlappipng with current bounding box
-                                                   //  pY       = ones(1,size(pX,2)); % labels of the positive patches
-                                                   //  % generate negative data
-
-//  idx      = overlap < tld.n_par.overlap & tld.tmp.conf >= 1; % get indexes of negative bounding boxes on the grid (bounding boxes on the grid that are far from current bounding box and which confidence was larger than 0)
-//  overlap  = bb_overlap(bb,tld.dt{I}.bb); % measure overlap of the current bounding box with detections
-//  nEx      = tld.dt{I}.patch(:,overlap < tld.n_par.overlap); % get negative patches that are far from current bounding box
-//  fern(2,[pX tld.tmp.patt(:,idx)],[pY zeros(1,sum(idx))],tld.model.thr_fern,2); % update the Ensemble Classifier (reuses the computation made by detector)
-//  tld = tldTrainNN(pEx,nEx,tld); % update nearest neighbour
+fern_examples.reserve(bad_boxes.size());           //  pY       = ones(1,size(pX,2)); % labels of the positive patches
+int idx;                                           //  % generate negative data
+for (int i=0;i<bad_boxes.size();i++){              //  idx      = overlap < tld.n_par.overlap & tld.tmp.conf >= 1; % get indexes of negative bounding boxes on the grid (bounding boxes on the grid that are far from current bounding box and which confidence was larger than 0)
+    idx=bad_boxes[i];
+    if (tmp.conf[idx]<1){//FIXME: tmp.conf indexes dont correspond with grid indexes cause bbox_step
+        fern_examples.push_back(make_pair(tmp.patt[idx],0));
+    }
+}
+vector<Mat> nn_examples;
+nn_examples.reserve(dt.bb.size()+1);
+nn_examples.push_back(pEx);
+for (int i=0;i<dt.bb.size();i++){
+    idx = dt.bb[i];
+    if (bbOverlap(lastbox,grid[idx]) < bad_overlap)  //  overlap  = bb_overlap(bb,tld.dt{I}.bb); % measure overlap of the current bounding box with detections
+      nn_examples.push_back(dt.patch[i]);            //  nEx      = tld.dt{I}.patch(:,overlap < tld.n_par.overlap); % get negative patches that are far from current bounding box
+}
+classifier.trainF(fern_examples,2);                  //  fern(2,[pX tld.tmp.patt(:,idx)],[pY zeros(1,sum(idx))],tld.model.thr_fern,2); % update the Ensemble Classifier (reuses the computation made by detector)
+classifier.trainNN(nn_examples);                     //  tld = tldTrainNN(pEx,nEx,tld); % update nearest neighbour
 }
 
 void TLD::buildGrid(const cv::Mat& img, const cv::Rect& box){
@@ -553,7 +551,7 @@ void TLD::getOverlappingBoxes(const cv::Rect& box1,int num_closest){
   }
   //Get the best num_closest (10) boxes and puts them in good_boxes
   if (good_boxes.size()>num_closest){
-    std::nth_element(good_boxes.begin(),good_boxes.begin()+num_closest,good_boxes.end(),Comparator(grid));
+    std::nth_element(good_boxes.begin(),good_boxes.begin()+num_closest,good_boxes.end(),OComparator(grid));
     good_boxes.resize(num_closest);
   }
   getBBHull();
@@ -641,6 +639,6 @@ void TLD::clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,
           cbb.push_back(bx);
       }
   }
-  printf("/n");
+  printf("\n");
 }
 
