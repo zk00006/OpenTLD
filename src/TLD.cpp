@@ -38,20 +38,28 @@ void TLD::read(const FileNode& file){
   bad_overlap = (float)file["overlap"];
   bad_patches = (int)file["num_patches"];
   classifier.read(file);
-  //allocate
-  dconf.reserve(100);
-  dbb.reserve(100);
+
 }
 
 void TLD::init(const Mat& frame1,const Rect& box){
-  ///Preparation
   //Get Bounding Boxes
-  buildGrid(frame1,box);
-  printf("Created %d bounding boxes\n",(int)grid.size());
+    buildGrid(frame1,box);
+    printf("Created %d bounding boxes\n",(int)grid.size());
+  ///Preparation
+  //allocation
+  iisum.create(frame1.rows+1,frame1.cols+1,CV_64F);
+  iisqsum.create(frame1.rows+1,frame1.cols+1,CV_64F);
+  dconf.reserve(100);
+  dbb.reserve(100);
+  tmpconf.reserve(grid.size());
+  good_boxes.reserve(grid.size());
+  bad_boxes.reserve(grid.size());
+  pEx.create(patch_size,patch_size,CV_32F);
+  //Init Generator
+  generator = PatchGenerator (0,0,noise_init,true,1-scale_init,1+scale_init,-angle_init*CV_PI/180,angle_init*CV_PI/180,-angle_init*CV_PI/180,angle_init*CV_PI/180);
   getOverlappingBoxes(box,num_closest_init);
   printf("Found %d good boxes, %d bad boxes\n",(int)good_boxes.size(),(int)bad_boxes.size());
   printf("Best Box: %d %d %d %d\n",best_box.x,best_box.y,best_box.width,best_box.height);
-  getBBHull(good_boxes,bbhull);
   printf("Bounding box hull: %d %d %d %d\n",bbhull.x,bbhull.y,bbhull.width,bbhull.height);
   //Correct Bounding Box
   lastbox=best_box;
@@ -59,13 +67,11 @@ void TLD::init(const Mat& frame1,const Rect& box){
   lastvalid=true;
   //Prepare Classifier
   classifier.prepare(scales);
-  //Init Generator
-  PatchGenerator generator(0,0,noise_init,true,1-scale_init,1+scale_init,-angle_init*CV_PI/180,angle_init*CV_PI/180,-angle_init*CV_PI/180,angle_init*CV_PI/180);
   ///Generate Data
   // Generate positive data
-  generatePositiveData(frame1,generator);
+  generatePositiveData(frame1,num_warps_init);
   // Generate negative data
-  generateNegativeData(frame1,generator);
+  generateNegativeData(frame1);
   //Split Negative Ferns into Training and Testing sets (they are already shuffled)
   int half = (int)nX.size()*0.5f;
   nXT.assign(nX.begin()+half,nX.end());
@@ -108,7 +114,7 @@ void TLD::init(const Mat& frame1,const Rect& box){
  * - Positive fern features (pX)
  * - Positive NN examples (pEx)
  */
-void TLD::generatePositiveData(const Mat& frame, const PatchGenerator& patchGenerator){
+void TLD::generatePositiveData(const Mat& frame, int num_warps){
   Scalar mean;
   Scalar stdev;
   getPattern(frame(best_box),pEx,mean,stdev);
@@ -117,14 +123,17 @@ void TLD::generatePositiveData(const Mat& frame, const PatchGenerator& patchGene
   //Get Fern features on warped patches
   Mat img;
   Mat warped;
-  frame.copyTo(img);
+  GaussianBlur(frame,img,Size(9,9),1.5);
   warped = img(bbhull);
   RNG& rng = theRNG();
   Point2f pt(bbhull.x+(bbhull.width-1)*0.5f,bbhull.y+(bbhull.height-1)*0.5f);
   vector<int> fern(classifier.getNumStructs());
-  for (int i=0;i<num_warps_init;i++){
+  pX.clear();
+  if (pX.capacity()<num_warps*good_boxes.size())
+    pX.reserve(num_warps*good_boxes.size());
+  for (int i=0;i<num_warps;i++){
      if (i>0)
-       patchGenerator(frame,pt,warped,bbhull.size(),rng);
+       generator(frame,pt,warped,bbhull.size(),rng);
      for (int b=0;b<good_boxes.size();b++){
          classifier.getFeatures(img,good_boxes[b],good_boxes[b].sidx,fern);
          pX.push_back(make_pair(fern,1));
@@ -139,7 +148,7 @@ void TLD::getPattern(const Mat& img, Mat& pattern,Scalar& mean,Scalar& stdev){
   meanStdDev(pattern,mean,stdev);
   pattern = pattern-mean.val[0];
 }
-void TLD::generateNegativeData(const Mat& frame, const PatchGenerator& patchGenerator){
+void TLD::generateNegativeData(const Mat& frame){
 /* Inputs:
  * - Image
  * - bad_boxes (Boxes far from the bounding box)
@@ -148,22 +157,18 @@ void TLD::generateNegativeData(const Mat& frame, const PatchGenerator& patchGene
  * - Negative fern features (nX)
  * - Negative NN examples (nEx)
  */
-  vector<int> idx;
-  idx = index_shuffle(0,bad_boxes.size());//creates a random indexes from 0 to bad_boxes.size()
+  vector<int> idx = index_shuffle(0,bad_boxes.size());//creates a random indexes from 0 to bad_boxes.size()
   //Get Fern Features of the boxes with big variance (calculated using integral images)
-  Mat sum, sqsum;
-  integral(frame,sum,sqsum);
+  integral(frame,iisum,iisqsum);
   int a=0;
   int num = std::min((int)bad_boxes.size(),(int)bad_patches*100); //limits the size of bad_boxes to try
   printf("negative data generation started.\n");
   vector<int> fern(classifier.getNumStructs());
+  nX.reserve(num);
   for (int j=0;j<num;j++){
-      int i = idx[j];
-      if (var>0){
-          if (getVar(bad_boxes[i],sum,sqsum)<var)
+          if (getVar(bad_boxes[idx[j]],iisum,iisqsum)<var/2)
             continue;
-      }
-      classifier.getFeatures(frame,bad_boxes[i],bad_boxes[i].sidx,fern);
+      classifier.getFeatures(frame,bad_boxes[idx[j]],bad_boxes[idx[j]].sidx,fern);
       nX.push_back(make_pair(fern,0));
       a++;
   }
@@ -171,6 +176,7 @@ void TLD::generateNegativeData(const Mat& frame, const PatchGenerator& patchGene
   //Randomly selects 'bad_patches' and get the patterns for NN;
   Mat negExample;
   Scalar dum1, dum2;
+  nEx.reserve(bad_patches);
   for (int i=0;i<bad_patches;i++){
       getPattern(frame(bad_boxes[idx[i]]),negExample,dum1,dum2);
       nEx.push_back(negExample);
@@ -178,11 +184,19 @@ void TLD::generateNegativeData(const Mat& frame, const PatchGenerator& patchGene
 }
 
 float TLD::getVar(const BoundingBox& box,const Mat& sum,const Mat& sqsum){
-  //NOTE: Optimize variance calculation?
-  Point br(box.br());
-  Point bl(box.x,box.y+box.height);
-  Point tr(box.x +box.width,box.y);
-  Point tl(box.tl());
+  /* NOTE: Optimize variance calculation?
+   * for quick initialization of small matrices and/or super-fast element access
+   * double m[3][3] = {{a, b, c}, {d, e, f}, {g, h, i}};
+   * cv::Mat M = cv::Mat(3, 3, CV_64F, m).inv();
+   */
+  /* #define ELEM(type,start,step,size,xpos,ypos) *((type*)(start+step*(ypos)+(xpos)*size))
+   * double v = ELEM(float,myMatrix.data,myMatrix.step(),myMatrix.elemSize,x,y);    // Moderately speedy access
+   * double v = ELEM(float,myMatrix.data,2560,4,x,y);                               // Even faster access
+   */
+  Point br(box.br().x+1,box.br().x+1);
+  Point bl(box.x+1,box.y+box.height+1);
+  Point tr(box.x +box.width+1,box.y+1);
+  Point tl(box.x+1,box.y+1);
   float mean = (sum.at<double>(br)+sum.at<double>(tl)-sum.at<double>(tr)-sum.at<double>(bl))/box.area();
   float sqmean = (sqsum.at<double>(br)+sqsum.at<double>(tl)-sqsum.at<double>(tr)-sqsum.at<double>(bl))/box.area();
   return sqmean-mean*mean;
@@ -202,13 +216,14 @@ void TLD::processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<Point2f>& 
   if (tvalid){                                //    if TR % if tracker is defined
       bbnext=tbb;                             //        tld.bb(:,I)  = tBB;
       lastconf=tconf;                         //        tld.conf(I)  = tConf;
-      lastvalid=tvalid;                       //        tld.valid(I) = tValid;                                              //        tld.size(I)  = 1; FIXME:what is this for???
+      lastvalid=tvalid;                       //        tld.valid(I) = tValid;
+                                              //        tld.size(I)  = 1;
       printf("Tracking...\n");
-      if(detected){                                                   //   if DT % if detections are also defined
-          clusterConf(dbb,dconf,cbb,cconf);                           //      [cBB,cConf,cSize] = bb_cluster_confidence(dBB,dConf); % cluster detections
+      if(detected){                                              //   if DT % if detections are also defined
+          clusterConf(dbb,dconf,cbb,cconf);                      //      [cBB,cConf,cSize] = bb_cluster_confidence(dBB,dConf); % cluster detections
           printf("Found %d clusters\n",(int)cbb.size());
           for (int i=0;i<cbb.size();i++){
-              if (bbOverlap(tbb,cbb[i])<0.5 && cconf[i]>tconf){       //      id = bb_overlap(tld.bb(:,I),cBB) < 0.5 & cConf > tld.conf(I); % get indexes of all clusters that are far from tracker and are more confident then the tracker
+              if (bbOverlap(tbb,cbb[i])<0.5 && cconf[i]>tconf){  //      id = bb_overlap(tld.bb(:,I),cBB) < 0.5 & cConf > tld.conf(I); % get indexes of all clusters that are far from tracker and are more confident then the tracker
                   confident_detections++;
                   didx=i; //detection index
               }
@@ -303,6 +318,7 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points2){
   else
     tvalid = false;
 }
+
 void TLD::bbPredict(const vector<cv::Point2f>& points1,const vector<cv::Point2f>& points2,
                     const BoundingBox& bb1,BoundingBox& bb2)    {
   int npoints = (int)points1.size();
@@ -336,18 +352,21 @@ bool compare_conf ( const pair<int,float>& idx1,const pair<int,float>& idx2){
 void TLD::detect(const cv::Mat& frame){
   double t = (double)getTickCount();
   int bbox_step =7;
-  Mat sum, sqsum;//TODO!: pre-allocate for speed;
-  integral(frame,sum,sqsum);
+  Mat img;//TODO:preallocate
+  integral(frame,iisum,iisqsum);
+  GaussianBlur(frame,img,Size(9,9),1.5);
   int numtrees = classifier.getNumStructs();
   float fern_th = classifier.getFernTh();
   vector<int> ferns(numtrees);
   float conf;
   vector<pair<int,float> > conf_idxs;
-
+  //tmpconf.clear();
+  conf_idxs.reserve(grid.size()/bbox_step);
+//TODO: blur img
   int a=0;
   for (int i=0;i<grid.size();i+=bbox_step){//FIXME: BottleNeck
-      if (getVar(grid[i],sum,sqsum)>var){
-          classifier.getFeatures(frame,grid[i],grid[i].sidx,ferns);
+      if (getVar(grid[i],iisum,iisqsum)>var){
+          classifier.getFeatures(img,grid[i],grid[i].sidx,ferns);
           conf = classifier.measure_forest(ferns);
           if (conf>numtrees*fern_th){
               conf_idxs.push_back(make_pair(i,conf));
@@ -387,7 +406,7 @@ void TLD::detect(const cv::Mat& frame){
   //          fprintf('Detector [Frame %d]: Testing Feature %d/%d - %f Conf1 cmp %f\n',I,i,num_dt,conf1,tld.model.thr_nn);
   //      end
   //  end
-  Mat pattern;//TODO: pre-allocate for speed
+Mat pattern(patch_size,patch_size,CV_32F);
 vector<int> isin(3,-1);
 a=0;
 float conf1,conf2;
@@ -398,16 +417,13 @@ dconf.clear();
   for (int i=0;i<conf_idxs.size();i++){
     getPattern(frame(grid[conf_idxs[i].first]),pattern,mean,stdev);
     classifier.NNConf(pattern,isin,conf1,conf2);
-    if (conf1>nn_th && isin[0]==1){//FIXME:save the bad paches too
-      dbb.push_back(grid[conf_idxs[i].first]);
-      dconf.push_back(conf2);
+    if (conf1>nn_th){                                              //  idx = dt.conf1 > tld.model.thr_nn; % get all indexes that made it through the nearest neighbour
+      dbb.push_back(grid[conf_idxs[i].first]);                     //  BB    = dt.bb(:,idx); % bounding boxes
+      dconf.push_back(conf2);                                      //  Conf  = dt.conf2(:,idx); % conservative confidences
       a++;
     }
 }
-//  idx = dt.conf1 > tld.model.thr_nn; % get all indexes that made it through the nearest neighbour
-//  BB    = dt.bb(:,idx); % bounding boxes
-//  Conf  = dt.conf2(:,idx); % conservative confidences
-//  tld.dt{I} = dt; % save the whole detection structure
+                                                                   //  tld.dt{I} = dt; % save the whole detection structure
   if (a>0){
       printf("Found %d NN matches\n",a);
     detected=true;
@@ -428,36 +444,38 @@ void TLD::learn(const Mat& img){
 //  % Check consistency -------------------------------------------------------
   Scalar mean, stdev;
   Mat pattern;
-  getPattern(img(lastbb,),pattern,mean,stdev);     //  pPatt  = tldGetPattern(img,bb,tld.model.patchsize); % get current patch
+  getPattern(img(lastbox),pattern,mean,stdev);     //  pPatt  = tldGetPattern(img,bb,tld.model.patchsize); % get current patch
   vector<int> isin;
   float dummy, conf;
   classifier.NNConf(pattern,isin,conf,dummy);      //  [pConf1,dummy9,pIsin] = tldNN(pPatt,tld); % measure similarity to model
 
-if (conf<0.5) {                                    //  if pConf1 < 0.5,
-    printf("Fast change..not training\n");         //disp('Fast change.');
-                                                   //FIXME: tld.valid(I) = 0;
-    return;                                        //return;
+if (conf<0.5) {                                    //if pConf1 < 0.5,
+    printf("Fast change..not training\n");         //  disp('Fast change.');
+    lastvalid =0;                                  //  tld.valid(I) = 0;
+    return;                                        //  return;
 }                                                  //end % too fast change of appearance
-if (pow(stdev.val[0]),2)>var){                     //  if var(pPatt) < tld.var,
-      printf("Low variance..not training\n");      //disp('Low variance.');
-                                                   // tld.valid(I) = 0;
-      return;                                      //return;
+if (pow(stdev.val[0],2)>var){                      //if var(pPatt) < tld.var,
+      printf("Low variance..not training\n");      //  disp('Low variance.');
+      lastvalid=0;                                 //  tld.valid(I) = 0;
+      return;                                      //  return;
 }                                                  //end % too low variance of the patch
-if(insin[2]==1){                                   //  if pIsin(3) == 1  return;
-    printf("Patch in negative data..not traing");  // disp('In negative data.');
-                                                   //tld.valid(I) = 0;
-    return;                                        //return;
+if(isin[2]==1){                                    //if pIsin(3) == 1  return;
+    printf("Patch in negative data..not traing");  //  disp('In negative data.');
+    lastvalid=0;                                   //  tld.valid(I) = 0;
+    return;                                        //  return;
 }                                                  //end % patch is in negative data
 //  % Update ------------------------------------------------------------------
-//  % generate positive data
+                                                   //  % generate positive data
 for (int i=0;i<grid.size();i++){                   //  overlap  = bb_overlap(bb,tld.grid); % measure overlap of the current bounding box with the bounding boxes on the grid
     grid[i].overlap = bbOverlap(lastbox,grid[i]);
 }
 good_boxes.clear();
 bad_boxes.clear();
-generatePositiveData(img,patchGenerator);//  [pX,pEx] = tldGeneratePositiveData(tld,overlap,img,tld.p_par_update); % generate positive examples from all bounding boxes that are highly overlappipng with current bounding box
-//  pY       = ones(1,size(pX,2)); % labels of the positive patches
-//  % generate negative data
+getOverlappingBoxes(lastbox,num_closest_update);
+generatePositiveData(img,num_warps_update);        //  [pX,pEx] = tldGeneratePositiveData(tld,overlap,img,tld.p_par_update); % generate positive examples from all bounding boxes that are highly overlappipng with current bounding box
+                                                   //  pY       = ones(1,size(pX,2)); % labels of the positive patches
+                                                   //  % generate negative data
+
 //  idx      = overlap < tld.n_par.overlap & tld.tmp.conf >= 1; % get indexes of negative bounding boxes on the grid (bounding boxes on the grid that are far from current bounding box and which confidence was larger than 0)
 //  overlap  = bb_overlap(bb,tld.dt{I}.bb); % measure overlap of the current bounding box with detections
 //  nEx      = tld.dt{I}.patch(:,overlap < tld.n_par.overlap); % get negative patches that are far from current bounding box
@@ -536,16 +554,17 @@ void TLD::getOverlappingBoxes(const cv::Rect& box1,int num_closest){
     std::nth_element(good_boxes.begin(),good_boxes.begin()+num_closest,good_boxes.end(),bbcomparator);
     good_boxes.resize(num_closest);
   }
+  getBBHull();
 }
 
-void TLD::getBBHull(const vector<BoundingBox>& boxes,BoundingBox& bbhull){
+void TLD::getBBHull(){
   int x1=INT_MAX, x2=0;
   int y1=INT_MAX, y2=0;
-  for (int i=0;i<boxes.size();i++){
-      x1=min(boxes[i].x,x1);
-      y1=min(boxes[i].y,y1);
-      x2=max(boxes[i].x+boxes[i].width,x2);
-      y2=max(boxes[i].y+boxes[i].height,y2);
+  for (int i=0;i<good_boxes.size();i++){
+      x1=min(good_boxes[i].x,x1);
+      y1=min(good_boxes[i].y,y1);
+      x2=max(good_boxes[i].x+good_boxes[i].width,x2);
+      y2=max(good_boxes[i].y+good_boxes[i].height,y2);
   }
   bbhull.x = x1;
   bbhull.y = y1;
@@ -562,175 +581,6 @@ void TLD::bbPoints(vector<cv::Point2f>& points,const BoundingBox& bb,int pts,int
       }
   }
 }
-
-#define ISNAN(a) (a != a)
-template<class TEMPL>
-void linkage(
-    TEMPL out[],      /* Array  of left hand side (output) arguments */
-    const TEMPL in[],/* Array  of right hand side (input) arguments */
-    int num
-)
-{
-static TEMPL  inf;
-int       m,m2,m2m3,m2m1,n,i,j,bn,bc,bp,p1,p2,q,q1,q2,h,k,l,g;
-int       nk,nl,ng,nkpnl,sT,N;
-int       *obp,*scl,*K,*L;
-TEMPL         *y,*yi,*s,*b1,*b2,*T;
-TEMPL         t1,t2,t3,rnk,rnl;
-int           no_squared_input = true;
-     no_squared_input = true;
-
-    /* get the dimensions of inputs */
-    n  = num;                /* number of pairwise distances --> n */
-    m = (int) ceil(sqrt(2*(double)n));   /* size of distance matrix --> m = (1 + sqrt(1+8*n))/2 */
-
-    /*  create a pointer to the input pairwise distances */
-    yi = (TEMPL *)in;
-
-    /* set space to copy the input */
-    y =  (TEMPL *) malloc(n * sizeof(TEMPL));
-
-    /* copy input and compute Y^2 if necessary.  lots of books use 0.5*Y^2
-     * for ward's, but the 1/2 makes no difference */
-    if (no_squared_input) memcpy(y,yi,n * sizeof(TEMPL));
-    else /* then it is ward's, centroid, or median */
-        for (i=0; i<n; i++) y[i] = yi[i] * yi[i];
-/* calculate some other constants */
-bn   = m-1;                        /* number of branches     --> bn */
-m2   = m * 2;                      /* 2*m */
-m2m3 = m2 - 3;                     /* 2*m - 3 */
-m2m1 = m2 - 1;                     /* 2*m - 1 */
-
-inf  = (TEMPL) FLT_MAX;     /* inf */
-
-/*  allocate space for the output matrix  */
-out = (TEMPL *)malloc(bn*3*sizeof(TEMPL));
-/*  create pointers to the output matrix */
-b1 = out;   /*leftmost  column */
-b2 = b1 + bn;                        /*center    column */
-s  = b2 + bn;                        /*rightmost column */
-if      (m>1023) N = 512;
-else if (m>511)  N = 256;
-else if (m>255)  N = 128;
-else if (m>127)  N = 64;
-else if (m>63)   N = 32;
-else             N = 16;
-N = N >> 2;
-/* set space for the vector of minimums (and indexes) */
-T = (TEMPL *) malloc(N * sizeof(TEMPL));
-K = (int*) malloc(N * sizeof(int));
-L = (int*) malloc(N * sizeof(int));
-/* set space for the obs-branch pointers  */
-obp = (int*) malloc(m * sizeof(int));
-/* only initialize obp */
-for (i=0; i<m; i++) obp[i]=i;
-
-sT = 0;  t3 = inf;
-
-for (bc=0,bp=m;bc<bn;bc++,bp++){
-    for (h=0;((T[h]<t3) && (h<sT));h++);
-    sT = h; t3 = inf;
-    if (sT==0) {
-        for (h=0; h<N; T[h++]=inf);
-        p1 = ((m2m1 - bc) * bc) >> 1; /* finds where the matrix starts */
-        for (j=bc; j<m; j++) {
-            for (i=j+1; i<m; i++) {
-                t2 = y[p1++];
-                 if (t2 <= T[N-1]) {
-                    for (h=N-1; ((t2 <= T[h-1]) && (h>0)); h--) {
-                        T[h]=T[h-1];
-                        K[h]=K[h-1];
-                        L[h]=L[h-1];
-                    } /* for (h=N-1 ... */
-                    T[h] = t2;
-                    K[h] = j;
-                    L[h] = i;
-                    sT++;
-               } /* if (t2<T[N-1]) */
-               /*}*/
-            } /*  for (i= ... */
-        } /* for (j= ... */
-        if (sT>N) sT=N;
-    } /* if (sT<1) */
-    if (sT==0) break;
-    k=K[0]; l=L[0]; t1=T[0];
-    for (h=0,i=1;i<sT;i++) {
-        if ( (k!=K[i]) && (l!=L[i]) && (l!=K[i]) && (k!=L[i]) ) {
-            T[h]=T[i];
-            K[h]=K[i];
-            L[h]=L[i];
-            if (bc==K[h]) {
-                if (k>L[h]) {
-                    K[h] = L[h];
-                    L[h] = k;
-                } /* if (k> ...*/
-                else K[h] = k;
-            } /* if (bc== ... */
-            h++;
-        } /* if k!= ... */
-    } /* for (h=0 ... */
-    sT=h; /* the new size of "T" after the shifting */
-    if (obp[k]<obp[l]) {
-        *b1++ = (TEMPL) (obp[k]+1); /* +1 since Matlab ptrs start at 1 */
-        *b2++ = (TEMPL) (obp[l]+1);
-    } else {
-        *b1++ = (TEMPL) (obp[l]+1);
-        *b2++ = (TEMPL) (obp[k]+1);
-    }
-    *s++ = (no_squared_input) ? t1 : sqrt(t1);
-    obp[k] = obp[bc];        /* new cluster branch ptr */
-    obp[l] = bp;             /* leftmost column cluster branch ptr */
-    q1 = bn - k - 1;
-    q2 = bn - l - 1;
-    p1 = (((m2m1 - bc) * bc) >> 1) + k - bc - 1;
-    p2 = p1 - k + l;
-             for (q=bn-bc-1; q>q1; q--) {
-                 if (y[p1] < y[p2]) y[p2] = y[p1];
-                 else if (ISNAN(y[p2])) y[p2] = y[p1];
-                 if (y[p2] < t3)    t3 = y[p2];
-                 p1 = p1 + q;
-                 p2 = p2 + q;
-             }
-             p1++;
-             p2 = p2 + q;
-             for (q=q1-1;  q>q2; q--) {
-                 if (y[p1] < y[p2]) y[p2] = y[p1];
-                 else if (ISNAN(y[p2])) y[p2] = y[p1];
-                 if (y[p2] < t3)    t3 = y[p2];
-                 p1++;
-                 p2 = p2 + q;
-             }
-             p1++;
-             p2++;
-             for (q=q2+1; q>0; q--) {
-                 if (y[p1] < y[p2]) y[p2] = y[p1];
-                 else if (ISNAN(y[p2])) y[p2] = y[p1];
-                 if (y[p2] < t3)    t3 = y[p2];
-                 p1++;
-                 p2++;
-             }
-    if (k!=bc) {
-        q1 = bn - k;
-        p1 = (((m2m3 - bc) * bc) >> 1) + k - 1;
-        p2 = p1 - k + bc + 1;
-
-        for (q=bn-bc-1; q>q1; q--) {
-            p1 = p1 + q;
-            y[p1] = y[p2++];
-        }
-        p1 = p1 + q + 1;
-        p2++;
-        for ( ; q>0; q--) {
-            y[p1++] = y[p2++];
-        }
-    } /*if (k!=bc) */
-} /*for (bc=0,bp=m;bc<bn;bc++,bp++) */
-free(y);                               /* ... or the copy of them */
-free(obp);
-free(L);
-free(K);
-free(T);
-}
 bool bbcomp(const BoundingBox& b1,const BoundingBox& b2){
   TLD t;
     if (t.bbOverlap(b1,b2)<0.5)
@@ -742,41 +592,23 @@ bool bbcomp(const BoundingBox& b1,const BoundingBox& b2){
 void TLD::clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,vector<BoundingBox>& cbb,vector<float>& cconf){
   int numbb =dbb.size();
   vector<int> T;
-
-  if (numbb==1){
-      cbb=vector<BoundingBox>(1,dbb[0]);
-      cconf=vector<float>(1,dconf[0]);
-      return;
-  }
   float space_thr = 0.5;
-  if (numbb==2){
+
+  switch (numbb){
+  case 1:
+    cbb=vector<BoundingBox>(1,dbb[0]);
+    cconf=vector<float>(1,dconf[0]);
+    return;
+    break;
+  case 2:
     T =vector<int>(2,0);
     if (1-bbOverlap(dbb[0],dbb[1])>space_thr)
       T[1]=1;
-  }
-  if (numbb>2){
-      /*
-      const int dist_size = numbb*(numbb-1)/2;
-      float distance[dist_size];
-      float *Z, *dptr=distance;
-      //get distance
-      for (int i = 0; i < numbb; i++) {
-          for (int j = i+1; j < numbb; j++) {
-              *dptr++=(1-bbOverlap(dbb[i],dbb[j]));
-          }
-      }
-
-      //Get the cluster tree
-        linkage<float>(Z,distance,dist_size);
-      int m = (int)dbb.size()-1;
-      for (int i=0;i<m;i++){
-          printf("%f %f %f\n",Z[3*i],Z[3*i+1],Z[3*i+2]);
-      }
-      */
-      T = vector<int>(numbb);
-      partition(dbb,T,(*bbcomp));
-      //Assign the cluster indexes
-
+    break;
+  default:
+    T = vector<int>(numbb);
+    partition(dbb,T,(*bbcomp));
+    break;
   }
   cconf.reserve(T.size());
   cbb.reserve(T.size());

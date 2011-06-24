@@ -122,7 +122,7 @@ idx         = randperm(size(tld.X{1},2));
 tld.X{1}    = tld.X{1}(:,idx);
 tld.Y{1}    = tld.Y{1}(:,idx);
 
-% Train using training set ------------------------------------------------
+% Train using training set------------------------------------------------
 
 % Fern
 bootstrap = 2;
@@ -136,7 +136,7 @@ tld.nex = [];
 tld = tldTrainNN(pEx,nEx1,tld);
 tld.model.num_init = size(tld.pex,2);
 
-% Estimate thresholds on validation set  ----------------------------------
+% Estimate thresholds on validation set----------------------------------
 
 % Fern
 conf_fern = fern(3,nX2);

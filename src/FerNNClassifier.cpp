@@ -41,8 +41,9 @@ void FerNNClassifier::prepare(const vector<Size>& scales){
       }
 
   }
-  //Negative Threshold
+  //Thresholds
   thrN = 0.5*nstructs;
+
   //Initialize Posteriors
   for (int i = 0; i<nstructs; i++) {
       posteriors.push_back(vector<float>(pow(2.0,structSize), 0));
@@ -80,15 +81,13 @@ float FerNNClassifier::measure_forest(vector<int> fern) {
   return votes;
 }
 
-void FerNNClassifier::update(vector<int> fern, int C, int N) {
+void FerNNClassifier::update(const vector<int>& fern, int C, int N) {
   for (int i = 0; i < nstructs; i++) {
-      int idx = fern[i];
-      //printf("[%d] C:%d ",idx,C);
-      (C==1) ? pCounter[i][idx] += N : nCounter[i][idx] += N;
-      if (pCounter[i][idx]==0) {
-          posteriors[i][idx] = 0;
+      (C==1) ? pCounter[i][fern[i]] += N : nCounter[i][fern[i]] += N;
+      if (pCounter[i][fern[i]]==0) {
+          posteriors[i][fern[i]] = 0;
       } else {
-          posteriors[i][idx] = ((float) (pCounter[i][idx])) / (pCounter[i][idx] + nCounter[i][idx]);
+          posteriors[i][fern[i]] = ((float)(pCounter[i][fern[i]]))/(pCounter[i][fern[i]] + nCounter[i][fern[i]]);
       }
   }
 }
@@ -101,31 +100,21 @@ void FerNNClassifier::trainF(const vector<pair<vector<int>,int> >& ferns,int res
   //  double *Y     = mxGetPr(prhs[2]); ->ferns[i].second
   //  double thrP   = *mxGetPr(prhs[3]) * nTREES; ->threshold*nstructs
   //  int bootstrap = (int) *mxGetPr(prhs[4]); ->resample
-  thrP = thr_fern*nstructs;
-  // int step = numX / 10;
-  for (int j = 0; j < resample; j++) { // for (int j = 0; j < bootstrap; j++) {
-      for (int i = 0; i < ferns.size(); i++){ //for (int i = 0; i < step; i++) {
-          //for (int k = 0; k < 10; k++) {
-          // int I = k*step + i;//box index
-          //double *x = X+nTREES*I; //tree index
-          if(ferns[i].second==1){     //if (Y[I] == 1) {
-              if(measure_forest(ferns[i].first)<=thrP)//if (measure_forest(x) <= thrP)
-                update(ferns[i].first,1,1);//    update(x,1,1);
-          }else{
-              if (measure_forest(ferns[i].first) >= thrN)// if (measure_forest(x) >= thrN)
-                update(ferns[i].first,0,1);//      update(x,0,1);
+  thrP = thr_fern*nstructs;                                                          // int step = numX / 10;
+  for (int j = 0; j < resample; j++) {                      // for (int j = 0; j < bootstrap; j++) {
+      for (int i = 0; i < ferns.size(); i++){               //   for (int i = 0; i < step; i++) {
+                                                            //     for (int k = 0; k < 10; k++) {
+                                                            //       int I = k*step + i;//box index
+                                                            //       double *x = X+nTREES*I; //tree index
+          if(ferns[i].second==1){                           //       if (Y[I] == 1) {
+              if(measure_forest(ferns[i].first)<=thrP)      //         if (measure_forest(x) <= thrP)
+                update(ferns[i].first,1,1);                 //             update(x,1,1);
+          }else{                                            //        }else{
+              if (measure_forest(ferns[i].first) >= thrN)   //         if (measure_forest(x) >= thrN)
+                update(ferns[i].first,0,1);                 //             update(x,0,1);
           }
       }
   }
-  /*#IF DEBUG
-  for (int j=0;j<posteriors.size();j++){
-      printf("posterior[%d]=\n",j);
-      for (int i = 0; i<posteriors[j].size();i++){
-          if (pCounter[j][i]>0 || nCounter[j][i]>0)
-            printf("posterior: %f positive:%d      negative:%d\n",posteriors[j][i],pCounter[j][i],nCounter[j][i]);
-      }
-  }
-  */
 }
 
 void FerNNClassifier::trainNN(const vector<cv::Mat>& nn_examples){
@@ -144,19 +133,19 @@ void FerNNClassifier::trainNN(const vector<cv::Mat>& nn_examples){
   vector<int> y(nn_examples.size(),0);
   y[0]=1;
   vector<int> isin;
-  for (int i=0;i<nn_examples.size();i++){  //     for i = 1:length(y)
-      NNConf(nn_examples[i],isin,conf,dummy);   //[conf1,dummy5,isin] = tldNN(x(:,i),tld); % measure Relative similarity
-      if (y[i]==1 && conf<=thr_nn){     //  if y(i) == 1 && conf1 <= tld.model.thr_nn % 0.65
-          if (isin[1]<0){       //  if isnan(isin(2))
-              pEx = vector<Mat>(1,nn_examples[i]); //  tld.pex = x(:,i);
-              continue; //  continue;
-          }              //  end
-          pEx.insert(pEx.begin()+isin[1],nn_examples[i]); //  tld.pex = [tld.pex(:,1:isin(2)) x(:,i) tld.pex(:,isin(2)+1:end)]; % add to model
-      } //  end
-      if(y[i]==0 && conf>0.5) //  if y(i) == 0 && conf1 > 0.5
-        nEx.push_back(nn_examples[i]);  //  tld.nex = [tld.nex x(:,i)];
-  }//  end
-}//  end
+  for (int i=0;i<nn_examples.size();i++){                          //  for i = 1:length(y)
+      NNConf(nn_examples[i],isin,conf,dummy);                      //    [conf1,dummy5,isin] = tldNN(x(:,i),tld); % measure Relative similarity
+      if (y[i]==1 && conf<=thr_nn){                                //    if y(i) == 1 && conf1 <= tld.model.thr_nn % 0.65
+          if (isin[1]<0){                                          //      if isnan(isin(2))
+              pEx = vector<Mat>(1,nn_examples[i]);                 //        tld.pex = x(:,i);
+              continue;                                            //        continue;
+          }                                                        //      end
+          pEx.insert(pEx.begin()+isin[1],nn_examples[i]);          //      tld.pex = [tld.pex(:,1:isin(2)) x(:,i) tld.pex(:,isin(2)+1:end)]; % add to model
+      }                                                            //    end
+      if(y[i]==0 && conf>0.5)                                      //  if y(i) == 0 && conf1 > 0.5
+        nEx.push_back(nn_examples[i]);                             //    tld.nex = [tld.nex x(:,i)];
+  }                                                                //  end
+}                                                                  //  end
 
 
 void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf,float& csconf){
@@ -177,10 +166,10 @@ void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf
       return;
   }
   //for i = 1:size(x,2) % fore every patch that is tested
-  Mat ncc;
+  Mat ncc(1,1,CV_32F);
   float nccP,csmaxP,maxP=0;
   bool anyP=false;
-  int maxPidx,validatedPart = pEx.size()*valid;
+  int maxPidx,validatedPart = ceil(pEx.size()*valid);
   float nccN, maxN=0;
   bool anyN=false;
   for (int i=0;i<pEx.size();i++){
@@ -215,6 +204,7 @@ void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf
   dP = 1 - csmaxP;
   csconf =(float)dN / (dN + dP);
 }
+
 void FerNNClassifier::evaluateTh(const vector<pair<vector<int>,int> >& nXT,const vector<cv::Mat>& nExT){
 float fconf;
   for (int i=0;i<nXT.size();i++){
