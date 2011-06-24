@@ -89,6 +89,7 @@ private:
   float lastconf;
 //Current frame data
   //Tracker data
+  bool tracked;
   BoundingBox tbb;
   bool tvalid;
   float tconf;

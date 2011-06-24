@@ -222,7 +222,7 @@ void TLD::processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<Point2f>& 
     track(img1,img2,points);
   //Detect
   detect(img2);
-  if (tvalid){                                //    if TR % if tracker is defined
+  if (tracked){                                //    if TR % if tracker is defined
       bbnext=tbb;                             //        tld.bb(:,I)  = tBB;
       lastconf=tconf;                         //        tld.conf(I)  = tConf;
       lastvalid=tvalid;                       //        tld.valid(I) = tValid;
@@ -281,11 +281,15 @@ void TLD::processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<Point2f>& 
               lastvalid=0;                    //                tld.valid(I) = 0;
               printf("Confident detection..reinitializing tracker\n");
           lastboxfound = true;
-          }                                   //            end
+          } else
+            printf("No confident cluster were detected");//            end
       }
                                               //        end
   }                                           //    end
   lastbox=bbnext;
+  if (lastvalid)
+    learn(img2);
+
 }
 
 
@@ -300,10 +304,11 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points2){
   bbPoints(points1,lastbox,10,5);
   if (points1.size()<=0){
       tvalid=false;
+      tracked=false;
       return;
   }
   //Frame-to-frame tracking with forward-backward error cheking
-  bool tracked=false;
+  tracked=false;
   if (points1.size()>0)
     tracked = tracker.trackf2f(img1,img2,points1,points2);
   if (tracked){
@@ -382,9 +387,10 @@ void TLD::detect(const cv::Mat& frame){
       dt.bb.resize(100);
   }
   if (detections==0){
-      detected=false;
-      return;
-  }
+        detected=false;
+        return;
+      }
+
   printf("Fern detector made %d detections ",detections);
   t=(double)getTickCount()-t;
   printf("in %gms\n", t*1000/getTickFrequency());
@@ -411,15 +417,16 @@ void TLD::detect(const cv::Mat& frame){
                                                                             //      dt.conf2(i)   = conf2;
                                                                             //      dt.isin(:,i)  = isin;
                                                                             //      dt.patch(:,i) = ex;
-      if (dt.conf1[i]>nn_th){                                                     //  idx = dt.conf1 > tld.model.thr_nn; % get all indexes that made it through the nearest neighbour
-          dbb.push_back(grid[idx]);                                //  BB    = dt.bb(:,idx); % bounding boxes
-          dconf.push_back(dt.conf2[i]);                                           //  Conf  = dt.conf2(:,idx); % conservative confidences
+      if (dt.conf1[i]>nn_th){                                               //  idx = dt.conf1 > tld.model.thr_nn; % get all indexes that made it through the nearest neighbour
+          dbb.push_back(grid[idx]);                                         //  BB    = dt.bb(:,idx); % bounding boxes
+          dconf.push_back(dt.conf2[i]);                                     //  Conf  = dt.conf2(:,idx); % conservative confidences
       }
   }                                                                         //  end
                                                                             //  tld.dt{I} = dt; % save the whole detection structure
   if (dbb.size()>0){
       printf("Found %d NN matches\n",(int)dbb.size());
       detected=true;
+      imshow("Detection",dbb[0]);
   }
   else{
       printf("No NN matches found.\n");
@@ -458,7 +465,7 @@ if(isin[2]==1){                                    //if pIsin(3) == 1  return;
     return;                                        //  return;
 }                                                  //end % patch is in negative data
 //  % Update ------------------------------------------------------------------
-                                                   //  % generate positive data
+printf("Training!..\n");                                                   //  % generate positive data
 for (int i=0;i<grid.size();i++){                   //  overlap  = bb_overlap(bb,tld.grid); % measure overlap of the current bounding box with the bounding boxes on the grid
     grid[i].overlap = bbOverlap(lastbox,grid[i]);
 }
