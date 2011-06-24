@@ -5,11 +5,11 @@ void drawBox(Mat& image, CvRect box, Scalar color, int thick){
   rectangle( image, cvPoint(box.x, box.y), cvPoint(box.x+box.width,box.y+box.height),color, thick);
 } 
 
-void drawPoints(Mat& image, vector<Point2f> points){
+void drawPoints(Mat& image, vector<Point2f> points,Scalar color){
   for( vector<Point2f>::const_iterator i = points.begin(), ie = points.end(); i != ie; ++i )
       {
       Point center( cvRound(i->x ), cvRound(i->y));
-      circle(image,*i,2,Scalar::all(255),1);
+      circle(image,*i,2,color,1);
       }
 }
 
