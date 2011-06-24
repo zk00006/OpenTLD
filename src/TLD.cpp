@@ -181,7 +181,6 @@ void TLD::generateNegativeData(const Mat& frame){
       a++;
   }
   printf("Negative examples generated: %d \n",a);
-  fflush(stdout);
   //random_shuffle(bad_boxes.begin(),bad_boxes.begin()+bad_patches);//Randomly selects 'bad_patches' and get the patterns for NN;
   Mat negExample;
   Scalar dum1, dum2;
@@ -264,6 +263,8 @@ void TLD::processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<Point2f>& 
                   bbnext.height =  (10*tbb.height+ch)/(10+confident_detections);
                   printf("Weighting %d close cluster with tracker..\n",confident_detections);
               }
+              else
+                printf("No confident cluster was foud\n");
           }                                                             //     end
       }                                                                 //    end
   }
@@ -364,7 +365,7 @@ void TLD::detect(const cv::Mat& frame){
   float fern_th = classifier.getFernTh();
   float conf;
   vector <int> ferns(10);
-  for (int i=0;i<grid.size();i+=bbox_step){//FIXME: BottleNeck
+  for (int i=0;i<grid.size();i++){//FIXME: BottleNeck
       if (getVar(grid[i],iisum,iisqsum)>var){
           classifier.getFeatures(img,grid[i],grid[i].sidx,ferns);
           conf = classifier.measure_forest(ferns);
