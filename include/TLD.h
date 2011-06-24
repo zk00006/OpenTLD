@@ -119,9 +119,9 @@ public:
   void init(const cv::Mat& frame1,const cv::Rect &box);
   void generatePositiveData(const cv::Mat& frame, int num_warps);
   void generateNegativeData(const cv::Mat& frame);
-  void processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<cv::Point2f>& points,
+  void processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<cv::Point2f>& points1,vector<cv::Point2f>& points2,
       BoundingBox& bbnext,bool& lastboxfound);
-  void track(const cv::Mat& img1, const cv::Mat& img2,vector<cv::Point2f>& points2);
+  void track(const cv::Mat& img1, const cv::Mat& img2,vector<cv::Point2f>& points1,vector<cv::Point2f>& points2);
   void detect(const cv::Mat& frame);
   void clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,vector<BoundingBox>& cbb,vector<float>& cconf);
   void evaluate();

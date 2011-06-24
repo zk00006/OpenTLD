@@ -36,13 +36,27 @@ void mouseHandler(int event, int x, int y, int flags, void *param){
 }
 
 int main(int argc, char * argv[]){
-  if(argc<2){
-    printf("use:\n     %s /path/parameters.yml\n",argv[0]);
-    return 0;
-  }
-  //Init camera
+
   VideoCapture capture;
-  capture.open(0);
+  string video;
+  switch (argc){
+  case 4:
+    if (strcmp(argv[2],"-s")==0){
+        video = string(argv[3]);
+        capture.open(video);
+    }
+    break;
+  case 2:
+    capture.open(0);
+    break;
+  default:
+    printf("use:\n     %s /path/parameters.yml [-s source]\n",argv[0]);
+    return 0;
+    break;
+  }
+
+  //Init camera
+
   if (!capture.isOpened())
   {
 	cout << "capture device failed to open!" << endl;
@@ -82,23 +96,27 @@ gotBB=false;
   ///Run-time
   Mat current_gray;
   BoundingBox pbox;
-  vector<Point2f> pts;
+  vector<Point2f> pts1;
+  vector<Point2f> pts2;
   bool status=true;
   while(true){
     //get frame
     capture >> frame;
     cvtColor(frame, current_gray, CV_RGB2GRAY);
     //Process Frame
-    tld.processFrame(last_gray,current_gray,pts,pbox,status);
+    tld.processFrame(last_gray,current_gray,pts1,pts2,pbox,status);
     //Draw Points
     if (status){
-      drawPoints(frame,pts);
+      drawPoints(frame,pts1);
+      drawPoints(frame,pts2,Scalar(0,255,0));
       drawBox(frame,pbox);
     }
     //Display
     imshow("TLD", frame);
     //swap points and images
     swap(last_gray,current_gray);
+    pts1.clear();
+    pts2.clear();
     if (cvWaitKey(33) == 'q')
       break;
   }
