@@ -1,0 +1,26 @@
+%YAML:1.0
+Parameters:
+   min_win: 24
+   patch_size: 15
+   ncc_thesame: 0.95
+   valid: 0.5
+   num_trees: 10
+   num_features: 13
+   thr_fern: 0.5
+   thr_nn: 0.65
+   thr_nn_valid: 0.7
+   num_closest_init: 10
+   num_warps_init: 20
+   noise_init: 5
+   angle_init: 20
+   shift_init: 0.02
+   scale_init: 0.02
+   num_closest_update: 10
+   num_warps_update: 10
+   noise_update: 5
+   angle_update: 10
+   shift_update: 0.02
+   scale_update: 0.02
+   overlap: 0.2
+   num_patches: 100
+
