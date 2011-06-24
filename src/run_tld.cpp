@@ -36,7 +36,7 @@ void mouseHandler(int event, int x, int y, int flags, void *param){
 }
 
 int main(int argc, char * argv[]){
-
+bool fromfile=false;
   VideoCapture capture;
   string video;
   switch (argc){
@@ -44,6 +44,7 @@ int main(int argc, char * argv[]){
     if (strcmp(argv[2],"-s")==0){
         video = string(argv[3]);
         capture.open(video);
+        fromfile = true;
     }
     break;
   case 2:
@@ -73,15 +74,22 @@ int main(int argc, char * argv[]){
   FileStorage fs(argv[1], FileStorage::READ);
   tld.read(fs.getFirstTopLevelNode());
 
+  capture >> frame;
+  Mat first;
+  frame.copyTo(first);
   ///Initialization
 GETBOUNDINGBOX:
 gotBB=false;
   while(!gotBB)
   {
-    capture >> frame;
+    if (!fromfile)
+      capture >> frame;
+    else
+      first.copyTo(frame);
     cvtColor(frame, last_gray, CV_RGB2GRAY);
     drawBox(frame,box);
     imshow("TLD", frame);
+
     if (cvWaitKey(33) == 'q')
 	    return 0;
   }
