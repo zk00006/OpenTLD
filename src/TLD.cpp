@@ -131,11 +131,13 @@ void TLD::generatePositiveData(const Mat& frame, int num_warps){
   pX.clear();
   if (pX.capacity()<num_warps*good_boxes.size())
     pX.reserve(num_warps*good_boxes.size());
+  int idx;
   for (int i=0;i<num_warps;i++){
      if (i>0)
        generator(frame,pt,warped,bbhull.size(),rng);
      for (int b=0;b<good_boxes.size();b++){
-         classifier.getFeatures(img,good_boxes[b],good_boxes[b].sidx,fern);
+         idx=good_boxes[b];
+         classifier.getFeatures(img,grid[idx],grid[idx].sidx,fern);
          pX.push_back(make_pair(fern,1));
      }
   }
@@ -157,7 +159,8 @@ void TLD::generateNegativeData(const Mat& frame){
  * - Negative fern features (nX)
  * - Negative NN examples (nEx)
  */
-  vector<int> idx = index_shuffle(0,bad_boxes.size());//creates a random indexes from 0 to bad_boxes.size()
+  random_shuffle(bad_boxes.begin(),bad_boxes.end());//Random shuffle bad_boxes indexes
+  int idx;
   //Get Fern Features of the boxes with big variance (calculated using integral images)
   integral(frame,iisum,iisqsum);
   int a=0;
@@ -166,19 +169,21 @@ void TLD::generateNegativeData(const Mat& frame){
   vector<int> fern(classifier.getNumStructs());
   nX.reserve(num);
   for (int j=0;j<num;j++){
-          if (getVar(bad_boxes[idx[j]],iisum,iisqsum)<var/2)
+      idx = bad_boxes[j];
+          if (getVar(grid[idx],iisum,iisqsum)<var/2)
             continue;
-      classifier.getFeatures(frame,bad_boxes[idx[j]],bad_boxes[idx[j]].sidx,fern);
+      classifier.getFeatures(frame,grid[idx],grid[idx].sidx,fern);
       nX.push_back(make_pair(fern,0));
       a++;
   }
   printf("Negative examples generated: %d \n",a);
-  //Randomly selects 'bad_patches' and get the patterns for NN;
+  random_shuffle(bad_boxes.begin(),bad_boxes.begin()+bad_patches);//Randomly selects 'bad_patches' and get the patterns for NN;
   Mat negExample;
   Scalar dum1, dum2;
   nEx.reserve(bad_patches);
   for (int i=0;i<bad_patches;i++){
-      getPattern(frame(bad_boxes[idx[i]]),negExample,dum1,dum2);
+      idx=bad_boxes[i];
+      getPattern(frame(grid[idx]),negExample,dum1,dum2);
       nEx.push_back(negExample);
   }
 }
@@ -531,9 +536,6 @@ float TLD::bbOverlap(const BoundingBox& box1,const BoundingBox& box2){
   float area2 = box2.width*box2.height;
   return intersection / (area1 + area2 - intersection);
 }
-bool bbcomparator ( const BoundingBox& bb1,const BoundingBox& bb2){
-  return bb1.overlap > bb2.overlap;
-}
 
 void TLD::getOverlappingBoxes(const cv::Rect& box1,int num_closest){
   float max_overlap = 0;
@@ -543,15 +545,15 @@ void TLD::getOverlappingBoxes(const cv::Rect& box1,int num_closest){
           best_box = grid[i];
       }
       if (grid[i].overlap > 0.6){
-          good_boxes.push_back(grid[i]);
+          good_boxes.push_back(i);
       }
       else if (grid[i].overlap < bad_overlap){
-          bad_boxes.push_back(grid[i]);
+          bad_boxes.push_back(i);
       }
   }
   //Get the best num_closest (10) boxes and puts them in good_boxes
   if (good_boxes.size()>num_closest){
-    std::nth_element(good_boxes.begin(),good_boxes.begin()+num_closest,good_boxes.end(),bbcomparator);
+    std::nth_element(good_boxes.begin(),good_boxes.begin()+num_closest,good_boxes.end(),Comparator(grid));
     good_boxes.resize(num_closest);
   }
   getBBHull();
@@ -560,11 +562,13 @@ void TLD::getOverlappingBoxes(const cv::Rect& box1,int num_closest){
 void TLD::getBBHull(){
   int x1=INT_MAX, x2=0;
   int y1=INT_MAX, y2=0;
+  int idx;
   for (int i=0;i<good_boxes.size();i++){
-      x1=min(good_boxes[i].x,x1);
-      y1=min(good_boxes[i].y,y1);
-      x2=max(good_boxes[i].x+good_boxes[i].width,x2);
-      y2=max(good_boxes[i].y+good_boxes[i].height,y2);
+      idx= good_boxes[i];
+      x1=min(grid[idx].x,x1);
+      y1=min(grid[idx].y,y1);
+      x2=max(grid[idx].x+grid[idx].width,x2);
+      y2=max(grid[idx].y+grid[idx].height,y2);
   }
   bbhull.x = x1;
   bbhull.y = y1;

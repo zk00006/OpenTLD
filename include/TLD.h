@@ -17,6 +17,14 @@ public:
   int label;
 };
 
+struct Comparator{
+  Comparator(const vector<BoundingBox>& _grid):grid(_grid){}
+  vector<BoundingBox> grid;
+  bool operator()(int idx1,int idx2){
+    return grid[idx1].overlap > grid[idx2].overlap;
+  }
+
+};
 
 class TLD{
 private:
@@ -76,8 +84,8 @@ private:
   //Bounding Boxes
   vector<BoundingBox> grid;
   vector<cv::Size> scales;
-  vector<BoundingBox> good_boxes; //bboxes with overlap > 0.6
-  vector<BoundingBox> bad_boxes; //bboxes with overlap < 0.2
+  vector<int> good_boxes; //indexes of bboxes with overlap > 0.6
+  vector<int> bad_boxes; //indexes of bboxes with overlap < 0.2
   BoundingBox bbhull; // hull of good_boxes
   BoundingBox best_box; // maximum overlapping bbox
 
@@ -108,6 +116,7 @@ public:
       const BoundingBox& bb1,BoundingBox& bb2);
   float getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
   bool bbComp(const BoundingBox& bb1,const BoundingBox& bb2);
+ // friend Comparator;
 };
 
 
