@@ -73,6 +73,8 @@ private:
 //Integral Images
   cv::Mat iisum;
   cv::Mat iisqsum;
+  size_t step;
+  size_t esize;
   float var;
 
 //Training data
@@ -135,7 +137,7 @@ public:
   void bbPoints(vector<cv::Point2f>& points, const BoundingBox& bb,int pts,int margin);
   void bbPredict(const vector<cv::Point2f>& points1,const vector<cv::Point2f>& points2,
       const BoundingBox& bb1,BoundingBox& bb2);
-  float getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
+  double getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
   bool bbComp(const BoundingBox& bb1,const BoundingBox& bb2);
 };
 

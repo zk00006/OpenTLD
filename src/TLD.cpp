@@ -47,8 +47,8 @@ void TLD::init(const Mat& frame1,const Rect& box){
     printf("Created %d bounding boxes\n",(int)grid.size());
   ///Preparation
   //allocation
-  iisum.create(frame1.rows+1,frame1.cols+1,CV_64F);
-  iisqsum.create(frame1.rows+1,frame1.cols+1,CV_64F);
+  iisum.create(frame1.rows+1,frame1.cols+1,CV_64FC1);
+  iisqsum.create(frame1.rows+1,frame1.cols+1,CV_64FC1);
   dconf.reserve(100);
   dbb.reserve(100);
   bbox_step =7;
@@ -169,6 +169,8 @@ void TLD::generateNegativeData(const Mat& frame){
   int idx;
   //Get Fern Features of the boxes with big variance (calculated using integral images)
   integral(frame,iisum,iisqsum);
+  esize = iisum.elemSize();
+  step = iisum.step;
   int a=0;
   int num = std::min((int)bad_boxes.size(),(int)bad_patches*100); //limits the size of bad_boxes to try
   printf("negative data generation started.\n");
@@ -193,23 +195,18 @@ void TLD::generateNegativeData(const Mat& frame){
       nEx.push_back(negExample);
   }
 }
-
-float TLD::getVar(const BoundingBox& box,const Mat& sum,const Mat& sqsum){
-  /* NOTE: Optimize variance calculation?
-   * for quick initialization of small matrices and/or super-fast element access
-   * double m[3][3] = {{a, b, c}, {d, e, f}, {g, h, i}};
-   * cv::Mat M = cv::Mat(3, 3, CV_64F, m).inv();
-   */
-  /* #define ELEM(type,start,step,size,xpos,ypos) *((type*)(start+step*(ypos)+(xpos)*size))
-   * double v = ELEM(float,myMatrix.data,myMatrix.step(),myMatrix.elemSize,x,y);    // Moderately speedy access
-   * double v = ELEM(float,myMatrix.data,2560,4,x,y);                               // Even faster access
-   */
-  Point br(box.br().x+1,box.br().y+1);
-  Point bl(box.x+1,box.y+box.height+1);
-  Point tr(box.x+box.width+1,box.y+1);
-  Point tl(box.x+1,box.y+1);
-  float mean = (sum.at<double>(br)+sum.at<double>(tl)-sum.at<double>(tr)-sum.at<double>(bl))/box.area();
-  float sqmean = (sqsum.at<double>(br)+sqsum.at<double>(tl)-sqsum.at<double>(tr)-sqsum.at<double>(bl))/box.area();
+#define ELEM(type,start,step,size,xpos,ypos) *((type*)(start+step*(ypos)+(xpos)*size))
+double TLD::getVar(const BoundingBox& box,const Mat& sum,const Mat& sqsum){
+  double brs = ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
+  double bls = ELEM(double,sum.data,step,esize,box.x,box.y+box.height+1);
+  double trs = ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y);
+  double tls = ELEM(double,sum.data,step,esize,box.x,box.y);
+  double brsq = ELEM(double,sqsum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
+  double blsq = ELEM(double,sqsum.data,step,esize,box.x,box.y+box.height+1);
+  double trsq = ELEM(double,sqsum.data,step,esize,box.x+box.width+1,box.y);
+  double tlsq = ELEM(double,sqsum.data,step,esize,box.x,box.y);
+  float mean = (brs+tls-trs-bls)/box.area();
+  float sqmean = (brsq+tlsq-trsq-blsq)/box.area();
   return sqmean-mean*mean;
 }
 
@@ -316,8 +313,9 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points1,vector
       //Bounding box prediction
       bbPredict(points,points2,lastbox,tbb);
       //printf("predicted bbox %d %d %d %d\n",tbb.tl().x,tbb.tl().y,tbb.br().x,tbb.br().y);
-      if (tracker.getFB()>10 ||tbb.tl().x < 0 || tbb.tl().y<0 || tbb.br().x > img2.cols || tbb.br().y > img2.rows){
+      if (tracker.getFB()>10 ||tbb.x < 0 || tbb.y<0 || tbb.br().x > img2.cols || tbb.br().y > img2.rows){
           tvalid =false; //too unstable prediction or bounding box out of image
+          tracked = false;
           return;
       }
       //Estimate Confidence and Validity
@@ -369,6 +367,8 @@ void TLD::detect(const cv::Mat& frame){
   double t = (double)getTickCount();
   Mat img(frame.rows,frame.cols,CV_8U);
   integral(frame,iisum,iisqsum);
+  esize = iisum.elemSize();
+  step = iisum.step;
   GaussianBlur(frame,img,Size(9,9),1.5);
   int numtrees = classifier.getNumStructs();
   float fern_th = classifier.getFernTh();
