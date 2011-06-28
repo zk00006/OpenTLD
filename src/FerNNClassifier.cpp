@@ -50,15 +50,6 @@ void FerNNClassifier::prepare(const vector<Size>& scales){
       pCounter.push_back(vector<int>(pow(2.0,structSize), 0));
       nCounter.push_back(vector<int>(pow(2.0,structSize), 0));
   }
-/*
-  for (int i = 0; i<nstructs; i++) {
-      for (int j = 0; j < posteriors[i].size(); j++) {
-          posteriors[i].at(j) = 0;
-          pCounter[i].at(j) = 0;
-          nCounter[i].at(j) = 0;
-      }
-  }
-*/
 }
 
 void FerNNClassifier::getFeatures(const cv::Mat& image,const cv::Rect& box,const int& scale_idx, vector<int>& fern){
@@ -77,7 +68,6 @@ float FerNNClassifier::measure_forest(vector<int> fern) {
   for (int i = 0; i < nstructs; i++) {
       votes += posteriors[i][fern[i]];
   }
-  //printf("votes:%f",votes);
   return votes;
 }
 
@@ -135,6 +125,7 @@ void FerNNClassifier::trainNN(const vector<cv::Mat>& nn_examples){
   vector<int> isin;
   for (int i=0;i<nn_examples.size();i++){                          //  for i = 1:length(y)
       NNConf(nn_examples[i],isin,conf,dummy);                      //    [conf1,dummy5,isin] = tldNN(x(:,i),tld); % measure Relative similarity
+      //printf("conf: %f pEx:%d  nEx:%d\n",conf,(int)pEx.size(),(int)nEx.size());
       if (y[i]==1 && conf<=thr_nn){                                //    if y(i) == 1 && conf1 <= tld.model.thr_nn % 0.65
           if (isin[1]<0){                                          //      if isnan(isin(2))
               pEx = vector<Mat>(1,nn_examples[i]);                 //        tld.pex = x(:,i);
@@ -144,7 +135,9 @@ void FerNNClassifier::trainNN(const vector<cv::Mat>& nn_examples){
       }                                                            //    end
       if(y[i]==0 && conf>0.5)                                      //  if y(i) == 0 && conf1 > 0.5
         nEx.push_back(nn_examples[i]);                             //    tld.nex = [tld.nex x(:,i)];
-  }                                                                //  end
+
+  }                                                                 //  end
+  printf("Trained NN examples: %d positive %d negative\n",(int)pEx.size(),(int)nEx.size());
 }                                                                  //  end
 
 
@@ -173,8 +166,8 @@ void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf
   float nccN, maxN=0;
   bool anyN=false;
   for (int i=0;i<pEx.size();i++){
-      matchTemplate(pEx[i],example,ncc,CV_TM_CCOEFF_NORMED);//    nccP = distance(x(:,i),tld.pex,1); % measure NCC to positive examples
-      nccP=(float)*ncc.data;
+      matchTemplate(pEx[i],example,ncc,CV_TM_CCORR_NORMED);//    nccP = distance(x(:,i),tld.pex,1); % measure NCC to positive examples
+      nccP=(((float*)ncc.data)[0]+1)*0.5;
       if (nccP>ncc_thesame)
         anyP=true;
       if(nccP > maxP){
@@ -183,14 +176,16 @@ void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf
           if(i<validatedPart)
             csmaxP=maxP; //maxP = max(nccP(1:ceil(tld.model.valid*size(tld.pex,2))));
       }
+     // printf("nccp=%f ",nccP);
   }
   for (int i=0;i<nEx.size();i++){
-      matchTemplate(nEx[i],example,ncc,CV_TM_CCOEFF_NORMED);//    nccN = distance(x(:,i),tld.nex,1); % measure NCC to negative examples
-      nccN=(float)*ncc.data;
+      matchTemplate(nEx[i],example,ncc,CV_TM_CCORR_NORMED);//    nccN = distance(x(:,i),tld.nex,1); % measure NCC to negative examples
+      nccN=(((float*)ncc.data)[0]+1)*0.5;
       if (nccN>ncc_thesame)
         anyN=true;
       if(nccN > maxN)
         maxN=nccN;
+     // printf("nccn=%f ",nccN);
   }
   //set isin
   if (anyP) isin[0]=1;//    if any(nccP > tld.model.ncc_thesame), isin(1,i) = 1;  end % IF the query patch is highly correlated with any positive patch in the model THEN it is considered to be one of them
