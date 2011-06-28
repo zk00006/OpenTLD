@@ -48,7 +48,7 @@ cd ../bin/
 %To run from camera
 ./run_tld ../parameters.yml
 %To run from file
-./run_tld ../parameters.yml -s file.mp4
+./run_tld ../parameters.yml -s ../_input/motorbike.mp4
 %To init bounding box from file
-./run_tld ../parameters.yml -s file.mp4 -b
+./run_tld ../parameters.yml -s ../_input/motorbike.mp4 -b
 
