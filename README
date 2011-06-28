@@ -45,5 +45,10 @@ cd build
 cmake ../src/
 make
 cd ../bin/
+%To run from camera
 ./run_tld ../parameters.yml
+%To run from file
+./run_tld ../parameters.yml -s file.mp4
+%To init bounding box from file
+./run_tld ../parameters.yml -s file.mp4 -b
 
