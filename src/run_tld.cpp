@@ -107,6 +107,8 @@ gotBB=false;
   vector<Point2f> pts1;
   vector<Point2f> pts2;
   bool status=true;
+  int frames = 0;
+  int detections = 0;
   while(true){
     //get frame
     capture >> frame;
@@ -118,6 +120,7 @@ gotBB=false;
       drawPoints(frame,pts1);
       drawPoints(frame,pts2,Scalar(0,255,0));
       drawBox(frame,pbox);
+      detections++;
     }
     //Display
     imshow("TLD", frame);
@@ -125,6 +128,8 @@ gotBB=false;
     swap(last_gray,current_gray);
     pts1.clear();
     pts2.clear();
+    frames++;
+    printf("Detection rate: %d/%d\n",detections,frames);
     if (cvWaitKey(33) == 'q')
       break;
   }
