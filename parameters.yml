@@ -23,4 +23,8 @@ Parameters:
    scale_update: 0.02
    overlap: 0.2
    num_patches: 100
+   bb_x: 288
+   bb_y: 36
+   bb_w: 25
+   bb_h: 42   
 
