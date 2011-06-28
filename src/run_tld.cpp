@@ -6,7 +6,14 @@ using namespace cv;
 
 Rect box;
 bool drawing_box = false;
-bool gotBB = false;	
+bool gotBB = false;
+void readBB(const FileNode& file){
+  int x = (int)file["bb_x"];
+  int y = (int)file["bb_y"];
+  int w = (int)file["bb_w"];
+  int h = (int)file["bb_h"];
+  box = Rect(x,y,w,h);
+}
 //bounding box mouse callback
 void mouseHandler(int event, int x, int y, int flags, void *param){
   switch( event ){
@@ -40,6 +47,7 @@ bool fromfile=false;
   VideoCapture capture;
   string video;
   switch (argc){
+  case 5:
   case 4:
     if (strcmp(argv[2],"-s")==0){
         video = string(argv[3]);
@@ -47,6 +55,7 @@ bool fromfile=false;
         fromfile = true;
     }
     break;
+  case 3:
   case 2:
     capture.open(0);
     break;
@@ -55,7 +64,6 @@ bool fromfile=false;
     return 0;
     break;
   }
-
   //Init camera
 
   if (!capture.isOpened())
@@ -75,11 +83,20 @@ bool fromfile=false;
   tld.read(fs.getFirstTopLevelNode());
 
   capture >> frame;
+  cvtColor(frame, last_gray, CV_RGB2GRAY);
   Mat first;
   frame.copyTo(first);
   ///Initialization
+  gotBB=false;
+  for (int i=0; i<argc; i++){
+      if (strcmp(argv[i],"-b")==0){
+          readBB(fs.getFirstTopLevelNode());
+          gotBB = true;
+          break;
+      }
+  }
+
 GETBOUNDINGBOX:
-gotBB=false;
   while(!gotBB)
   {
     if (!fromfile)
@@ -99,6 +116,7 @@ gotBB=false;
   }
   //Remove callback
   cvSetMouseCallback( "TLD", NULL, NULL );
+  printf("Initiali Bounding Box = x:%d y:%d h:%d w:%d\n",box.x,box.y,box.width,box.height);
   tld.init(last_gray,box);
 
   ///Run-time
