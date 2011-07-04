@@ -6,6 +6,7 @@
  */
 
 #include <opencv2/opencv.hpp>
+using namespace std;
 
 class FerNNClassifier{
 private:

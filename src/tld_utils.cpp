@@ -1,5 +1,6 @@
 #include <tld_utils.h>
 using namespace cv;
+using namespace std;
 
 void drawBox(Mat& image, CvRect box, Scalar color, int thick){
   rectangle( image, cvPoint(box.x, box.y), cvPoint(box.x+box.width,box.y+box.height),color, thick);

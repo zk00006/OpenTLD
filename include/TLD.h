@@ -3,6 +3,8 @@
 #include <LKTracker.h>
 #include <FerNNClassifier.h>
 
+using namespace std;
+
 //Bounding Boxes
 struct BoundingBox : public cv::Rect {
   BoundingBox(){}
