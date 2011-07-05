@@ -112,6 +112,7 @@ GETBOUNDINGBOX:
   }
   if (min(box.width,box.height)<24){
       cout << "Bounding box too small, try again." << endl;
+      gotBB = false;
       goto GETBOUNDINGBOX;
   }
   //Remove callback
