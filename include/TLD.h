@@ -3,7 +3,7 @@
 #include <LKTracker.h>
 #include <FerNNClassifier.h>
 
-using namespace std;
+
 
 //Bounding Boxes
 struct BoundingBox : public cv::Rect {
@@ -16,29 +16,29 @@ public:
 
 //Detection structure
 struct DetStruct {
-    vector<int> bb;
-    vector<vector<int> > patt;
-    vector<float> conf1;
-    vector<float> conf2;
-    vector<vector<int> > isin;
-    vector<cv::Mat> patch;
+    std::vector<int> bb;
+    std::vector<std::vector<int> > patt;
+    std::vector<float> conf1;
+    std::vector<float> conf2;
+    std::vector<std::vector<int> > isin;
+    std::vector<cv::Mat> patch;
   };
 //Temporal structure
   struct TempStruct {
-    vector<vector<int> > patt;
-    vector<float> conf;
+    std::vector<std::vector<int> > patt;
+    std::vector<float> conf;
   };
 
 struct OComparator{
-  OComparator(const vector<BoundingBox>& _grid):grid(_grid){}
-  vector<BoundingBox> grid;
+  OComparator(const std::vector<BoundingBox>& _grid):grid(_grid){}
+  std::vector<BoundingBox> grid;
   bool operator()(int idx1,int idx2){
     return grid[idx1].overlap > grid[idx2].overlap;
   }
 };
 struct CComparator{
-  CComparator(const vector<float>& _conf):conf(_conf){}
-  vector<float> conf;
+  CComparator(const std::vector<float>& _conf):conf(_conf){}
+  std::vector<float> conf;
   bool operator()(int idx1,int idx2){
     return conf[idx1]> conf[idx2];
   }
@@ -80,13 +80,13 @@ private:
   float var;
 
 //Training data
-  vector<pair<vector<int>,int> > pX; //positive ferns <features,labels=1>
-  vector<pair<vector<int>,int> > nX; // negative ferns <features,labels=0>
+  std::vector<std::pair<std::vector<int>,int> > pX; //positive ferns <features,labels=1>
+  std::vector<std::pair<std::vector<int>,int> > nX; // negative ferns <features,labels=0>
   cv::Mat pEx;  //positive NN example
-  vector<cv::Mat> nEx; //negative NN examples
+  std::vector<cv::Mat> nEx; //negative NN examples
 //Test data
-  vector<pair<vector<int>,int> > nXT; //negative data to Test
-  vector<cv::Mat> nExT; //negative NN examples to Test
+  std::vector<std::pair<std::vector<int>,int> > nXT; //negative data to Test
+  std::vector<cv::Mat> nExT; //negative NN examples to Test
 //Last frame data
   BoundingBox lastbox;
   bool lastvalid;
@@ -100,17 +100,17 @@ private:
   //Detector data
   TempStruct tmp;
   DetStruct dt;
-  vector<BoundingBox> dbb;
-  vector<bool> dvalid;
-  vector<float> dconf;
+  std::vector<BoundingBox> dbb;
+  std::vector<bool> dvalid;
+  std::vector<float> dconf;
   bool detected;
 
 
   //Bounding Boxes
-  vector<BoundingBox> grid;
-  vector<cv::Size> scales;
-  vector<int> good_boxes; //indexes of bboxes with overlap > 0.6
-  vector<int> bad_boxes; //indexes of bboxes with overlap < 0.2
+  std::vector<BoundingBox> grid;
+  std::vector<cv::Size> scales;
+  std::vector<int> good_boxes; //indexes of bboxes with overlap > 0.6
+  std::vector<int> bad_boxes; //indexes of bboxes with overlap < 0.2
   BoundingBox bbhull; // hull of good_boxes
   BoundingBox best_box; // maximum overlapping bbox
 
@@ -123,11 +123,11 @@ public:
   void init(const cv::Mat& frame1,const cv::Rect &box);
   void generatePositiveData(const cv::Mat& frame, int num_warps);
   void generateNegativeData(const cv::Mat& frame);
-  void processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<cv::Point2f>& points1,vector<cv::Point2f>& points2,
+  void processFrame(const cv::Mat& img1,const cv::Mat& img2,std::vector<cv::Point2f>& points1,std::vector<cv::Point2f>& points2,
       BoundingBox& bbnext,bool& lastboxfound);
-  void track(const cv::Mat& img1, const cv::Mat& img2,vector<cv::Point2f>& points1,vector<cv::Point2f>& points2);
+  void track(const cv::Mat& img1, const cv::Mat& img2,std::vector<cv::Point2f>& points1,std::vector<cv::Point2f>& points2);
   void detect(const cv::Mat& frame);
-  void clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,vector<BoundingBox>& cbb,vector<float>& cconf);
+  void clusterConf(const std::vector<BoundingBox>& dbb,const std::vector<float>& dconf,std::vector<BoundingBox>& cbb,std::vector<float>& cconf);
   void evaluate();
   void learn(const cv::Mat& img);
   //Tools
@@ -136,8 +136,8 @@ public:
   void getOverlappingBoxes(const cv::Rect& box1,int num_closest);
   void getBBHull();
   void getPattern(const cv::Mat& img, cv::Mat& pattern,cv::Scalar& mean,cv::Scalar& stdev);
-  void bbPoints(vector<cv::Point2f>& points, const BoundingBox& bb,int pts,int margin);
-  void bbPredict(const vector<cv::Point2f>& points1,const vector<cv::Point2f>& points2,
+  void bbPoints(std::vector<cv::Point2f>& points, const BoundingBox& bb,int pts,int margin);
+  void bbPredict(const std::vector<cv::Point2f>& points1,const std::vector<cv::Point2f>& points2,
       const BoundingBox& bb1,BoundingBox& bb2);
   double getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
   bool bbComp(const BoundingBox& bb1,const BoundingBox& bb2);

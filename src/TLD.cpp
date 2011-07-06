@@ -7,6 +7,7 @@
 
 #include <TLD.h>
 using namespace cv;
+using namespace std;
 
 TLD::TLD()
 {
@@ -214,6 +215,7 @@ void TLD::processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<Point2f>& 
   vector<float> cconf;
   int confident_detections=0;
   int didx; //detection index
+  //note to self: detect befor tracking, and backtrack the detected points
   //Track
   if(lastboxfound){
       track(img1,img2,points1,points2);

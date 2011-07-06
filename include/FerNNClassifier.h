@@ -6,7 +6,6 @@
  */
 
 #include <opencv2/opencv.hpp>
-using namespace std;
 
 class FerNNClassifier{
 private:
@@ -22,14 +21,14 @@ public:
   float thr_nn_valid;
 
   void read(const cv::FileNode& file);
-  void prepare(const vector<cv::Size>& scales);
-  void getFeatures(const cv::Mat& image,const cv::Rect& box,const int& scale_idx,vector<int>& fern);
-  void update(const vector<int>& fern, int C, int N);
-  float measure_forest(vector<int> fern);
-  void trainF(const vector<pair<vector<int>,int> >& ferns,int resample);
-  void trainNN(const vector<cv::Mat>& nn_examples);
-  void NNConf(const cv::Mat& example,vector<int>& isin,float& rsconf,float& csconf);
-  void evaluateTh(const vector<pair<vector<int>,int> >& nXT,const vector<cv::Mat>& nExT);
+  void prepare(const std::vector<cv::Size>& scales);
+  void getFeatures(const cv::Mat& image,const cv::Rect& box,const int& scale_idx,std::vector<int>& fern);
+  void update(const std::vector<int>& fern, int C, int N);
+  float measure_forest(std::vector<int> fern);
+  void trainF(const std::vector<std::pair<std::vector<int>,int> >& ferns,int resample);
+  void trainNN(const std::vector<cv::Mat>& nn_examples);
+  void NNConf(const cv::Mat& example,std::vector<int>& isin,float& rsconf,float& csconf);
+  void evaluateTh(const std::vector<std::pair<std::vector<int>,int> >& nXT,const std::vector<cv::Mat>& nExT);
 
   //Ferns Members
   int getNumStructs(){return nstructs;}
@@ -45,13 +44,13 @@ public:
           bool operator ()(const cv::Mat& patch) const
           { return patch.at<uchar>(y1,x1) > patch.at<uchar>(y2, x2); }
       };
-  vector<vector<Feature> > features; //Ferns features (one vector for each scale)
-  vector< vector<int> > nCounter; //negative counter
-  vector< vector<int> > pCounter; //positive counter
-  vector< vector<float> > posteriors; //Ferns posteriors
+  std::vector<std::vector<Feature> > features; //Ferns features (one std::vector for each scale)
+  std::vector< std::vector<int> > nCounter; //negative counter
+  std::vector< std::vector<int> > pCounter; //positive counter
+  std::vector< std::vector<float> > posteriors; //Ferns posteriors
   float thrN; //Negative threshold
   float thrP;  //Positive thershold
   //NN Members
-  vector<cv::Mat> pEx; //NN positive examples
-  vector<cv::Mat> nEx; //NN negative examples
+  std::vector<cv::Mat> pEx; //NN positive examples
+  std::vector<cv::Mat> nEx; //NN negative examples
 };

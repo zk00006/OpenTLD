@@ -8,6 +8,7 @@
 #include <FerNNClassifier.h>
 
 using namespace cv;
+using namespace std;
 
 void FerNNClassifier::read(const FileNode& file){
   ///Classifier Parameters
@@ -82,7 +83,7 @@ void FerNNClassifier::update(const vector<int>& fern, int C, int N) {
   }
 }
 
-void FerNNClassifier::trainF(const vector<pair<vector<int>,int> >& ferns,int resample){
+void FerNNClassifier::trainF(const vector<std::pair<vector<int>,int> >& ferns,int resample){
   // Conf = function(2,X,Y,Margin,Bootstrap,Idx)
   //                 0 1 2 3      4         5
   //  double *X     = mxGetPr(prhs[1]); -> ferns[i].first

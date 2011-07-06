@@ -3,7 +3,7 @@
 #include <iostream>
 #include <TLD.h>
 using namespace cv;
-
+using namespace std;
 Rect box;
 bool drawing_box = false;
 bool gotBB = false;
