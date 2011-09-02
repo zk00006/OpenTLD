@@ -2,6 +2,7 @@
 #include <tld_utils.h>
 #include <iostream>
 #include <TLD.h>
+#include <stdio.h>
 using namespace cv;
 
 Rect box;
