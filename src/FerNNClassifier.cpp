@@ -6,7 +6,7 @@
  */
 
 #include <FerNNClassifier.h>
-
+#include <stdio.h>
 using namespace cv;
 
 void FerNNClassifier::read(const FileNode& file){

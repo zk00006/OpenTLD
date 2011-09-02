@@ -6,6 +6,7 @@
  */
 
 #include <TLD.h>
+#include <stdio.h>
 using namespace cv;
 
 TLD::TLD()
