@@ -2,7 +2,7 @@
 #include <tld_utils.h>
 #include <LKTracker.h>
 #include <FerNNClassifier.h>
-
+#include <fstream>
 
 
 //Bounding Boxes
@@ -78,7 +78,7 @@ private:
   size_t step;
   size_t esize;
   float var;
-
+  FILE  *bb_file;
 //Training data
   std::vector<std::pair<std::vector<int>,int> > pX; //positive ferns <features,labels=1>
   std::vector<std::pair<std::vector<int>,int> > nX; // negative ferns <features,labels=0>
@@ -142,5 +142,4 @@ public:
   double getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
   bool bbComp(const BoundingBox& bb1,const BoundingBox& bb2);
 };
-
 

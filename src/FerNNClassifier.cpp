@@ -73,12 +73,14 @@ float FerNNClassifier::measure_forest(vector<int> fern) {
 }
 
 void FerNNClassifier::update(const vector<int>& fern, int C, int N) {
+  int idx;
   for (int i = 0; i < nstructs; i++) {
-      (C==1) ? pCounter[i][fern[i]] += N : nCounter[i][fern[i]] += N;
-      if (pCounter[i][fern[i]]==0) {
-          posteriors[i][fern[i]] = 0;
+      idx = fern[i];
+      (C==1) ? pCounter[i][idx] += N : nCounter[i][idx] += N;
+      if (pCounter[i][idx]==0) {
+          posteriors[i][idx] = 0;
       } else {
-          posteriors[i][fern[i]] = ((float)(pCounter[i][fern[i]]))/(pCounter[i][fern[i]] + nCounter[i][fern[i]]);
+          posteriors[i][idx] = ((float)(pCounter[i][idx]))/(pCounter[i][idx] + nCounter[i][idx]);
       }
   }
 }

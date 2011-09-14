@@ -27,7 +27,6 @@ float median(vector<float> v)
     return v[n];
 }
 
-
 vector<int> index_shuffle(int begin,int end){
   vector<int> indexes(end-begin);
   for (int i=begin;i<end;i++){
@@ -36,5 +35,4 @@ vector<int> index_shuffle(int begin,int end){
   random_shuffle(indexes.begin(),indexes.end());
   return indexes;
 }
-
 

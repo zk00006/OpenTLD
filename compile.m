@@ -115,7 +115,7 @@ elseif isunix
     include = [' -I' prefix 'include/opencv/' ' -I' prefix 'include/']; %OpenCV 2.1 libraries
 	libpath = [prefix 'lib/']; %OpenCV 2.1 libraries
     %files = [dir([libpath 'libcv.so']) dir([libpath 'libcxcore.so'])]; %OpenCV 2.1 libraries
-    files = dir([libpath 'libopencv*.so.2.2']); %OpenCV 2.2 libraries?
+    files = dir([libpath 'libopencv*.so.2.3']); %OpenCV 2.2 libraries?
 
     lib = [];
     if exist('OCTAVE_VERSION','builtin')
