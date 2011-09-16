@@ -6,7 +6,7 @@
  */
 
 #include <FerNNClassifier.h>
-#include <stdio.h>
+
 using namespace cv;
 using namespace std;
 
@@ -111,24 +111,12 @@ void FerNNClassifier::trainF(const vector<std::pair<vector<int>,int> >& ferns,in
 }
 
 void FerNNClassifier::trainNN(const vector<cv::Mat>& nn_examples){
-  //  function tld = tldTrainNN(pEx,nEx,tld)
-  //  nP = size(pEx,2); % get the number of positive example
-  //  nN = size(nEx,2); % get the number of negative examples
-  //  x = [pEx,nEx];
-  //  y = [ones(1,nP), zeros(1,nN)];
-  //  % Permutate the order of examples
-  //  idx = randperm(nP+nN); %
-  //  if ~isempty(pEx)
-  //      x   = [pEx(:,1) x(:,idx)]; % always add the first positive patch as the first (important in initialization)
-  //      y   = [1 y(:,idx)];
-  //  end
   float conf,dummy;
   vector<int> y(nn_examples.size(),0);
   y[0]=1;
   vector<int> isin;
-  for (int i=0;i<nn_examples.size();i++){                          //  for i = 1:length(y)
-      NNConf(nn_examples[i],isin,conf,dummy);                      //    [conf1,dummy5,isin] = tldNN(x(:,i),tld); % measure Relative similarity
-      //printf("conf: %f pEx:%d  nEx:%d\n",conf,(int)pEx.size(),(int)nEx.size());
+  for (int i=0;i<nn_examples.size();i++){                          //  For each example
+      NNConf(nn_examples[i],isin,conf,dummy);                      //  Measure Relative similarity
       if (y[i]==1 && conf<=thr_nn){                                //    if y(i) == 1 && conf1 <= tld.model.thr_nn % 0.65
           if (isin[1]<0){                                          //      if isnan(isin(2))
               pEx = vector<Mat>(1,nn_examples[i]);                 //        tld.pex = x(:,i);
@@ -150,7 +138,7 @@ void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf
    * Outputs:
    * -Relative Similarity (rsconf), Conservative Similarity (csconf), In pos. set|Id pos set|In neg. set (isin)
    */
-  isin=vector<int>(3,-1);//TODO: replace with static array     isin = nan(3,size(x,2)); -
+  isin=vector<int>(3,-1);
   if (pEx.empty()){ //if isempty(tld.pex) % IF positive examples in the model are not defined THEN everything is negative
       rsconf = 0; //    conf1 = zeros(1,size(x,2));
       csconf=0;
@@ -161,15 +149,14 @@ void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf
       csconf=1;
       return;
   }
-  //for i = 1:size(x,2) % fore every patch that is tested
   Mat ncc(1,1,CV_32F);
   float nccP,csmaxP,maxP=0;
   bool anyP=false;
   int maxPidx,validatedPart = ceil(pEx.size()*valid);
   float nccN, maxN=0;
   bool anyN=false;
-  for (int i=0;i<pEx.size();i++){
-      matchTemplate(pEx[i],example,ncc,CV_TM_CCORR_NORMED);//    nccP = distance(x(:,i),tld.pex,1); % measure NCC to positive examples
+  for (int i=0;i<pEx.size();i++){                                // Compare against each positive example
+      matchTemplate(pEx[i],example,ncc,CV_TM_CCORR_NORMED);      //    nccP = distance(x(:,i),tld.pex,1); % measure NCC to positive examples
       nccP=(((float*)ncc.data)[0]+1)*0.5;
       if (nccP>ncc_thesame)
         anyP=true;

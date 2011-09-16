@@ -118,7 +118,7 @@ GETBOUNDINGBOX:
   }
   //Remove callback
   cvSetMouseCallback( "TLD", NULL, NULL );
-  printf("Initiali Bounding Box = x:%d y:%d h:%d w:%d\n",box.x,box.y,box.width,box.height);
+  printf("Initial Bounding Box = x:%d y:%d h:%d w:%d\n",box.x,box.y,box.width,box.height);
   tld.init(last_gray,box);
 
   ///Run-time
