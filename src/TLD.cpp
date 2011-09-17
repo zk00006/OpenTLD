@@ -84,13 +84,16 @@ void TLD::init(const Mat& frame1,const Rect& box){
   generatePositiveData(frame1,num_warps_init);
   // Set variance threshold
   Scalar stdev, mean;
+
   meanStdDev(pEx,mean,stdev);
+
+  integral(frame1,iisum,iisqsum);
   var =  pow(stdev.val[0],2)*0.5;
   cout << "var: " << var << endl;
   //check variance
-  integral(frame1,iisum,iisqsum);
-  esize = iisum.elemSize();
-  step = iisum.step;
+
+  //esize = iisum.elemSize();
+  //step = iisum.step;
   double vr =  getVar(best_box,iisum,iisqsum);
   cout << "check variance: " << vr << endl;
   cout << "box area:" << best_box.area() << endl;
@@ -212,17 +215,17 @@ void TLD::generateNegativeData(const Mat& frame){
 
 #define ELEM(type,start,step,size,xpos,ypos) *((type*)(start+step*(ypos)+(xpos)*size))
 double TLD::getVar(const BoundingBox& box,const Mat& sum,const Mat& sqsum){
-  double brs = sum.at<double>(box.y+box.height+1,box.x+box.width+1);//sum.data[box.y*step+box.x];//ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
-  double bls = sum.at<double>(box.y+box.height+1,box.x);//ELEM(double,sum.data,step,esize,box.x,box.y+box.height+1);
-  double trs = sum.at<double>(box.y,box.x+box.width+1);//ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y);
-  double tls = sum.at<double>(box.y,box.x);//ELEM(double,sum.data,step,esize,box.x,box.y);
+  double brs = sum.at<int>(box.y+box.height+1,box.x+box.width+1);//sum.data[box.y*step+box.x];//ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
+  double bls = sum.at<int>(box.y+box.height+1,box.x);//ELEM(double,sum.data,step,esize,box.x,box.y+box.height+1);
+  double trs = sum.at<int>(box.y,box.x+box.width+1);//ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y);
+  double tls = sum.at<int>(box.y,box.x);//ELEM(double,sum.data,step,esize,box.x,box.y);
   double brsq = sqsum.at<double>(box.y+box.height+1,box.x+box.width+1);//ELEM(double,sqsum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
   double blsq = sqsum.at<double>(box.y+box.height+1,box.x);//ELEM(double,sqsum.data,step,esize,box.x,box.y+box.height+1);
   double trsq = sqsum.at<double>(box.y,box.x+box.width+1);//ELEM(double,sqsum.data,step,esize,box.x+box.width+1,box.y);
   double tlsq = sqsum.at<double>(box.y,box.x);//ELEM(double,sqsum.data,step,esize,box.x,box.y);
   double mean = (brs+tls-trs-bls)/((double)box.area());
   double sqmean = (brsq+tlsq-trsq-blsq)/((double)box.area());
- // printf("[%f %f %f %f %f %f %f %f %f m:%f sqm:%f]",brs,bls,trs,tls,brsq,blsq,trsq,tlsq,(double)box.area(),mean,sqmean);
+ //printf("[%f %f %f %f %f %f %f %f %f m:%f sqm:%f]",brs,bls,trs,tls,brsq,blsq,trsq,tlsq,(double)box.area(),mean,sqmean);
   return sqmean-mean*mean;
 }
 
@@ -390,7 +393,6 @@ void TLD::detect(const cv::Mat& frame){
   double t = (double)getTickCount();
   Mat img(frame.rows,frame.cols,CV_8U);
   integral(frame,iisum,iisqsum);
-  //integral(frame,iisum,iisqsum);
   esize = iisum.elemSize();
   step = iisum.step;
   GaussianBlur(frame,img,Size(9,9),1.5);
@@ -398,8 +400,10 @@ void TLD::detect(const cv::Mat& frame){
   float fern_th = classifier.getFernTh();
   vector <int> ferns(10);
   float conf;
+  int a=0;
   for (int i=0;i<grid.size();i++){//FIXME: BottleNeck
       if (getVar(grid[i],iisum,iisqsum)>=var){
+          a++;
           classifier.getFeatures(img,grid[i],grid[i].sidx,ferns);
           conf = classifier.measure_forest(ferns);
           tmp.conf[i]=conf;
@@ -417,6 +421,7 @@ void TLD::detect(const cv::Mat& frame){
       dt.bb.resize(100);
       detections=100;
   }
+  printf("%d Bounding boxes passed the variance filter\n",a);
   for (int i=0;i<detections;i++){
         drawBox(img,grid[dt.bb[i]]);
     }
