@@ -75,8 +75,6 @@ private:
 //Integral Images
   cv::Mat iisum;
   cv::Mat iisqsum;
-  size_t step;
-  size_t esize;
   float var;
   FILE  *bb_file;
 //Training data

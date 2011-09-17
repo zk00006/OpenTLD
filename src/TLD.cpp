@@ -51,7 +51,7 @@ void TLD::init(const Mat& frame1,const Rect& box){
     printf("Created %d bounding boxes\n",(int)grid.size());
   ///Preparation
   //allocation
-  iisum.create(frame1.rows+1,frame1.cols+1,CV_64F);
+  iisum.create(frame1.rows+1,frame1.cols+1,CV_32F);
   iisqsum.create(frame1.rows+1,frame1.cols+1,CV_64F);
   dconf.reserve(100);
   dbb.reserve(100);
@@ -64,7 +64,6 @@ void TLD::init(const Mat& frame1,const Rect& box){
   good_boxes.reserve(grid.size());
   bad_boxes.reserve(grid.size());
   pEx.create(patch_size,patch_size,CV_64F);
-
   //Init Generator
   generator = PatchGenerator (0,0,noise_init,true,1-scale_init,1+scale_init,-angle_init*CV_PI/180,angle_init*CV_PI/180,-angle_init*CV_PI/180,angle_init*CV_PI/180);
   getOverlappingBoxes(box,num_closest_init);
@@ -84,17 +83,12 @@ void TLD::init(const Mat& frame1,const Rect& box){
   generatePositiveData(frame1,num_warps_init);
   // Set variance threshold
   Scalar stdev, mean;
-
-  meanStdDev(pEx,mean,stdev);
-
+  meanStdDev(frame1(best_box),mean,stdev);
   integral(frame1,iisum,iisqsum);
-  var =  pow(stdev.val[0],2)*0.5;
-  cout << "var: " << var << endl;
+  var = pow(stdev.val[0],2)*0.5; //getVar(best_box,iisum,iisqsum);
+  cout << "variance: " << var << endl;
   //check variance
-
-  //esize = iisum.elemSize();
-  //step = iisum.step;
-  double vr =  getVar(best_box,iisum,iisqsum);
+  double vr =  getVar(best_box,iisum,iisqsum)*0.5;
   cout << "check variance: " << vr << endl;
   cout << "box area:" << best_box.area() << endl;
   // Generate negative data
@@ -213,19 +207,17 @@ void TLD::generateNegativeData(const Mat& frame){
   printf("NN: %d\n",(int)nEx.size());
 }
 
-#define ELEM(type,start,step,size,xpos,ypos) *((type*)(start+step*(ypos)+(xpos)*size))
 double TLD::getVar(const BoundingBox& box,const Mat& sum,const Mat& sqsum){
-  double brs = sum.at<int>(box.y+box.height+1,box.x+box.width+1);//sum.data[box.y*step+box.x];//ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
-  double bls = sum.at<int>(box.y+box.height+1,box.x);//ELEM(double,sum.data,step,esize,box.x,box.y+box.height+1);
-  double trs = sum.at<int>(box.y,box.x+box.width+1);//ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y);
+  double brs = sum.at<int>(box.y+box.height,box.x+box.width);//sum.data[box.y*step+box.x];//ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
+  double bls = sum.at<int>(box.y+box.height,box.x);//ELEM(double,sum.data,step,esize,box.x,box.y+box.height+1);
+  double trs = sum.at<int>(box.y,box.x+box.width);//ELEM(double,sum.data,step,esize,box.x+box.width+1,box.y);
   double tls = sum.at<int>(box.y,box.x);//ELEM(double,sum.data,step,esize,box.x,box.y);
-  double brsq = sqsum.at<double>(box.y+box.height+1,box.x+box.width+1);//ELEM(double,sqsum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
-  double blsq = sqsum.at<double>(box.y+box.height+1,box.x);//ELEM(double,sqsum.data,step,esize,box.x,box.y+box.height+1);
-  double trsq = sqsum.at<double>(box.y,box.x+box.width+1);//ELEM(double,sqsum.data,step,esize,box.x+box.width+1,box.y);
+  double brsq = sqsum.at<double>(box.y+box.height,box.x+box.width);//ELEM(double,sqsum.data,step,esize,box.x+box.width+1,box.y+box.height+1);
+  double blsq = sqsum.at<double>(box.y+box.height,box.x);//ELEM(double,sqsum.data,step,esize,box.x,box.y+box.height+1);
+  double trsq = sqsum.at<double>(box.y,box.x+box.width);//ELEM(double,sqsum.data,step,esize,box.x+box.width+1,box.y);
   double tlsq = sqsum.at<double>(box.y,box.x);//ELEM(double,sqsum.data,step,esize,box.x,box.y);
   double mean = (brs+tls-trs-bls)/((double)box.area());
   double sqmean = (brsq+tlsq-trsq-blsq)/((double)box.area());
- //printf("[%f %f %f %f %f %f %f %f %f m:%f sqm:%f]",brs,bls,trs,tls,brsq,blsq,trsq,tlsq,(double)box.area(),mean,sqmean);
   return sqmean-mean*mean;
 }
 
@@ -335,7 +327,6 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points1,vector
   if (tracked){
       //Bounding box prediction
       bbPredict(points,points2,lastbox,tbb);
-      //printf("predicted bbox %d %d %d %d\n",tbb.tl().x,tbb.tl().y,tbb.br().x,tbb.br().y);
       if (tracker.getFB()>10 ||tbb.x < 0 || tbb.y<0 || tbb.br().x > img2.cols || tbb.br().y > img2.rows){
           tvalid =false; //too unstable prediction or bounding box out of image
           tracked = false;
@@ -393,8 +384,6 @@ void TLD::detect(const cv::Mat& frame){
   double t = (double)getTickCount();
   Mat img(frame.rows,frame.cols,CV_8U);
   integral(frame,iisum,iisqsum);
-  esize = iisum.elemSize();
-  step = iisum.step;
   GaussianBlur(frame,img,Size(9,9),1.5);
   int numtrees = classifier.getNumStructs();
   float fern_th = classifier.getFernTh();

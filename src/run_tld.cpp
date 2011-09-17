@@ -129,9 +129,8 @@ GETBOUNDINGBOX:
   bool status=true;
   int frames = 0;
   int detections = 0;
-  while(true){
+  while(capture.read(frame)){
     //get frame
-    capture >> frame;
     cvtColor(frame, current_gray, CV_RGB2GRAY);
     //Process Frame
     tld.processFrame(last_gray,current_gray,pts1,pts2,pbox,status);
