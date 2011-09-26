@@ -94,7 +94,7 @@ void FerNNClassifier::trainF(const vector<std::pair<vector<int>,int> >& ferns,in
   //  double thrP   = *mxGetPr(prhs[3]) * nTREES; ->threshold*nstructs
   //  int bootstrap = (int) *mxGetPr(prhs[4]); ->resample
   thrP = thr_fern*nstructs;                                                          // int step = numX / 10;
-  for (int j = 0; j < resample; j++) {                      // for (int j = 0; j < bootstrap; j++) {
+  //for (int j = 0; j < resample; j++) {                      // for (int j = 0; j < bootstrap; j++) {
       for (int i = 0; i < ferns.size(); i++){               //   for (int i = 0; i < step; i++) {
                                                             //     for (int k = 0; k < 10; k++) {
                                                             //       int I = k*step + i;//box index
@@ -107,7 +107,7 @@ void FerNNClassifier::trainF(const vector<std::pair<vector<int>,int> >& ferns,in
                 update(ferns[i].first,0,1);                 //             update(x,0,1);
           }
       }
-  }
+  //}
 }
 
 void FerNNClassifier::trainNN(const vector<cv::Mat>& nn_examples){
@@ -155,8 +155,8 @@ void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf
   int maxPidx,validatedPart = ceil(pEx.size()*valid);
   float nccN, maxN=0;
   bool anyN=false;
-  for (int i=0;i<pEx.size();i++){                                // Compare against each positive example
-      matchTemplate(pEx[i],example,ncc,CV_TM_CCORR_NORMED);      //    nccP = distance(x(:,i),tld.pex,1); % measure NCC to positive examples
+  for (int i=0;i<pEx.size();i++){
+      matchTemplate(pEx[i],example,ncc,CV_TM_CCORR_NORMED);      // measure NCC to positive examples
       nccP=(((float*)ncc.data)[0]+1)*0.5;
       if (nccP>ncc_thesame)
         anyP=true;
@@ -164,27 +164,25 @@ void FerNNClassifier::NNConf(const Mat& example, vector<int>& isin,float& rsconf
           maxP=nccP;
           maxPidx = i;
           if(i<validatedPart)
-            csmaxP=maxP; //maxP = max(nccP(1:ceil(tld.model.valid*size(tld.pex,2))));
+            csmaxP=maxP;
       }
-     // printf("nccp=%f ",nccP);
   }
   for (int i=0;i<nEx.size();i++){
-      matchTemplate(nEx[i],example,ncc,CV_TM_CCORR_NORMED);//    nccN = distance(x(:,i),tld.nex,1); % measure NCC to negative examples
+      matchTemplate(nEx[i],example,ncc,CV_TM_CCORR_NORMED);     //measure NCC to negative examples
       nccN=(((float*)ncc.data)[0]+1)*0.5;
       if (nccN>ncc_thesame)
         anyN=true;
       if(nccN > maxN)
         maxN=nccN;
-     // printf("nccn=%f ",nccN);
   }
   //set isin
-  if (anyP) isin[0]=1;//    if any(nccP > tld.model.ncc_thesame), isin(1,i) = 1;  end % IF the query patch is highly correlated with any positive patch in the model THEN it is considered to be one of them
-  isin[1]=maxPidx;//    [dummy6,isin(2,i)] = max(nccP); % get the index of the maximall correlated positive patch
-  if (anyN) isin[2]=1;//    if any(nccN > tld.model.ncc_thesame), isin(3,i) = 1;  end % IF the query patch is highly correlated with any negative patch in the model THEN it is considered to be one of them
+  if (anyP) isin[0]=1;  //if he query patch is highly correlated with any positive patch in the model then it is considered to be one of them
+  isin[1]=maxPidx;      //get the index of the maximall correlated positive patch
+  if (anyN) isin[2]=1;  //if  the query patch is highly correlated with any negative patch in the model then it is considered to be one of them
   //Measure Relative Similarity
-  float dN=1-maxN;//    dN = 1 - max(nccN);
-  float dP=1-maxP;//    dP = 1 - max(nccP);
-  rsconf = (float)dN/(dN+dP);//    conf1(i) = dN / (dN + dP);
+  float dN=1-maxN;
+  float dP=1-maxP;
+  rsconf = (float)dN/(dN+dP);
   //Measure Conservative Similarity
   dP = 1 - csmaxP;
   csconf =(float)dN / (dN + dP);

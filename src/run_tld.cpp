@@ -1,25 +1,40 @@
 #include <opencv2/opencv.hpp>
 #include <tld_utils.h>
 #include <iostream>
+#include <sstream>
 #include <TLD.h>
 #include <stdio.h>
 using namespace cv;
 using namespace std;
+//Global variables
 Rect box;
 bool drawing_box = false;
 bool gotBB = false;
-void readBB(const FileNode& file){
-  int x = (int)file["bb_x"];
-  int y = (int)file["bb_y"];
-  int w = (int)file["bb_w"];
-  int h = (int)file["bb_h"];
+bool tl = false;
+bool rep = false;
+bool fromfile=false;
+
+void readBB(char* file){
+  ifstream bb_file (file);
+  string line;
+  getline(bb_file,line);
+  istringstream linestream(line);
+  string x1,y1,x2,y2;
+  getline (linestream,x1, ',');
+  getline (linestream,y1, ',');
+  getline (linestream,x2, ',');
+  getline (linestream,y2, ',');
+  int x = atoi(x1.c_str());// = (int)file["bb_x"];
+  int y = atoi(y1.c_str());// = (int)file["bb_y"];
+  int w = atoi(x2.c_str())-x;// = (int)file["bb_w"];
+  int h = atoi(y2.c_str())-y;// = (int)file["bb_h"];
   box = Rect(x,y,w,h);
 }
 //bounding box mouse callback
 void mouseHandler(int event, int x, int y, int flags, void *param){
   switch( event ){
   case CV_EVENT_MOUSEMOVE:
-    if( drawing_box ){
+    if (drawing_box){
         box.width = x-box.x;
         box.height = y-box.y;
     }
@@ -43,60 +58,73 @@ void mouseHandler(int event, int x, int y, int flags, void *param){
   }
 }
 
-int main(int argc, char * argv[]){
-bool fromfile=false;
-  VideoCapture capture;
-  string video;
-  switch (argc){
-  case 5:
-  case 4:
-    if (strcmp(argv[2],"-s")==0){
-        video = string(argv[3]);
-        capture.open(video);
-        fromfile = true;
-    }
-    break;
-  case 3:
-  case 2:
-    capture.open(0);
-    break;
-  default:
-    printf("use:\n     %s /path/parameters.yml [-s source]\n",argv[0]);
-    return 0;
-    break;
-  }
-  //Init camera
+void print_help(char** argv){
+  printf("use:\n     %s -p /path/parameters.yml\n",argv[0]);
+  printf("-s    source video\n-b        bounding box file\n-tl  track and learn\n-r     repeat\n");
+}
 
+void read_options(int argc, char** argv,VideoCapture& capture,FileStorage &fs){
+  for (int i=0;i<argc;i++){
+      if (strcmp(argv[i],"-b")==0){
+          if (argc>i){
+              readBB(argv[i+1]);
+              gotBB = true;
+          }
+          else
+            print_help(argv);
+      }
+      if (strcmp(argv[i],"-s")==0){
+          if (argc>i){
+              string video = string(argv[i+1]);
+              capture.open(video);
+              fromfile = true;
+          }
+          else
+            print_help(argv);
+
+      }
+      if (strcmp(argv[i],"-p")==0){
+          if (argc>i){
+              fs.open(argv[i+1], FileStorage::READ);
+          }
+          else
+            print_help(argv);
+      }
+      if (strcmp(argv[i],"-tl")==0){
+          tl = true;
+      }
+      if (strcmp(argv[i],"-r")==0){
+          rep = true;
+      }
+  }
+}
+
+int main(int argc, char * argv[]){
+  VideoCapture capture;
+  capture.open(0);
+  FileStorage fs;
+  //Read options
+  read_options(argc,argv,capture,fs);
+  //Init camera
   if (!capture.isOpened())
   {
 	cout << "capture device failed to open!" << endl;
     return 1;
   }
-  Mat frame;
-  Mat last_gray;
   //Register mouse callback to draw the bounding box
   cvNamedWindow("TLD",CV_WINDOW_AUTOSIZE);
   cvSetMouseCallback( "TLD", mouseHandler, NULL );
   //TLD framework
   TLD tld;
   //Read parameters file
-  FileStorage fs(argv[1], FileStorage::READ);
   tld.read(fs.getFirstTopLevelNode());
-
+  Mat frame;
+  Mat last_gray;
   capture >> frame;
   cvtColor(frame, last_gray, CV_RGB2GRAY);
   Mat first;
   frame.copyTo(first);
   ///Initialization
-  gotBB=false;
-  for (int i=0; i<argc; i++){
-      if (strcmp(argv[i],"-b")==0){
-          readBB(fs.getFirstTopLevelNode());
-          gotBB = true;
-          break;
-      }
-  }
-
 GETBOUNDINGBOX:
   while(!gotBB)
   {
@@ -107,7 +135,6 @@ GETBOUNDINGBOX:
     cvtColor(frame, last_gray, CV_RGB2GRAY);
     drawBox(frame,box);
     imshow("TLD", frame);
-
     if (cvWaitKey(33) == 'q')
 	    return 0;
   }
@@ -129,11 +156,12 @@ GETBOUNDINGBOX:
   bool status=true;
   int frames = 0;
   int detections = 0;
+REPEAT:
   while(capture.read(frame)){
     //get frame
     cvtColor(frame, current_gray, CV_RGB2GRAY);
     //Process Frame
-    tld.processFrame(last_gray,current_gray,pts1,pts2,pbox,status);
+    tld.processFrame(last_gray,current_gray,pts1,pts2,pbox,status,tl);
     //Draw Points
     if (status){
       drawPoints(frame,pts1);
@@ -151,6 +179,12 @@ GETBOUNDINGBOX:
     printf("Detection rate: %d/%d\n",detections,frames);
     if (cvWaitKey(33) == 'q')
       break;
+  }
+  if (rep){
+    rep = false;
+    tl = false;
+    capture.set(CV_CAP_PROP_POS_FRAMES,0);
+    goto REPEAT;
   }
   return 0;
 }

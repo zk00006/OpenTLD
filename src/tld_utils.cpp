@@ -22,7 +22,7 @@ Mat createMask(const Mat& image, CvRect box){
 
 float median(vector<float> v)
 {
-    int n = v.size() / 2;
+    int n = floor(v.size() / 2);
     nth_element(v.begin(), v.begin()+n, v.end());
     return v[n];
 }

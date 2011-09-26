@@ -46,9 +46,9 @@ cmake ../src/
 make
 cd ../bin/
 %To run from camera
-./run_tld ../parameters.yml
+./run_tld -p ../parameters.yml -tl
 %To run from file
-./run_tld ../parameters.yml -s ../_input/motorbike.mp4
+./run_tld -p ../parameters.yml -s ../_input/motorbike.mp4 -tl
 %To init bounding box from file
-./run_tld ../parameters.yml -s ../_input/motorbike.mp4 -b
+./run_tld -p ../parameters.yml -s ../_input/motorbike.mp4 -b ../_input/init.txt -tl
 
