@@ -22,6 +22,7 @@ void FerNNClassifier::read(const FileNode& file){
 }
 
 void FerNNClassifier::prepare(const vector<Size>& scales){
+  acum = 0;
   //Initialize test locations for features
   int totalFeatures = nstructs*structSize;
   features = vector<vector<Feature> >(scales.size(),vector<Feature> (totalFeatures));
@@ -122,13 +123,15 @@ void FerNNClassifier::trainNN(const vector<cv::Mat>& nn_examples){
               pEx = vector<Mat>(1,nn_examples[i]);                 //        tld.pex = x(:,i);
               continue;                                            //        continue;
           }                                                        //      end
-          pEx.insert(pEx.begin()+isin[1],nn_examples[i]);          //      tld.pex = [tld.pex(:,1:isin(2)) x(:,i) tld.pex(:,isin(2)+1:end)]; % add to model
+          //pEx.insert(pEx.begin()+isin[1],nn_examples[i]);        //      tld.pex = [tld.pex(:,1:isin(2)) x(:,i) tld.pex(:,isin(2)+1:end)]; % add to model
+          pEx.push_back(nn_examples[i]);
       }                                                            //    end
       if(y[i]==0 && conf>0.5)                                      //  if y(i) == 0 && conf1 > 0.5
         nEx.push_back(nn_examples[i]);                             //    tld.nex = [tld.nex x(:,i)];
 
   }                                                                 //  end
-  printf("Trained NN examples: %d positive %d negative\n",(int)pEx.size(),(int)nEx.size());
+  acum++;
+  printf("%d. Trained NN examples: %d positive %d negative\n",acum,(int)pEx.size(),(int)nEx.size());
 }                                                                  //  end
 
 
@@ -206,3 +209,16 @@ float fconf;
     thr_nn_valid = thr_nn;
 }
 
+void FerNNClassifier::show(){
+  Mat examples((int)pEx.size()*pEx[0].rows,pEx[0].cols,CV_8U);
+  double minval;
+  Mat ex(pEx[0].rows,pEx[0].cols,pEx[0].type());
+  for (int i=0;i<pEx.size();i++){
+    minMaxLoc(pEx[i],&minval);
+    pEx[i].copyTo(ex);
+    ex = ex-minval;
+    Mat tmp = examples.rowRange(Range(i*pEx[i].rows,(i+1)*pEx[i].rows));
+    ex.convertTo(tmp,CV_8U);
+  }
+  imshow("Examples",examples);
+}

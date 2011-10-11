@@ -3,12 +3,13 @@ using namespace cv;
 
 LKTracker::LKTracker(){
   term_criteria = TermCriteria( TermCriteria::COUNT+TermCriteria::EPS, 20, 0.03);
-  window_size = Size(5,5);
+  window_size = Size(4,4);
   level = 5;
   lambda = 0.5;
 }
 
 bool LKTracker::trackf2f(const Mat& img1, const Mat& img2,vector<Point2f> &points1, vector<cv::Point2f> &points2){
+  //TODO!:implement c function cvCalcOpticalFlowPyrLK()
   //Forward-Backward tracking
   calcOpticalFlowPyrLK( img1,img2, points1, points2, status,sim_error, window_size, level, term_criteria, lambda, 0);
   calcOpticalFlowPyrLK( img2,img1, points2, pointsFB, FB_status,FB_error, window_size, level, term_criteria, lambda, 0);

@@ -15,7 +15,7 @@ private:
   float valid;
   float ncc_thesame;
   float thr_nn;
-
+  int acum;
 public:
   //Parameters
   float thr_nn_valid;
@@ -29,7 +29,7 @@ public:
   void trainNN(const std::vector<cv::Mat>& nn_examples);
   void NNConf(const cv::Mat& example,std::vector<int>& isin,float& rsconf,float& csconf);
   void evaluateTh(const std::vector<std::pair<std::vector<int>,int> >& nXT,const std::vector<cv::Mat>& nExT);
-
+  void show();
   //Ferns Members
   int getNumStructs(){return nstructs;}
   float getFernTh(){return thr_fern;}

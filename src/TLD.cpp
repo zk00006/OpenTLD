@@ -43,8 +43,8 @@ void TLD::read(const FileNode& file){
   classifier.read(file);
 }
 
-void TLD::init(const Mat& frame1,const Rect& box){
-  bb_file = fopen("bounding_boxes.txt","w");
+void TLD::init(const Mat& frame1,const Rect& box,FILE* bb_file){
+  //bb_file = fopen("bounding_boxes.txt","w");
   //Get Bounding Boxes
     buildGrid(frame1,box);
     printf("Created %d bounding boxes\n",(int)grid.size());
@@ -219,7 +219,7 @@ double TLD::getVar(const BoundingBox& box,const Mat& sum,const Mat& sqsum){
   return sqmean-mean*mean;
 }
 
-void TLD::processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<Point2f>& points1,vector<Point2f>& points2,BoundingBox& bbnext,bool& lastboxfound, bool tl){
+void TLD::processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<Point2f>& points1,vector<Point2f>& points2,BoundingBox& bbnext,bool& lastboxfound, bool tl, FILE* bb_file){
   vector<BoundingBox> cbb;
   vector<float> cconf;
   int confident_detections=0;
@@ -235,68 +235,70 @@ void TLD::processFrame(const cv::Mat& img1,const cv::Mat& img2,vector<Point2f>& 
   detect(img2);
   ///Integration
   if (tracked){
-      bbnext=tbb;                             //        tld.bb(:,I)  = tBB;
-      lastconf=tconf;                         //        tld.conf(I)  = tConf;
-      lastvalid=tvalid;                       //        tld.valid(I) = tValid;
+      bbnext=tbb;
+      lastconf=tconf;
+      lastvalid=tvalid;
       printf("Tracked\n");
-      if(detected){                           //   if DT % if detections are also defined
-          clusterConf(dbb,dconf,cbb,cconf);   //      [cBB,cConf,cSize] = bb_cluster_confidence(dBB,dConf); % cluster detections
+      if(detected){                                               //   if Detected
+          clusterConf(dbb,dconf,cbb,cconf);                       //   cluster detections
           printf("Found %d clusters\n",(int)cbb.size());
           for (int i=0;i<cbb.size();i++){
-              if (bbOverlap(tbb,cbb[i])<0.5 && cconf[i]>tconf){  //      id = bb_overlap(tld.bb(:,I),cBB) < 0.5 & cConf > tld.conf(I); % get indexes of all clusters that are far from tracker and are more confident then the tracker
+              if (bbOverlap(tbb,cbb[i])<0.5 && cconf[i]>tconf){  //  Get index of a clusters that is far from tracker and are more confident than the tracker
                   confident_detections++;
                   didx=i; //detection index
               }
           }
-          if (confident_detections==1){                                //if sum(id) == 1 % if there is ONE such a cluster, re-initialize the tracker
+          if (confident_detections==1){                                //if there is ONE such a cluster, re-initialize the tracker
               printf("Found a better match..reinitializing tracking\n");
-              bbnext=cbb[didx];                                        //      tld.bb(:,I)  = cBB(:,id);
-              lastconf=cconf[didx];                                    //      tld.conf(I)  = cConf(:,id);
-              lastvalid=false;                                             //      tld.valid(I) = 0;
+              bbnext=cbb[didx];
+              lastconf=cconf[didx];
+              lastvalid=false;
           }
-          else {                                                       //  else % othervide adjust the tracker's trajectory
-              confident_detections=0;
+          else {
+              printf("%d confident cluster was found\n",confident_detections);
               int cx=0,cy=0,cw=0,ch=0;
-              for(int i=0;i<cbb.size();i++){
-                  if(bbOverlap(tbb,cbb[i])>0.7){                        //      idTr = bb_overlap(tBB,tld.dt{I}.bb) > 0.7;  % get indexes of close detections
-                      cx += cbb[i].x;
-                      cy +=cbb[i].y;
-                      cw += cbb[i].width;
-                      ch += cbb[i].height;
-                      confident_detections++;
+              int close_detections=0;
+              for (int i=0;i<dbb.size();i++){
+                  if(bbOverlap(tbb,dbb[i])>0.7){                     // Get mean of close detections
+                      cx += dbb[i].x;
+                      cy +=dbb[i].y;
+                      cw += dbb[i].width;
+                      ch += dbb[i].height;
+                      close_detections++;
+                      printf("weighted detection: %d %d %d %d\n",dbb[i].x,dbb[i].y,dbb[i].width,dbb[i].height);
                   }
               }
-              if (confident_detections>0){
-                  bbnext.x = (10*tbb.x+cx)/(10+confident_detections);   //     tld.bb(:,I) = mean([repmat(tBB,1,10) tld.dt{I}.bb(:,idTr)],2);  % weighted average trackers trajectory with the close detections
-                  bbnext.y = (10*tbb.y+cy)/(10+confident_detections);
-                  bbnext.width = (10*tbb.width+cw)/(10+confident_detections);
-                  bbnext.height =  (10*tbb.height+ch)/(10+confident_detections);
-                  printf("Weighting %d close cluster with tracker..\n",confident_detections);
+              if (close_detections>0){
+                  bbnext.x = cvRound((float)(10*tbb.x+cx)/(float)(10+close_detections));   // weighted average trackers trajectory with the close detections
+                  bbnext.y = cvRound((float)(10*tbb.y+cy)/(float)(10+close_detections));
+                  bbnext.width = cvRound((float)(10*tbb.width+cw)/(float)(10+close_detections));
+                  bbnext.height =  cvRound((float)(10*tbb.height+ch)/(float)(10+close_detections));
+                  printf("Tracker bb: %d %d %d %d\n",tbb.x,tbb.y,tbb.width,tbb.height);
+                  printf("Average bb: %d %d %d %d\n",bbnext.x,bbnext.y,bbnext.width,bbnext.height);
+                  printf("Weighting %d close detection(s) with tracker..\n",close_detections);
               }
               else{
-                printf("No confident cluster was found\n");
+                printf("%d close detections were found\n",close_detections);
 
               }
-          }                                                             //     end
-      }                                                                 //    end
+          }
+      }
   }
-  else{                                       //    else % if tracker is not defined
+  else{                                       //   If NOT tracking
       printf("Not tracking..\n");
       lastboxfound = false;
       lastvalid = false;
-      if(detected){                           //        if DT % and detector is defined
-          clusterConf(dbb,dconf,cbb,cconf);   //            [cBB,cConf,cSize] = bb_cluster_confidence(dBB,dConf); % cluster detections
+      if(detected){                           //  and detector is defined
+          clusterConf(dbb,dconf,cbb,cconf);   //  cluster detections
           printf("Found %d clusters\n",(int)cbb.size());
           if (cconf.size()==1){
-              bbnext=cbb[0];                  //                tld.bb(:,I)  = cBB;
-              lastconf=cconf[0];              //                tld.conf(I)  = cConf;
-                                              //                tld.valid(I) = 0;
+              bbnext=cbb[0];
+              lastconf=cconf[0];
               printf("Confident detection..reinitializing tracker\n");
               lastboxfound = true;
           }
       }
-      //end
-  }//end
+  }
   lastbox=bbnext;
   if (lastboxfound)
     fprintf(bb_file,"%d,%d,%d,%d,%f\n",lastbox.x,lastbox.y,lastbox.br().x,lastbox.br().y,lastconf);
@@ -314,7 +316,8 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points1,vector
    *- Confidence(tconf), Predicted bounding box(tbb),Validity(tvalid), points2 (for display purposes only)
    */
   //Generate points
-  bbPoints(points1,lastbox,10,5);
+  //FIXME: tracker may be drifting
+  bbPoints(points1,lastbox,10,1);
   if (points1.size()<=0){
       printf("BB= %d %d %d %d, Points not generated\n",lastbox.x,lastbox.y,lastbox.width,lastbox.height);
       tvalid=false;
@@ -376,10 +379,14 @@ void TLD::bbPredict(const vector<cv::Point2f>& points1,const vector<cv::Point2f>
   else {
       s = 1.0;
   }
-  bb2.x = round(bb1.x +dx);
-  bb2.y = round(bb1.y +dy);
+  float s1 = 0.5*(s-1)*bb1.width;
+  float s2 = 0.5*(s-1)*bb1.height;
+  printf("s= %f s1= %f s2= %f \n",s,s1,s2);
+  bb2.x = round( bb1.x + dx -s1);
+  bb2.y = round( bb1.y + dy -s2);
   bb2.width = round(bb1.width*s);
   bb2.height = round(bb1.height*s);
+
 }
 
 void TLD::detect(const cv::Mat& frame){
@@ -452,7 +459,6 @@ void TLD::detect(const cv::Mat& frame){
   if (dbb.size()>0){
       printf("Found %d NN matches\n",(int)dbb.size());
       detected=true;
-      imshow("Detection",frame(dbb[0]));
   }
   else{
       printf("No NN matches found.\n");
@@ -517,6 +523,7 @@ void TLD::learn(const Mat& img){
   classifier.trainF(fern_examples,2);
   classifier.trainNN(nn_examples);
   printf("success..\n");
+  classifier.show();
 }
 
 void TLD::buildGrid(const cv::Mat& img, const cv::Rect& box){
@@ -608,14 +615,16 @@ void TLD::getBBHull(){
 }
 
 void TLD::bbPoints(vector<cv::Point2f>& points,const BoundingBox& bb,int pts,int margin){
-  int stepx = round((bb.width-2*margin)/pts);
-  int stepy = round((bb.height-2*margin)/pts);
+  //FIXME: dynamic margin for when the bbox is too small
+  int stepx = ceil((bb.width-2*margin)/pts);
+  int stepy = ceil((bb.height-2*margin)/pts);
   for (int y=bb.y+margin;y<bb.y+bb.height-margin;y+=stepy){
       for (int x=bb.x+margin;x<bb.x+bb.width-margin;x+=stepx){
           points.push_back(Point2f(x,y));
       }
   }
 }
+
 bool bbcomp(const BoundingBox& b1,const BoundingBox& b2){
   TLD t;
     if (t.bbOverlap(b1,b2)<0.5)
@@ -623,12 +632,75 @@ bool bbcomp(const BoundingBox& b1,const BoundingBox& b2){
     else
       return true;
 }
+int TLD::clusterBB(const vector<BoundingBox>& dbb,vector<int>& indexes){
+  const int c = dbb.size();
+  //1. Build proximity matrix
+  Mat D(c,c,CV_32F);
+  float d;
+  for (int i=0;i<c;i++){
+      for (int j=i+1;j<c;j++){
+        d = 1-bbOverlap(dbb[i],dbb[j]);
+        D.at<float>(i,j) = d;
+        D.at<float>(j,i) = d;
+      }
+  }
+  //2. Initialize disjoint clustering
+ float L[c-1]; //Level
+ int nodes[c-1][2];
+ int belongs[c];
+ int m=c;
+ for (int i=0;i<c;i++){
+    belongs[i]=i;
+ }
+ for (int it=0;it<c-1;it++){
+ //3. Find nearest neighbor
+     float min_d = 1;
+     int node_a, node_b;
+     for (int i=0;i<D.rows;i++){
+         for (int j=i+1;j<D.cols;j++){
+             if (D.at<float>(i,j)<min_d && belongs[i]!=belongs[j]){
+                 min_d = D.at<float>(i,j);
+                 node_a = i;
+                 node_b = j;
+             }
+         }
+     }
+     if (min_d>0.5){
+         int max_idx =0;
+         bool visited;
+         for (int j=0;j<c;j++){
+             visited = false;
+             for(int i=0;i<2*c-1;i++){
+                 if (belongs[j]==i){
+                     indexes[j]=max_idx;
+                     visited = true;
+                 }
+             }
+             if (visited)
+               max_idx++;
+         }
+         return max_idx;
+     }
+
+ //4. Merge clusters and assign level
+     L[m]=min_d;
+     nodes[it][0] = belongs[node_a];
+     nodes[it][1] = belongs[node_b];
+     for (int k=0;k<c;k++){
+         if (belongs[k]==belongs[node_a] || belongs[k]==belongs[node_b])
+           belongs[k]=m;
+     }
+     m++;
+ }
+ return 1;
+
+}
 
 void TLD::clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,vector<BoundingBox>& cbb,vector<float>& cconf){
   int numbb =dbb.size();
   vector<int> T;
   float space_thr = 0.5;
-
+  int c=1;
   switch (numbb){
   case 1:
     cbb=vector<BoundingBox>(1,dbb[0]);
@@ -637,15 +709,18 @@ void TLD::clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,
     break;
   case 2:
     T =vector<int>(2,0);
-    if (1-bbOverlap(dbb[0],dbb[1])>space_thr)
+    if (1-bbOverlap(dbb[0],dbb[1])>space_thr){
       T[1]=1;
+      c=2;
+    }
     break;
   default:
-    T = vector<int>(numbb);
-    partition(dbb,T,(*bbcomp));
+    T = vector<int>(numbb,0);
+    //c = partition(dbb,T,(*bbcomp));
+    c = clusterBB(dbb,T);
     break;
   }
-  int c = *max_element(T.begin(),T.end()) + 1; //number of clusters
+  //int c = *max_element(T.begin(),T.end()) + 1; //number of clusters
   cconf=vector<float>(c);
   cbb=vector<BoundingBox>(c);
   printf("Cluster indexes: ");

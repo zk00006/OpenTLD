@@ -76,7 +76,6 @@ private:
   cv::Mat iisum;
   cv::Mat iisqsum;
   float var;
-  FILE  *bb_file;
 //Training data
   std::vector<std::pair<std::vector<int>,int> > pX; //positive ferns <features,labels=1>
   std::vector<std::pair<std::vector<int>,int> > nX; // negative ferns <features,labels=0>
@@ -118,11 +117,11 @@ public:
   TLD(const cv::FileNode& file);
   void read(const cv::FileNode& file);
   //Methods
-  void init(const cv::Mat& frame1,const cv::Rect &box);
+  void init(const cv::Mat& frame1,const cv::Rect &box, FILE* bb_file);
   void generatePositiveData(const cv::Mat& frame, int num_warps);
   void generateNegativeData(const cv::Mat& frame);
   void processFrame(const cv::Mat& img1,const cv::Mat& img2,std::vector<cv::Point2f>& points1,std::vector<cv::Point2f>& points2,
-      BoundingBox& bbnext,bool& lastboxfound, bool tl);
+      BoundingBox& bbnext,bool& lastboxfound, bool tl,FILE* bb_file);
   void track(const cv::Mat& img1, const cv::Mat& img2,std::vector<cv::Point2f>& points1,std::vector<cv::Point2f>& points2);
   void detect(const cv::Mat& frame);
   void clusterConf(const std::vector<BoundingBox>& dbb,const std::vector<float>& dconf,std::vector<BoundingBox>& cbb,std::vector<float>& cconf);
@@ -139,5 +138,6 @@ public:
       const BoundingBox& bb1,BoundingBox& bb2);
   double getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
   bool bbComp(const BoundingBox& bb1,const BoundingBox& bb2);
+  int clusterBB(const std::vector<BoundingBox>& dbb,std::vector<int>& indexes);
 };
 

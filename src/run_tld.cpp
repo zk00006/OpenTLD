@@ -13,6 +13,7 @@ bool gotBB = false;
 bool tl = false;
 bool rep = false;
 bool fromfile=false;
+string video;
 
 void readBB(char* file){
   ifstream bb_file (file);
@@ -75,7 +76,7 @@ void read_options(int argc, char** argv,VideoCapture& capture,FileStorage &fs){
       }
       if (strcmp(argv[i],"-s")==0){
           if (argc>i){
-              string video = string(argv[i+1]);
+              video = string(argv[i+1]);
               capture.open(video);
               fromfile = true;
           }
@@ -120,16 +121,23 @@ int main(int argc, char * argv[]){
   tld.read(fs.getFirstTopLevelNode());
   Mat frame;
   Mat last_gray;
-  capture >> frame;
-  cvtColor(frame, last_gray, CV_RGB2GRAY);
   Mat first;
-  frame.copyTo(first);
+  if (fromfile){
+      capture >> frame;
+      cvtColor(frame, last_gray, CV_RGB2GRAY);
+      frame.copyTo(first);
+  }else{
+      capture.set(CV_CAP_PROP_FRAME_WIDTH,340);
+      capture.set(CV_CAP_PROP_FRAME_HEIGHT,240);
+  }
+
   ///Initialization
 GETBOUNDINGBOX:
   while(!gotBB)
   {
-    if (!fromfile)
+    if (!fromfile){
       capture >> frame;
+    }
     else
       first.copyTo(frame);
     cvtColor(frame, last_gray, CV_RGB2GRAY);
@@ -138,7 +146,7 @@ GETBOUNDINGBOX:
     if (cvWaitKey(33) == 'q')
 	    return 0;
   }
-  if (min(box.width,box.height)<24){
+  if (min(box.width,box.height)<(int)fs.getFirstTopLevelNode()["min_win"]){
       cout << "Bounding box too small, try again." << endl;
       gotBB = false;
       goto GETBOUNDINGBOX;
@@ -146,7 +154,8 @@ GETBOUNDINGBOX:
   //Remove callback
   cvSetMouseCallback( "TLD", NULL, NULL );
   printf("Initial Bounding Box = x:%d y:%d h:%d w:%d\n",box.x,box.y,box.width,box.height);
-  tld.init(last_gray,box);
+  FILE  *bb_file = fopen("bounding_boxes.txt","w");
+  tld.init(last_gray,box,bb_file);
 
   ///Run-time
   Mat current_gray;
@@ -161,7 +170,7 @@ REPEAT:
     //get frame
     cvtColor(frame, current_gray, CV_RGB2GRAY);
     //Process Frame
-    tld.processFrame(last_gray,current_gray,pts1,pts2,pbox,status,tl);
+    tld.processFrame(last_gray,current_gray,pts1,pts2,pbox,status,tl,bb_file);
     //Draw Points
     if (status){
       drawPoints(frame,pts1);
@@ -183,8 +192,11 @@ REPEAT:
   if (rep){
     rep = false;
     tl = false;
-    capture.set(CV_CAP_PROP_POS_FRAMES,0);
+    //capture.set(CV_CAP_PROP_POS_AVI_RATIO,0);
+    capture.release();
+    capture.open(video);
     goto REPEAT;
   }
+  fclose(bb_file);
   return 0;
 }
