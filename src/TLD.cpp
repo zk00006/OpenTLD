@@ -316,9 +316,8 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points1,vector
    *- Confidence(tconf), Predicted bounding box(tbb),Validity(tvalid), points2 (for display purposes only)
    */
   //Generate points
-  //FIXME: tracker may be drifting
-  bbPoints(points1,lastbox,10,1);
-  if (points1.size()<=0){
+  bbPoints(points1,lastbox);
+  if (points1.size()<1){
       printf("BB= %d %d %d %d, Points not generated\n",lastbox.x,lastbox.y,lastbox.width,lastbox.height);
       tvalid=false;
       tracked=false;
@@ -330,7 +329,7 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points1,vector
   if (tracked){
       //Bounding box prediction
       bbPredict(points,points2,lastbox,tbb);
-      if (tracker.getFB()>10 ||tbb.x < 0 || tbb.y<0 || tbb.br().x > img2.cols || tbb.br().y > img2.rows){
+      if (tracker.getFB()>10 || tbb.x>img2.cols ||  tbb.y>img2.rows || tbb.br().x < 1 || tbb.br().y <1){
           tvalid =false; //too unstable prediction or bounding box out of image
           tracked = false;
           printf("Too unstable predictions FB error=%f\n",tracker.getFB());
@@ -339,7 +338,12 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points1,vector
       //Estimate Confidence and Validity
       Mat pattern;
       Scalar mean, stdev;
-      getPattern(img2(tbb),pattern,mean,stdev);
+      BoundingBox bb;
+      bb.x = max(tbb.x,0);
+      bb.y = max(tbb.y,0);
+      bb.width = min(min(img2.cols-tbb.x,tbb.width),min(tbb.width,tbb.br().x));
+      bb.height = min(min(img2.rows-tbb.y,tbb.height),min(tbb.height,tbb.br().y));
+      getPattern(img2(bb),pattern,mean,stdev);
       vector<int> isin;
       float dummy;
       classifier.NNConf(pattern,isin,dummy,tconf); //Conservative Similarity
@@ -351,6 +355,19 @@ void TLD::track(const Mat& img1, const Mat& img2,vector<Point2f>& points1,vector
   else
     printf("No points tracked\n");
 
+}
+
+void TLD::bbPoints(vector<cv::Point2f>& points,const BoundingBox& bb){
+  int max_pts=10;
+  int margin_h=0;
+  int margin_v=0;
+  int stepx = ceil((bb.width-2*margin_h)/max_pts);
+  int stepy = ceil((bb.height-2*margin_v)/max_pts);
+  for (int y=bb.y+margin_v;y<bb.y+bb.height-margin_v;y+=stepy){
+      for (int x=bb.x+margin_h;x<bb.x+bb.width-margin_h;x+=stepx){
+          points.push_back(Point2f(x,y));
+      }
+  }
 }
 
 void TLD::bbPredict(const vector<cv::Point2f>& points1,const vector<cv::Point2f>& points2,
@@ -386,7 +403,7 @@ void TLD::bbPredict(const vector<cv::Point2f>& points1,const vector<cv::Point2f>
   bb2.y = round( bb1.y + dy -s2);
   bb2.width = round(bb1.width*s);
   bb2.height = round(bb1.height*s);
-
+  printf("predicted bb: %d %d %d %d\n",bb2.x,bb2.y,bb2.br().x,bb2.br().y);
 }
 
 void TLD::detect(const cv::Mat& frame){
@@ -425,10 +442,10 @@ void TLD::detect(const cv::Mat& frame){
       dt.bb.resize(100);
       detections=100;
   }
-  for (int i=0;i<detections;i++){
-        drawBox(img,grid[dt.bb[i]]);
-    }
-  imshow("detections",img);
+//  for (int i=0;i<detections;i++){
+//        drawBox(img,grid[dt.bb[i]]);
+//    }
+//  imshow("detections",img);
   if (detections==0){
         detected=false;
         return;
@@ -450,7 +467,7 @@ void TLD::detect(const cv::Mat& frame){
       getPattern(frame(grid[idx]),dt.patch[i],mean,stdev);                //  Get pattern within bounding box
       classifier.NNConf(dt.patch[i],dt.isin[i],dt.conf1[i],dt.conf2[i]);  //  Evaluate nearest neighbour classifier
       dt.patt[i]=tmp.patt[idx];
-      printf("Testing feature %d, conf:%f isin:(%d|%d|%d)\n",i,dt.conf1[i],dt.isin[i][0],dt.isin[i][1],dt.isin[i][2]);
+      //printf("Testing feature %d, conf:%f isin:(%d|%d|%d)\n",i,dt.conf1[i],dt.isin[i][0],dt.isin[i][1],dt.isin[i][2]);
       if (dt.conf1[i]>nn_th){                                               //  idx = dt.conf1 > tld.model.thr_nn; % get all indexes that made it through the nearest neighbour
           dbb.push_back(grid[idx]);                                         //  BB    = dt.bb(:,idx); % bounding boxes
           dconf.push_back(dt.conf2[i]);                                     //  Conf  = dt.conf2(:,idx); % conservative confidences
@@ -472,9 +489,14 @@ void TLD::evaluate(){
 void TLD::learn(const Mat& img){
   printf("[Learning] ");
   ///Check consistency
+  BoundingBox bb;
+  bb.x = max(lastbox.x,0);
+  bb.y = max(lastbox.y,0);
+  bb.width = min(min(img.cols-lastbox.x,lastbox.width),min(lastbox.width,lastbox.br().x));
+  bb.height = min(min(img.rows-lastbox.y,lastbox.height),min(lastbox.height,lastbox.br().y));
   Scalar mean, stdev;
   Mat pattern;
-  getPattern(img(lastbox),pattern,mean,stdev);
+  getPattern(img(bb),pattern,mean,stdev);
   vector<int> isin;
   float dummy, conf;
   classifier.NNConf(pattern,isin,conf,dummy);
@@ -501,7 +523,13 @@ void TLD::learn(const Mat& img){
   good_boxes.clear();
   bad_boxes.clear();
   getOverlappingBoxes(lastbox,num_closest_update);
-  generatePositiveData(img,num_warps_update);
+  if (good_boxes.size()>0)
+    generatePositiveData(img,num_warps_update);
+  else{
+    lastvalid = false;
+    printf("No good boxes..Not training");
+    return;
+  }
   fern_examples.reserve(pX.size()+bad_boxes.size());
   fern_examples.assign(pX.begin(),pX.end());
   int idx;
@@ -522,7 +550,6 @@ void TLD::learn(const Mat& img){
   /// Classifiers update
   classifier.trainF(fern_examples,2);
   classifier.trainNN(nn_examples);
-  printf("success..\n");
   classifier.show();
 }
 
@@ -614,17 +641,6 @@ void TLD::getBBHull(){
   bbhull.height = y2 -y1;
 }
 
-void TLD::bbPoints(vector<cv::Point2f>& points,const BoundingBox& bb,int pts,int margin){
-  //FIXME: dynamic margin for when the bbox is too small
-  int stepx = ceil((bb.width-2*margin)/pts);
-  int stepy = ceil((bb.height-2*margin)/pts);
-  for (int y=bb.y+margin;y<bb.y+bb.height-margin;y+=stepy){
-      for (int x=bb.x+margin;x<bb.x+bb.width-margin;x+=stepx){
-          points.push_back(Point2f(x,y));
-      }
-  }
-}
-
 bool bbcomp(const BoundingBox& b1,const BoundingBox& b2){
   TLD t;
     if (t.bbOverlap(b1,b2)<0.5)
@@ -633,6 +649,7 @@ bool bbcomp(const BoundingBox& b1,const BoundingBox& b2){
       return true;
 }
 int TLD::clusterBB(const vector<BoundingBox>& dbb,vector<int>& indexes){
+  //FIXME: Conditional jump or move depends on uninitialised value(s)
   const int c = dbb.size();
   //1. Build proximity matrix
   Mat D(c,c,CV_32F);
@@ -716,11 +733,10 @@ void TLD::clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,
     break;
   default:
     T = vector<int>(numbb,0);
-    //c = partition(dbb,T,(*bbcomp));
-    c = clusterBB(dbb,T);
+    c = partition(dbb,T,(*bbcomp));
+    //c = clusterBB(dbb,T);
     break;
   }
-  //int c = *max_element(T.begin(),T.end()) + 1; //number of clusters
   cconf=vector<float>(c);
   cbb=vector<BoundingBox>(c);
   printf("Cluster indexes: ");
@@ -741,10 +757,10 @@ void TLD::clusterConf(const vector<BoundingBox>& dbb,const vector<float>& dconf,
       }
       if (N>0){
           cconf[i]=cnf/N;
-          bx.x=round(mx/N);
-          bx.y=round(my/N);
-          bx.width=round(mw/N);
-          bx.height=round(mh/N);
+          bx.x=cvRound(mx/N);
+          bx.y=cvRound(my/N);
+          bx.width=cvRound(mw/N);
+          bx.height=cvRound(mh/N);
           cbb[i]=bx;
       }
   }

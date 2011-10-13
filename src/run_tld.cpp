@@ -154,7 +154,9 @@ GETBOUNDINGBOX:
   //Remove callback
   cvSetMouseCallback( "TLD", NULL, NULL );
   printf("Initial Bounding Box = x:%d y:%d h:%d w:%d\n",box.x,box.y,box.width,box.height);
+  //Output file
   FILE  *bb_file = fopen("bounding_boxes.txt","w");
+  //TLD initialization
   tld.init(last_gray,box,bb_file);
 
   ///Run-time
@@ -163,8 +165,8 @@ GETBOUNDINGBOX:
   vector<Point2f> pts1;
   vector<Point2f> pts2;
   bool status=true;
-  int frames = 0;
-  int detections = 0;
+  int frames = 1;
+  int detections = 1;
 REPEAT:
   while(capture.read(frame)){
     //get frame
@@ -192,6 +194,8 @@ REPEAT:
   if (rep){
     rep = false;
     tl = false;
+    fclose(bb_file);
+    bb_file = fopen("final_detector.txt","w");
     //capture.set(CV_CAP_PROP_POS_AVI_RATIO,0);
     capture.release();
     capture.open(video);

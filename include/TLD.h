@@ -133,7 +133,7 @@ public:
   void getOverlappingBoxes(const cv::Rect& box1,int num_closest);
   void getBBHull();
   void getPattern(const cv::Mat& img, cv::Mat& pattern,cv::Scalar& mean,cv::Scalar& stdev);
-  void bbPoints(std::vector<cv::Point2f>& points, const BoundingBox& bb,int pts,int margin);
+  void bbPoints(std::vector<cv::Point2f>& points, const BoundingBox& bb);
   void bbPredict(const std::vector<cv::Point2f>& points1,const std::vector<cv::Point2f>& points2,
       const BoundingBox& bb1,BoundingBox& bb2);
   double getVar(const BoundingBox& box,const cv::Mat& sum,const cv::Mat& sqsum);
