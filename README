@@ -1,0 +1,68 @@
+=======
+ Usage
+=======
+
+Keyboard shortcuts:
+q...quit
+b...remember current frame as background model / clear background
+c...clear model and stop tracking
+l...toggle learning
+a...toggle alternating mode (if true, detector is switched off when tracker is available)
+e...export model to file 'model'
+i...import model from file specified in configuration parameter "modelPath"
+r...clear model, let user reinit tracking
+
+command line options:
+usage: tld [option arguments] [arguments]
+option arguments:
+[-a <startFrameNumber>] video starts at the frameNumber <startFrameNumber>
+[-c] shows color images instead of greyscale
+[-d <device>] select input device: <device>=(IMGS|CAM|VID)
+	IMGS: capture from images
+	CAM: capture from connected camera
+	VID: capture from a video
+[-e] shows detections
+[-f] shows foreground
+[-i <path>] <path> to the images or to the video
+[-h] shows help
+[-j <number>] specifies the <number> of the last frames which are considered by the trajectory; 0 disables the trajectory
+[-m <path>] if specified load a model from <path>. An initialBoundingBox must be specified or selectManually must be true. 
+[-p <path>] prints results into the file <path>
+[-q] open QT-Config GUI
+[-s] if set, user can select initial bounding box
+[-t <theta>] threshold for determining positive results
+[-z <lastFrameNumber>] video ends at the frameNumber <lastFrameNumber>.
+	If <lastFrameNumber> is 0 or the optaion argument isn't specified means
+	take all frames are taken.
+arguments:
+[<path>] <path> to the config file
+
+===========
+ Compiling
+===========
+
+Dependencies:
+- OpenCV & OpenCV highgui >= 2.0
+- CMake >= 2.6
+- QtGui4 & QtCore4 >= 4.4 (optional)
+- NSIS (optional, Windows)
+
+Use CMake to build the project. You can use "cmake-gui", if you need a graphical user interface.
+- Specify the source path (root path of the dictionary) and the binary path (where to build the program, out
+  of source buid recommended)
+- Configure
+- Select compiler
+- Define the install path and other options
+- Generate
+- Windows: go to the binary directory and build the solutions you want (!!!You have to compile in RELEASE mode!!!):
+  o tld: build the project
+  o INSTALL: install the project
+  o PACKAGE: create a NSIS-installer (NSIS required)
+  Linux: go with the terminal to the build directory
+  o make: build the project
+  o make install all: install the project
+  o make package: generates a package (.tgz file if GENERATE_DEB_PACKAGE=false, .deb file if GENERATE_DEB_PACKAGE=true)
+
+Options:
+- BUILD_WITH_QT: build project with a Qt-settings-dialog (Qt must be installed)
+- GENERATE_DEB_PACKAGE(Linux): build a Debian (.deb) packages
