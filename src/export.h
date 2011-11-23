@@ -20,7 +20,7 @@
  * export.h
  *
  *  Created on: Nov 18, 2011
- *      Author: georg
+ *      Author: Georg Nebehay
  */
 
 #ifndef EXPORT_H_

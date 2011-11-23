@@ -20,7 +20,7 @@
  * imAcq.h
  *
  *  Created on: 18 May 2011
- *      Author: georg
+ *      Author: Georg Nebehay
  */
 
 #ifndef IMACQ_IMPL_H_

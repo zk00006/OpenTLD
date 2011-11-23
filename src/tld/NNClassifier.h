@@ -20,7 +20,7 @@
  * NNClassifier.h
  *
  *  Created on: Nov 16, 2011
- *      Author: georg
+ *      Author: Georg Nebehay
  */
 
 #ifndef NNCLASSIFIER_H_

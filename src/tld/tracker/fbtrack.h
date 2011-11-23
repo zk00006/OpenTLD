@@ -20,7 +20,7 @@
  * fbtrack.h
  *
  *  Created on: 29.04.2011
- *      Author: georg
+ *      Author: Georg Nebehay
  */
 
 #ifndef FBTRACK_H_

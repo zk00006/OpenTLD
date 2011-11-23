@@ -20,7 +20,7 @@
  * MainX.cpp
  *
  *  Created on: Nov 17, 2011
- *      Author: georg
+ *      Author: Georg Nebehay
  */
 
 #include "Main.h"

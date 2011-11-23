@@ -20,7 +20,7 @@
  * ForegroundDetector.cpp
  *
  *  Created on: Nov 16, 2011
- *      Author: georg
+ *      Author: Georg Nebehay
  */
 
 #include "ForegroundDetector.h"

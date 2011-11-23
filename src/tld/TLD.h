@@ -20,7 +20,7 @@
  * TLD.h
  *
  *  Created on: Nov 17, 2011
- *      Author: georg
+ *      Author: Georg Nebehay
  */
 
 #ifndef TLD_H_

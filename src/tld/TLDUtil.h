@@ -20,7 +20,7 @@
  * util.h
  *
  *  Created on: 30.05.2011
- *      Author: georg
+ *      Author: Georg Nebehay
  */
 
 #ifndef TLDUTIL_H_
