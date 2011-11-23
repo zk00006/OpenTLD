@@ -25,6 +25,7 @@ namespace tld {
 Settings::Settings() :
 		m_useProportionalShift(true),
 		m_loadModel(false),
+		m_trackerEnabled(true),
 		m_selectManually(false),
 		m_learningEnabled(true),
 		m_showOutput(true),

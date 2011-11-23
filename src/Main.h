@@ -42,7 +42,6 @@ public:
 	TLD * tld;
 	ImAcq * imAcq;
 	Gui * gui;
-
 	bool showOutput;
 	const char * printResults;
 	bool saveOutput;

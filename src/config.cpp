@@ -259,6 +259,9 @@ int Config::init(int argc, char ** argv) {
 		// learningEnabled
 		m_cfg.lookupValue("learningEnabled", m_settings.m_learningEnabled);
 
+		// learningEnabled
+		m_cfg.lookupValue("trackerEnabled", m_settings.m_trackerEnabled);
+
 		// selectManuall
 		if(!m_selectManuallySet)
 			m_cfg.lookupValue("selectManually", m_settings.m_selectManually);
@@ -321,6 +324,7 @@ int Config::configure(Main* main) {
 	imAcq->currentFrame = m_settings.m_startFrame;
 
 	// main
+	main->tld->trackerEnabled = m_settings.m_trackerEnabled;
 	main->showOutput = m_settings.m_showOutput;
 	main->printResults = (m_settings.m_printResults.empty()) ? NULL : m_settings.m_printResults.c_str();
 	main->saveOutput = m_settings.m_saveOutput;
