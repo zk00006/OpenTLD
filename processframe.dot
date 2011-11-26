@@ -1,0 +1,32 @@
+digraph graphname {
+ranksep = 1.5;
+"FerNNClassifier::trainF"->"FerNNClassifier::update";
+"FerNNClassifier::trainNN"->"FerNNClassifier::NNConf";
+"TLD::generatePositiveData"->"TLD::getPattern";
+"TLD::generatePositiveData"->"FerNNClassifier::getFeatures";
+"TLD::processFrame"->"TLD::track";
+"TLD::processFrame"->"TLD::detect";
+"TLD::processFrame"->"TLD::clusterConf";
+"TLD::processFrame"->"TLD::learn";
+"TLD::track"->"TLD::bbPoints";
+"TLD::track"->"LKTracker::trackf2f";
+"TLD::track"->"TLD::bbPredict";
+"TLD::track"->"TLD::getPattern";
+"TLD::track"->"FerNNClassifier::NNConf";
+"TLD::detect"->"FerNNClassifier::getNumStructs";
+"TLD::detect"->"FerNNClassifier::getFernTh";
+"TLD::detect"->"FerNNClassifier::getFeatures";
+"TLD::detect"->"FerNNClassifier::measure_forest";
+"TLD::detect"->"FerNNClassifier::getNNTh";
+"TLD::detect"->"TLD::getPattern";
+"TLD::detect"->"FerNNClassifier::NNConf";
+"TLD::learn"->"TLD::getPattern";
+"TLD::learn"->"FerNNClassifier::NNConf";
+"TLD::learn"->"TLD::getOverlappingBoxes";
+"TLD::learn"->"TLD::generatePositiveData";
+"TLD::learn"->"FerNNClassifier::trainF";
+"TLD::learn"->"FerNNClassifier::trainNN";
+"TLD::learn"->"FerNNClassifier::show";
+"TLD::getOverlappingBoxes"->"TLD::getBBHull";
+"main"->"TLD::processFrame";
+}
