@@ -7,10 +7,10 @@ set(TLD_SOURCES
     gui.cpp
     Main.cpp
     settings.cpp
-	imacq/imAcq.cpp
+    imacq/imAcq.cpp
     tld/Clustering.cpp
     tld/DetectionResult.cpp
-	tld/DetectorCascade.cpp
+    tld/DetectorCascade.cpp
     tld/EnsembleClassifier.cpp
     tld/ForegroundDetector.cpp
     tld/MedianFlowTracker.cpp
@@ -23,16 +23,6 @@ set(TLD_SOURCES
     tld/tracker/fbtrack.cpp
     tld/tracker/lk.cpp
     tld/tracker/median.cpp)
-
-#-------------------------------------------------------------------------------
-#libraries to link
-if(UNIX)
-    set(TLD_LINK_LIBS highgui config++ cvblobs)
-endif(UNIX)
-
-if(WIN32)
-    set(TLD_LINK_LIBS cv200 cvblobslib cxcore200 highgui200 libconfig++ winmm)
-endif(WIN32)
 
 #-------------------------------------------------------------------------------
 #Qt4 specific
@@ -48,12 +38,14 @@ endif(BUILD_WITH_QT)
 
 #-------------------------------------------------------------------------------
 #build
+add_library(cvblobs cvblobs/blob.cpp cvblobs/BlobContour.cpp cvblobs/BlobOperators.cpp cvblobs/BlobProperties.cpp cvblobs/BlobResult.cpp cvblobs/ComponentLabeling.cpp)
+add_library(config config/grammar.c config/libconfig.c config/libconfigcpp.c++ config/scanctx.c config/scanner.c config/strbuf.c)
 add_executable(tld ${TLD_SOURCES})
 set_target_properties(tld PROPERTIES OUTPUT_NAME ${TLD_EXECUTABLE_NAME})
 
 #-------------------------------------------------------------------------------
 #link
-target_link_libraries(tld ${TLD_LINK_LIBS})
+target_link_libraries(tld config cvblobs ${OpenCV_LIBS})
 
 #-------------------------------------------------------------------------------
 #install
@@ -62,19 +54,3 @@ install(TARGETS tld DESTINATION bin)
 if(NOT GENERATE_DEB_PACKAGE)
     install(FILES ${PROJECT_SOURCE_DIR}/conf/config-sample.cfg DESTINATION bin RENAME config.cfg)
 endif(NOT GENERATE_DEB_PACKAGE)
-
-
-if(WIN32)
-    install(FILES
-            ${PROJECT_SOURCE_DIR}/dll/cv200.dll
-            ${PROJECT_SOURCE_DIR}/dll/cxcore200.dll
-            ${PROJECT_SOURCE_DIR}/dll/highgui200.dll
-            ${PROJECT_SOURCE_DIR}/dll/libconfig++.dll
-        DESTINATION bin)
-    if(BUILD_WITH_QT)
-		install(FILES
-		        ${QT_BINARY_DIR}/QtCore4.dll
-		        ${QT_BINARY_DIR}/QtGui4.dll
-		    DESTINATION bin)
-	endif(BUILD_WITH_QT)
-endif(WIN32)

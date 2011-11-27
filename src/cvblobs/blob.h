@@ -1,9 +1,9 @@
 /************************************************************************
   			Blob.h
   			
-FUNCIONALITAT: Definiciï¿½ de la classe CBlob
+FUNCIONALITAT: Definició de la classe CBlob
 AUTOR: Inspecta S.L.
-MODIFICACIONS (Modificaciï¿½, Autor, Data):
+MODIFICACIONS (Modificació, Autor, Data):
 
 FUNCTIONALITY: Definition of the CBlob class and some helper classes to perform
 			   some calculations on it
@@ -47,7 +47,7 @@ public:
 	CBlob( const CBlob &src );
 	CBlob( const CBlob *src );
 
-	//! Operador d'assignaciï¿½
+	//! Operador d'assignació
 	//! Assigment operator
 	CBlob& operator=(const CBlob &src );
 	
@@ -89,7 +89,7 @@ public:
 	//! Get standard deviation grey color
 	double StdDev( IplImage *image );
 
-	//! Indica si el blob estï¿½ buit ( no tï¿½ cap info associada )
+	//! Indica si el blob està buit ( no té cap info associada )
 	//! Shows if the blob has associated information
 	bool IsEmpty();
 

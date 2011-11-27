@@ -26,6 +26,8 @@ project(tld)
 
 cmake_minimum_required(VERSION 2.6)
 
+FIND_PACKAGE( OpenCV REQUIRED )
+
 #-------------------------------------------------------------------------------
 #version
 set(TLD_VERSION_MAJOR 1)
@@ -55,11 +57,8 @@ set(CPACK_PACKAGE_VERSION_MAJOR ${TLD_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${TLD_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${TLD_VERSION_PATCH})
 set(CPACK_PACKAGE_VERSION ${TLD_VERSION})
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Mr. Foo")
 if(BUILD_WITH_QT)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqtgui4 (>= 4:4.0.0), libqtcore4 (>= 4:4.0.0), libhighgui4 (>= 2.0.0), libcv4 (>= 2.0.0)")
-else(BUILD_WITH_QT)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libhighgui4 (>= 2.0.0), libcv4 (>= 2.0.0)")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqtgui4 (>= 4:4.0.0), libqtcore4 (>= 4:4.0.0)")
 endif(BUILD_WITH_QT)
 include(CPack)
 
@@ -90,18 +89,18 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 #-------------------------------------------------------------------------------
 #compiler and linker options
-include_directories(${PROJECT_SOURCE_DIR}/include/opencv ${PROJECT_SOURCE_DIR}/include/cvblobs ${PROJECT_SOURCE_DIR}/include ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/src/tld ${PROJECT_SOURCE_DIR}/src/imacq ${PROJECT_SOURCE_DIR}/src/tld/tracker)
+include_directories(${PROJECT_SOURCE_DIR}/src/cvblobs ${PROJECT_SOURCE_DIR}/src/config ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/src/tld ${PROJECT_SOURCE_DIR}/src/imacq ${PROJECT_SOURCE_DIR}/src/tld/tracker)
 link_directories(${PROJECT_SOURCE_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
 #-------------------------------------------------------------------------------
 #platform specific
 if(UNIX)
-    add_definitions(-Wall -fopenmp)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
 endif(UNIX)
 
 if(WINDOWS)
-    add_definitions(/openmp)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /openmp")
 endif(WINDOWS)
 
 #-------------------------------------------------------------------------------
@@ -130,3 +129,4 @@ message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
 message(STATUS "Change a value with: cmake -D<Variable>=<Value>")
 message(STATUS "-------------------------------------------------------------------------------")
 message(STATUS)
+

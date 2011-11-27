@@ -1,9 +1,9 @@
 /************************************************************************
   			BlobLibraryConfiguration.h
   			
-FUNCIONALITAT: Configuraciï¿½ del comportament global de la llibreria
+FUNCIONALITAT: Configuració del comportament global de la llibreria
 AUTOR: Inspecta S.L.
-MODIFICACIONS (Modificaciï¿½, Autor, Data):
+MODIFICACIONS (Modificació, Autor, Data):
 
 FUNCTIONALITY: Global configuration of the library
 AUTHOR: Inspecta S.L.
@@ -19,5 +19,4 @@ MODIFICATIONS (Modification, Author, Date):
 //#define BLOB_OBJECT_FACTORY
 
 //! Show/not show blob access errors
-//SHOW ERRORS USES .NET
-//#define _SHOW_ERRORS
+//#define _SHOW_ERRORS  //AO: Only works for WIN.

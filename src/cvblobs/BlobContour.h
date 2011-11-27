@@ -2,9 +2,10 @@
 #define BLOBCONTOUR_H_INCLUDED
 
 
-#include <list>
+#include "list"
 #include <opencv/cv.h>
-#include <opencv/cxtypes.h>
+//#include "cxtypes.h"  //AO
+#include <opencv/cxcore.h>   //
 
 //! Type of chain codes
 typedef unsigned char t_chainCode;
@@ -22,6 +23,7 @@ typedef CvSeq* t_PointList;
 class CBlobContour
 {
 	friend class CBlob;
+	friend class CBlobProperties; //AO
 	
 public:
 	//! Constructors
