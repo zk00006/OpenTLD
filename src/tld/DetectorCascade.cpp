@@ -271,9 +271,10 @@ void DetectorCascade::detect(Mat img) {
 
 		ensembleClassifier->classifyWindow(i);
 
-		if(detectionResult->posteriors[i] > 0.5) {
-			nnClassifier->classifyWindow(img, i);
+		if(detectionResult->posteriors[i] < 0.5) {
+			continue;
 		}
+		nnClassifier->classifyWindow(img, i);
 	}
 	//Cluster
 	clustering->clusterConfidentIndices();
