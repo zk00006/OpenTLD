@@ -154,7 +154,7 @@ void TLD::generatePositiveData(const Mat& frame, int num_warps){
        generator(frame,pt,warped,bbhull.size(),rng);
        for (int b=0;b<good_boxes.size();b++){
          idx=good_boxes[b];
-         classifier.getFeatures(img,grid[idx],grid[idx].sidx,fern);
+         classifier.getFeatures(img(grid[idx]),grid[idx].sidx,fern);
          pX.push_back(make_pair(fern,1));
      }
   }
@@ -190,7 +190,7 @@ void TLD::generateNegativeData(const Mat& frame){
       idx = bad_boxes[j];
           if (getVar(grid[idx],iisum,iisqsum)<var*0.5f)
             continue;
-      classifier.getFeatures(frame,grid[idx],grid[idx].sidx,fern);
+      classifier.getFeatures(frame(grid[idx]),grid[idx].sidx,fern);
       nX.push_back(make_pair(fern,0));
       a++;
   }
@@ -423,7 +423,7 @@ void TLD::detect(const cv::Mat& frame){
   for (int i=0;i<grid.size();i++){//FIXME: BottleNeck
       if (getVar(grid[i],iisum,iisqsum)>=var){
           a++;
-          classifier.getFeatures(img,grid[i],grid[i].sidx,ferns);
+          classifier.getFeatures(img(grid[i]),grid[i].sidx,ferns);
           conf = classifier.measure_forest(ferns);
           tmp.conf[i]=conf;
           tmp.patt[i]=ferns;

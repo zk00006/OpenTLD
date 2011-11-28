@@ -1,6 +1,6 @@
 %YAML:1.0
 Parameters:
-   min_win: 24
+   min_win: 20
    patch_size: 15
    ncc_thesame: 0.95
    valid: 0.5

@@ -22,7 +22,7 @@ public:
 
   void read(const cv::FileNode& file);
   void prepare(const std::vector<cv::Size>& scales);
-  void getFeatures(const cv::Mat& image,const cv::Rect& box,const int& scale_idx,std::vector<int>& fern);
+  void getFeatures(const cv::Mat& image,const int& scale_idx,std::vector<int>& fern);
   void update(const std::vector<int>& fern, int C, int N);
   float measure_forest(std::vector<int> fern);
   void trainF(const std::vector<std::pair<std::vector<int>,int> >& ferns,int resample);
