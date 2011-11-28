@@ -39,13 +39,18 @@ endif(BUILD_WITH_QT)
 #-------------------------------------------------------------------------------
 #build
 add_library(cvblobs cvblobs/blob.cpp cvblobs/BlobContour.cpp cvblobs/BlobOperators.cpp cvblobs/BlobProperties.cpp cvblobs/BlobResult.cpp cvblobs/ComponentLabeling.cpp)
-add_library(config config/grammar.c config/libconfig.c config/libconfigcpp.c++ config/scanctx.c config/scanner.c config/strbuf.c)
+add_library(config config/grammar.c config/libconfig.c config/libconfigcpp.cc config/scanctx.c config/scanner.c config/strbuf.c)
 add_executable(tld ${TLD_SOURCES})
 set_target_properties(tld PROPERTIES OUTPUT_NAME ${TLD_EXECUTABLE_NAME})
 
 #-------------------------------------------------------------------------------
 #link
 target_link_libraries(tld config cvblobs ${OpenCV_LIBS})
+
+if(WIN32)
+target_link_libraries(tld winmm)
+	add_definitions(-DLIBCONFIGXX_STATIC -DLIBCONFIG_STATIC -DYY_NO_UNISTD_H -DYY_USE_CONST -D_CRT_SECURE_NO_DEPRECATE -D_STDLIB_H)
+endif(WIN32)
 
 #-------------------------------------------------------------------------------
 #install
