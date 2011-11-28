@@ -89,23 +89,34 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 #-------------------------------------------------------------------------------
 #compiler and linker options
-include_directories(${PROJECT_SOURCE_DIR}/src/cvblobs ${PROJECT_SOURCE_DIR}/src/config ${PROJECT_SOURCE_DIR}/src ${PROJECT_SOURCE_DIR}/src/tld ${PROJECT_SOURCE_DIR}/src/imacq ${PROJECT_SOURCE_DIR}/src/tld/tracker)
-link_directories(${PROJECT_SOURCE_DIR}/lib)
+include_directories(${PROJECT_SOURCE_DIR}/src/cvblobs ${PROJECT_SOURCE_DIR}/src/config ${PROJECT_SOURCE_DIR}/src/tld ${PROJECT_SOURCE_DIR}/src/tld/tracker ${PROJECT_SOURCE_DIR}/src/imacq ${PROJECT_SOURCE_DIR}/src)
+#link_directories(${PROJECT_SOURCE_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
-#-------------------------------------------------------------------------------
-#platform specific
-if(UNIX)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
-endif(UNIX)
-
-if(WINDOWS)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /openmp")
-endif(WINDOWS)
+if(WIN32)
+	add_definitions(-DLIBCONFIGXX_STATIC -DLIBCONFIG_STATIC) #Needed when linking libconfig statically
+endif(WIN32)
 
 #-------------------------------------------------------------------------------
 #add subdirectories
-add_subdirectory(src)
+add_subdirectory(src/imacq)
+add_subdirectory(src/cvblobs)
+add_subdirectory(src/config)
+add_subdirectory(src/tld)
+add_subdirectory(src/main)
+
+#-------------------------------------------------------------------------------
+#Qt4 specific
+if(BUILD_WITH_QT)
+    include_directories(${CMAKE_CURRENT_BINARY_DIR})
+    set(TLD_QT_HEADERS ui/qtconfiggui.h)
+    set(TLD_QT_FORMS ui/qtconfiggui.ui)
+    QT4_WRAP_CPP(TLD_QT_HEADERS_MOC ${TLD_QT_HEADERS})
+    QT4_WRAP_UI(TLD_QT_FORMS_HEADERS ${TLD_QT_FORMS})
+    set(TLD_LINK_LIBS ${TLD_LINK_LIBS} ${QT_LIBRARIES})
+    set(TLD_SOURCES ${TLD_SOURCES} ${TLD_QT_HEADERS_MOC} ${TLD_QT_FORMS_HEADERS})
+endif(BUILD_WITH_QT)
+
 
 #-------------------------------------------------------------------------------
 #configure & install
