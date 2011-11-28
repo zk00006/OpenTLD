@@ -1,7 +1,7 @@
 #ifndef BLOB_OPERATORS_H_INCLUDED
 #define BLOB_OPERATORS_H_INCLUDED
 
-#include "Blob.h"
+#include "blob.h"
 
 /**************************************************************************
 		Definició de les classes per a fer operacions sobre els blobs

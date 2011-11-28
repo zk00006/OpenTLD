@@ -3,7 +3,7 @@
 
 #include "vector"
 #include "BlobContour.h"
-#include "Blob.h"
+#include "blob.h"
 
 
 //! definició de que es un vector de blobs
