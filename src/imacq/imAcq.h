@@ -47,6 +47,7 @@ typedef struct {
 	CvCapture * capture;
 	int lastFrame;
 	int currentFrame;
+	int camNo;
 } ImAcq ;
 
 ImAcq * imAcqAlloc();

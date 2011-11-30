@@ -30,12 +30,13 @@ ImAcq * imAcqAlloc() {
 	imAcq->method = IMACQ_CAM;
 	imAcq->currentFrame = 1;
 	imAcq->lastFrame = 0;
+	imAcq->camNo = 0;
 	return imAcq;
 }
 
 void imAcqInit(ImAcq * imAcq) {
 	if(imAcq->method == IMACQ_CAM) {
-		imAcq->capture = cvCaptureFromCAM(0);
+		imAcq->capture = cvCaptureFromCAM(imAcq->camNo);
 		if(imAcq->capture == NULL) {
 			printf("Error: Unable to initialize camera\n");
 			exit(0);
