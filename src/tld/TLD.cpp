@@ -60,6 +60,7 @@ void TLD::release() {
 }
 
 void TLD::storeCurrentData() {
+	prevImg.release();
 	prevImg = currImg; //Store old image (if any)
 	prevBB = currBB;		//Store old bounding box (if any)
 
