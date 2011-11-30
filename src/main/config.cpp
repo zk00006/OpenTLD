@@ -18,6 +18,7 @@
 */
 #include "Main.h"
 #include "config.h"
+#include "qtconfiggui.h"
 
 using namespace std;
 
@@ -142,6 +143,17 @@ int Config::init(int argc, char ** argv) {
 			break;
 		}
 	}
+
+	#ifdef WITH_QT
+		if(m_qtConfigGui || (argc == 1)) {
+			bool correctClosed;
+					Settings settings;
+					if(getSettingsFromQtConfigGUI(argc, argv, &settings)) {
+							m_settings = settings;
+				return SUCCESS;
+			}
+		}
+	#endif
 
 	if(!m_imagePathSet && m_methodSet && (m_settings.m_method == IMACQ_VID || m_settings.m_method == IMACQ_IMGS)) {
 		cerr <<  "Error: Must set imagePath and method if capturing from images or a video." << endl;

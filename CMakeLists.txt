@@ -105,17 +105,6 @@ add_subdirectory(src/config)
 add_subdirectory(src/tld)
 add_subdirectory(src/main)
 
-#-------------------------------------------------------------------------------
-#Qt4 specific
-if(BUILD_WITH_QT)
-    include_directories(${CMAKE_CURRENT_BINARY_DIR})
-    set(TLD_QT_HEADERS ui/qtconfiggui.h)
-    set(TLD_QT_FORMS ui/qtconfiggui.ui)
-    QT4_WRAP_CPP(TLD_QT_HEADERS_MOC ${TLD_QT_HEADERS})
-    QT4_WRAP_UI(TLD_QT_FORMS_HEADERS ${TLD_QT_FORMS})
-    set(TLD_LINK_LIBS ${TLD_LINK_LIBS} ${QT_LIBRARIES})
-    set(TLD_SOURCES ${TLD_SOURCES} ${TLD_QT_HEADERS_MOC} ${TLD_QT_FORMS_HEADERS})
-endif(BUILD_WITH_QT)
 
 
 #-------------------------------------------------------------------------------
