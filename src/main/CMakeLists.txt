@@ -28,7 +28,17 @@ add_executable(main ${MAIN_SOURCES})
 
 #-------------------------------------------------------------------------------
 #link
-target_link_libraries(main tld config cvblobs imacq ${OpenCV_LIBS})
+
+target_link_libraries(main tld config cvblobs imacq)
+
+if(GENERATE_DEB_PACKAGE)
+	target_link_libraries(main highgui)
+endif(GENERATE_DEB_PACKAGE)
+
+if(NOT GENERATE_DEB_PACKAGE)
+	target_link_libraries(main ${OpenCV_LIBS})
+endif(NOT GENERATE_DEB_PACKAGE)
+
 
 if(BUILD_WITH_QT)
     target_link_libraries(main ${QT_LIBRARIES})
