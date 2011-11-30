@@ -39,6 +39,7 @@ static char help_text[] =
 		"[-h] shows help\n"
 		"[-j <number>] specifies the <number> of the last frames which are considered by the trajectory; 0 disables the trajectory\n"
 		"[-m <path>] if specified load a model from <path>. An initialBoundingBox must be specified or selectManually must be true.\n"
+		"[-n <number>] specifies which camera device to use.\n"
 		"[-p <path>] prints results into the file <path>\n"
 		"[-q] open QT-Config GUI\n"
 		"[-s] if set, user can select initial bounding box\n"
@@ -72,7 +73,7 @@ int Config::init(int argc, char ** argv) {
 	// check cli arguments
 	int c;
 
-	while((c = getopt(argc, argv, "a:cd:efhi:j:m:np:qst:z:")) != -1) {
+	while((c = getopt(argc, argv, "a:cd:efhi:j:m:n:p:qst:z:")) != -1) {
 		switch(c) {
 		case 'a':
 			m_settings.m_startFrame = atoi(optarg);
@@ -118,6 +119,10 @@ int Config::init(int argc, char ** argv) {
 			m_settings.m_loadModel = true;
 			m_settings.m_modelPath = optarg;
 			m_modelPathSet = true;
+			break;
+		case 'n':
+			m_settings.m_camNo = atoi(optarg);
+			m_camNoSet = true;
 			break;
 		case 'p':
 			m_settings.m_printResults = optarg;
@@ -210,6 +215,10 @@ int Config::init(int argc, char ** argv) {
 		// lastFrame
 		if(!m_lastFrameSet)
 			m_cfg.lookupValue("acq.lastFrame", m_settings.m_lastFrame);
+
+		// camNo
+		if(!m_camNoSet)
+			m_cfg.lookupValue("acq.camNo", m_settings.m_camNo);
 
 		// loadModel
 		if(!m_modelPathSet)

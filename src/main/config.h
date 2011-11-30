@@ -85,6 +85,7 @@ private:
 	bool m_thetaSet;
 	bool m_imagePathSet;
 	bool m_printResultsSet;
+	bool m_camNoSet;
 	bool m_imagePath;
 	bool m_modelPathSet;
 	///@}
