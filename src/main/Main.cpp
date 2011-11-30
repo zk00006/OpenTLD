@@ -104,7 +104,7 @@ void Main::doWork() {
 
 		int confident = (tld->currConf >= threshold) ? 1 : 0;
 
-		if(showOutput || saveOutput) {
+		if(showOutput || saveDir != NULL) {
 			char string[128];
 
 			char learningString[10] = "";
@@ -191,7 +191,7 @@ void Main::doWork() {
 				}
 			}
 
-			if(saveOutput) {
+			if(saveDir != NULL) {
 				char fileName[256];
 				sprintf(fileName, "%s/%.5d.png", saveDir, imAcq->currentFrame);
 

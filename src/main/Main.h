@@ -44,7 +44,6 @@ public:
 	Gui * gui;
 	bool showOutput;
 	const char * printResults;
-	bool saveOutput;
 	const char * saveDir;
 	double threshold;
 	bool showForeground;
@@ -64,7 +63,6 @@ public:
 		tld = new TLD();
 		showOutput = 1;
 		printResults = NULL;
-		saveOutput = 0;
 		saveDir = ".";
 		threshold = 0.5;
 		showForeground = 0;

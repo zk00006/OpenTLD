@@ -44,12 +44,13 @@ static char help_text[] =
 		"[-s] if set, user can select initial bounding box\n"
 		"[-t <theta>] threshold for determining positive results\n"
 		"[-z <lastFrameNumber>] video ends at the frameNumber <lastFrameNumber>.\n"
-		"    If <lastFrameNumber> is 0 or the optaion argument isn't specified means\n"
-		"    take all frames are taken.\n"
+		"    If <lastFrameNumber> is 0 or the option argument isn't specified means\n"
+		"    take all frames.\n"
 		"arguments:\n"
 		"[<path>] <path> to the config file\n";
 
 Config::Config() :
+		m_qtConfigGui(false),
 		m_selectManuallySet(false),
 		m_methodSet(false),
 		m_startFrameSet(false),
@@ -278,11 +279,8 @@ int Config::init(int argc, char ** argv) {
 		if(!m_selectManuallySet)
 			m_cfg.lookupValue("selectManually", m_settings.m_selectManually);
 
-		// saveOutput & saveDir
-		if(m_cfg.lookupValue("saveOutput", m_settings.m_saveOutput)&&(!(m_cfg.lookupValue("saveDir", m_settings.m_outputDir)))) {
-			cerr << "Error: saveDir must be set when using saveOutput" << endl;
-			return PROGRAM_EXIT;
-		}
+		// saveDir
+		m_cfg.lookupValue("saveDir", m_settings.m_outputDir);
 
 		// theta
 		if(!m_thetaSet)
@@ -339,7 +337,6 @@ int Config::configure(Main* main) {
 	main->tld->trackerEnabled = m_settings.m_trackerEnabled;
 	main->showOutput = m_settings.m_showOutput;
 	main->printResults = (m_settings.m_printResults.empty()) ? NULL : m_settings.m_printResults.c_str();
-	main->saveOutput = m_settings.m_saveOutput;
 	main->saveDir = (m_settings.m_outputDir.empty()) ? NULL : m_settings.m_outputDir.c_str();
 	main->threshold = m_settings.m_threshold;
 	main->showForeground = m_settings.m_showForeground;
