@@ -7,7 +7,7 @@ This is a C++ implementation of OpenTLD that was originally published in MATLAB 
 The easiest way to get started is to download the precompiled binaries that are available for Windows and Ubuntu 10.04. You can get a .deb package here:
 http://dl.dropbox.com/u/8715460/tld.deb
 and a windows installer file here:
-http://dl.dropbox.com/u/8715460/tld-setup.exe
+http://dl.dropbox.com/u/8715460/tld.zip
 
 If you have a webcam attached to your PC, you can simply execute tld (on Ubuntu) or tld.exe (on Windows) in order to
 try it out. For other configuration options, please see below.
