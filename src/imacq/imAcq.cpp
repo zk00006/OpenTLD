@@ -49,7 +49,7 @@ void imAcqInit(ImAcq * imAcq) {
 		}
 		// take all frames
 		if(imAcq->lastFrame == 0)
-			imAcq->lastFrame = imAcqVidGetNumberOfFrames(imAcq);
+			imAcq->lastFrame = imAcqVidGetNumberOfFrames(imAcq); //This sometimes returns garbage
 		// lastFrame out of bounds
 		if(imAcq->lastFrame > imAcqVidGetNumberOfFrames(imAcq)) {
 			printf("Error: video has only %d frames you selected %d as last frame.\n",
@@ -63,7 +63,8 @@ void imAcqInit(ImAcq * imAcq) {
 			exit(1);
 		}
 		// set the video position to the correct frame
-		imAcqVidSetNextFrameNumber(imAcq, imAcq->currentFrame);
+		//This produces strange results on some videos and is deactivated for now.
+		//imAcqVidSetNextFrameNumber(imAcq, imAcq->currentFrame);
 	}
 }
 
