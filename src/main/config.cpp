@@ -342,6 +342,7 @@ int Config::configure(Main* main) {
 	imAcq->imgPath = (m_settings.m_imagePath.empty()) ? NULL : m_settings.m_imagePath.c_str();
 	imAcq->lastFrame = m_settings.m_lastFrame;
 	imAcq->currentFrame = m_settings.m_startFrame;
+	imAcq->camNo = m_settings.m_camNo;
 
 	// main
 	main->tld->trackerEnabled = m_settings.m_trackerEnabled;
