@@ -1,12 +1,12 @@
 %YAML:1.0
 Parameters:
-   min_win: 20
+   min_win: 15
    patch_size: 15
    ncc_thesame: 0.95
    valid: 0.5
    num_trees: 10
    num_features: 13
-   thr_fern: 0.5
+   thr_fern: 0.6
    thr_nn: 0.65
    thr_nn_valid: 0.7
    num_closest_init: 10

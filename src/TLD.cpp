@@ -146,6 +146,7 @@ void TLD::generatePositiveData(const Mat& frame, int num_warps){
   Point2f pt(bbhull.x+(bbhull.width-1)*0.5f,bbhull.y+(bbhull.height-1)*0.5f);
   vector<int> fern(classifier.getNumStructs());
   pX.clear();
+  Mat patch;
   if (pX.capacity()<num_warps*good_boxes.size())
     pX.reserve(num_warps*good_boxes.size());
   int idx;
@@ -154,7 +155,8 @@ void TLD::generatePositiveData(const Mat& frame, int num_warps){
        generator(frame,pt,warped,bbhull.size(),rng);
        for (int b=0;b<good_boxes.size();b++){
          idx=good_boxes[b];
-         classifier.getFeatures(img(grid[idx]),grid[idx].sidx,fern);
+		 patch = img(grid[idx]);
+         classifier.getFeatures(patch,grid[idx].sidx,fern);
          pX.push_back(make_pair(fern,1));
      }
   }
@@ -182,15 +184,17 @@ void TLD::generateNegativeData(const Mat& frame){
   int idx;
   //Get Fern Features of the boxes with big variance (calculated using integral images)
   int a=0;
-  int num = std::min((int)bad_boxes.size(),(int)bad_patches*100); //limits the size of bad_boxes to try
+  //int num = std::min((int)bad_boxes.size(),(int)bad_patches*100); //limits the size of bad_boxes to try
   printf("negative data generation started.\n");
   vector<int> fern(classifier.getNumStructs());
-  nX.reserve(num);
-  for (int j=0;j<num;j++){
+  nX.reserve(bad_boxes.size());
+  Mat patch;
+  for (int j=0;j<bad_boxes.size();j++){
       idx = bad_boxes[j];
           if (getVar(grid[idx],iisum,iisqsum)<var*0.5f)
             continue;
-      classifier.getFeatures(frame(grid[idx]),grid[idx].sidx,fern);
+      patch =  frame(grid[idx]);
+	  classifier.getFeatures(patch,grid[idx].sidx,fern);
       nX.push_back(make_pair(fern,0));
       a++;
   }
@@ -200,7 +204,8 @@ void TLD::generateNegativeData(const Mat& frame){
   nEx=vector<Mat>(bad_patches);
   for (int i=0;i<bad_patches;i++){
       idx=bad_boxes[i];
-      getPattern(frame(grid[idx]),nEx[i],dum1,dum2);
+	  patch = frame(grid[idx]);
+      getPattern(patch,nEx[i],dum1,dum2);
   }
   printf("NN: %d\n",(int)nEx.size());
 }
@@ -420,10 +425,12 @@ void TLD::detect(const cv::Mat& frame){
   vector <int> ferns(10);
   float conf;
   int a=0;
+  Mat patch;
   for (int i=0;i<grid.size();i++){//FIXME: BottleNeck
       if (getVar(grid[i],iisum,iisqsum)>=var){
           a++;
-          classifier.getFeatures(img(grid[i]),grid[i].sidx,ferns);
+		  patch = img(grid[i]);
+          classifier.getFeatures(patch,grid[i].sidx,ferns);
           conf = classifier.measure_forest(ferns);
           tmp.conf[i]=conf;
           tmp.patt[i]=ferns;
@@ -464,7 +471,8 @@ void TLD::detect(const cv::Mat& frame){
   float nn_th = classifier.getNNTh();
   for (int i=0;i<detections;i++){                                         //  for every remaining detection
       idx=dt.bb[i];                                                       //  Get the detected bounding box index
-      getPattern(frame(grid[idx]),dt.patch[i],mean,stdev);                //  Get pattern within bounding box
+	  patch = frame(grid[idx]);
+      getPattern(patch,dt.patch[i],mean,stdev);                //  Get pattern within bounding box
       classifier.NNConf(dt.patch[i],dt.isin[i],dt.conf1[i],dt.conf2[i]);  //  Evaluate nearest neighbour classifier
       dt.patt[i]=tmp.patt[idx];
       //printf("Testing feature %d, conf:%f isin:(%d|%d|%d)\n",i,dt.conf1[i],dt.isin[i][0],dt.isin[i][1],dt.isin[i][2]);
