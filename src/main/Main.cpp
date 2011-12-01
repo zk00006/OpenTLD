@@ -84,6 +84,10 @@ void Main::doWork() {
 
 		if(!reuseFrameOnce) {
 			img = imAcqGetImg(imAcq);
+			if(img == NULL) {
+				printf("current image is NULL, assuming end of input.\n");
+				break;
+			}
 			grey = cvCreateImage( cvGetSize(img), 8, 1 );
 			cvCvtColor( img, grey, CV_BGR2GRAY );
 		}
@@ -206,6 +210,8 @@ void Main::doWork() {
 		} else {
 			reuseFrameOnce = false;
 		}
+		//cvWaitKey();
+
 
 	}
 }
