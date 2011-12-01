@@ -88,6 +88,7 @@ private:
 	bool m_camNoSet;
 	bool m_imagePath;
 	bool m_modelPathSet;
+	bool m_initialBBset;
 	///@}
 };
 

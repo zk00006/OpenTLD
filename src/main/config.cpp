@@ -28,6 +28,7 @@ static char help_text[] =
 		"usage: tld [option arguments] [arguments]\n"
 		"option arguments:\n"
 		"[-a <startFrameNumber>] video starts at the frameNumber <startFrameNumber>\n"
+		"[-b <x,y,w,h>] Initial bounding box\n"
 		"[-c] shows color images instead of greyscale\n"
 		"[-d <device>] select input device: <device>=(IMGS|CAM|VID)\n"
 		"    IMGS: capture from images\n"
@@ -63,6 +64,7 @@ Config::Config() :
 		m_thetaSet(false),
 		m_printResultsSet(false),
 		m_imagePath(false),
+		m_initialBBset(false),
 		m_modelPathSet(false) {
 }
 
@@ -73,11 +75,19 @@ int Config::init(int argc, char ** argv) {
 	// check cli arguments
 	int c;
 
-	while((c = getopt(argc, argv, "a:cd:efhi:j:m:n:p:qst:z:")) != -1) {
+	while((c = getopt(argc, argv, "a:b:cd:efhi:j:m:n:p:qst:z:")) != -1) {
 		switch(c) {
 		case 'a':
 			m_settings.m_startFrame = atoi(optarg);
 			m_startFrameSet = true;
+			break;
+		case 'b':
+			char * pch;
+			pch = strtok(optarg, ",");
+			while (pch != NULL) {
+				m_settings.m_initialBoundingBox.push_back(atoi(pch));
+				pch = strtok(NULL, ",");
+			}
 			break;
 		case 'c':
 			m_settings.m_showColorImage = true;
