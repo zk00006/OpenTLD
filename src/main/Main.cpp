@@ -76,6 +76,7 @@ void Main::doWork() {
 
 		tld->selectObject(grey, &bb);
 		skipProcessingOnce = true;
+		reuseFrameOnce = true;
 	}
 
 	while(imAcqHasMoreFrames(imAcq)) {

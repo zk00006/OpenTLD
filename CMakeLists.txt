@@ -26,7 +26,13 @@ project(tld)
 
 cmake_minimum_required(VERSION 2.6)
 
-FIND_PACKAGE( OpenCV REQUIRED )
+if(NOT GENERATE_DEB_PACKAGE)
+	FIND_PACKAGE( OpenCV REQUIRED )
+endif(NOT GENERATE_DEB_PACKAGE)
+
+if(GENERATE_DEB_PACKAGE)
+	include_directories(/usr/include/opencv)
+endif(GENERATE_DEB_PACKAGE)
 
 #-------------------------------------------------------------------------------
 #version
@@ -59,7 +65,7 @@ set(CPACK_PACKAGE_VERSION_PATCH ${TLD_VERSION_PATCH})
 set(CPACK_PACKAGE_VERSION ${TLD_VERSION})
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Georg Nebehay")
 if(BUILD_WITH_QT)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqtgui4 (>= 4:4.0.0), libqtcore4 (>= 4:4.0.0)")
+    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqtgui4 (>= 4.0.0), libqtcore4 (>= 4.0.0), libhighgui4 (>= 2.0.0)")
 endif(BUILD_WITH_QT)
 include(CPack)
 
