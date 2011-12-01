@@ -48,7 +48,6 @@ public:
 	double threshold;
 	bool showForeground;
 	bool showNotConfident;
-	bool showColorImage;
 	bool alternating;
 	bool learningEnabled;
 	bool selectManually;
@@ -66,7 +65,6 @@ public:
 		saveDir = ".";
 		threshold = 0.5;
 		showForeground = 0;
-		showColorImage = 0;
 
 		alternating = 0;
 

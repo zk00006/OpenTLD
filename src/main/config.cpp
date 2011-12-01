@@ -58,7 +58,6 @@ Config::Config() :
 		m_startFrameSet(false),
 		m_lastFrameSet(false),
 		m_trajectorySet(false),
-		m_showColorImageSet(false),
 		m_showDetectionsSet(false),
 		m_showForegroundSet(false),
 		m_thetaSet(false),
@@ -75,7 +74,7 @@ int Config::init(int argc, char ** argv) {
 	// check cli arguments
 	int c;
 
-	while((c = getopt(argc, argv, "a:b:cd:efhi:j:m:n:p:qst:z:")) != -1) {
+	while((c = getopt(argc, argv, "a:b:d:efhi:j:m:n:p:qst:z:")) != -1) {
 		switch(c) {
 		case 'a':
 			m_settings.m_startFrame = atoi(optarg);
@@ -88,10 +87,6 @@ int Config::init(int argc, char ** argv) {
 				m_settings.m_initialBoundingBox.push_back(atoi(pch));
 				pch = strtok(NULL, ",");
 			}
-			break;
-		case 'c':
-			m_settings.m_showColorImage = true;
-			m_showColorImageSet = true;
 			break;
 		case 'd':
 			if(!strcmp(optarg, "CAM")) {
@@ -312,10 +307,6 @@ int Config::init(int argc, char ** argv) {
 		if(!m_showForegroundSet)
 			m_cfg.lookupValue("showForeground", m_settings.m_showForeground);
 
-		// showColorImage
-		if(!m_showColorImageSet)
-			m_cfg.lookupValue("showColorImage", m_settings.m_showColorImage);
-
 		// showDetections
 		if(!m_showDetectionsSet)
 			m_cfg.lookupValue("showDetections", m_settings.m_showDetections);
@@ -360,7 +351,6 @@ int Config::configure(Main* main) {
 	main->threshold = m_settings.m_threshold;
 	main->showForeground = m_settings.m_showForeground;
 	main->showNotConfident = m_settings.m_showNotConfident;
-	main->showColorImage = m_settings.m_showColorImage;
 	main->alternating = m_settings.m_alternating;
 	main->learningEnabled = m_settings.m_learningEnabled;
 	main->selectManually = m_settings.m_selectManually;

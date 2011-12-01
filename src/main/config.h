@@ -79,7 +79,6 @@ private:
 	bool m_startFrameSet;
 	bool m_lastFrameSet;
 	bool m_trajectorySet;
-	bool m_showColorImageSet;
 	bool m_showDetectionsSet;
 	bool m_showForegroundSet;
 	bool m_thetaSet;
