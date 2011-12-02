@@ -88,6 +88,8 @@ private:
 	bool m_imagePath;
 	bool m_modelPathSet;
 	bool m_initialBBset;
+	bool m_showOutputSet;
+	bool m_exportModelAfterRun;
 	///@}
 };
 

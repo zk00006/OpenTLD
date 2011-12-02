@@ -34,7 +34,7 @@ static char help_text[] =
 		"    IMGS: capture from images\n"
 		"    CAM: capture from connected camera\n"
 		"    VID: capture from a video\n"
-		"[-e] shows detections\n"
+		"[-e <path>] export model after run to <path>\n"
 		"[-f] shows foreground\n"
 		"[-i <path>] <path> to the images or to the video\n"
 		"[-h] shows help\n"
@@ -64,7 +64,8 @@ Config::Config() :
 		m_printResultsSet(false),
 		m_imagePath(false),
 		m_modelPathSet(false),
-		m_initialBBset(false) {
+		m_initialBBset(false),
+		m_showOutputSet(false) {
 }
 
 Config::~Config() {
@@ -74,7 +75,7 @@ int Config::init(int argc, char ** argv) {
 	// check cli arguments
 	int c;
 
-	while((c = getopt(argc, argv, "a:b:d:efhi:j:m:n:p:qst:z:")) != -1) {
+	while((c = getopt(argc, argv, "a:b:d:e:fhi:j:m:n:Op:qst:z:")) != -1) {
 		switch(c) {
 		case 'a':
 			m_settings.m_startFrame = atoi(optarg);
@@ -101,8 +102,8 @@ int Config::init(int argc, char ** argv) {
 			}
 			break;
 		case 'e':
-			m_settings.m_showDetections = true;
-			m_showDetectionsSet = true;
+			m_settings.m_exportModelAfterRun = true;
+			m_settings.m_modelExportFile = optarg;
 			break;
 		case 'f':
 			m_settings.m_showForeground = true;
@@ -132,6 +133,10 @@ int Config::init(int argc, char ** argv) {
 		case 'p':
 			m_settings.m_printResults = optarg;
 			m_printResultsSet = true;
+			break;
+		case 'O':
+			m_settings.m_showOutput = false;
+			m_showOutputSet = true;
 			break;
 		case 'q':
 #ifndef WITH_QT
@@ -270,7 +275,8 @@ int Config::init(int argc, char ** argv) {
 		//}
 
 		// showOutput
-		m_cfg.lookupValue("showOutput", m_settings.m_showOutput);
+		if(!m_showOutputSet)
+			m_cfg.lookupValue("showOutput", m_settings.m_showOutput);
 
 		// trajectory
 		if(!m_trajectorySet)
@@ -318,7 +324,8 @@ int Config::init(int argc, char ** argv) {
 		m_cfg.lookupValue("modelExportFile", m_settings.m_modelExportFile);
 
 		// exportModelAfterRun
-		m_cfg.lookupValue("exportModelAfterRun", m_settings.m_exportModelAfterRun);
+		if(!m_exportModelAfterRun)
+			m_cfg.lookupValue("exportModelAfterRun", m_settings.m_exportModelAfterRun);
 
 		// initialBoundingBox
 		try {

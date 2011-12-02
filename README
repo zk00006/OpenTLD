@@ -36,7 +36,7 @@ option arguments:
 	IMGS: capture from images
 	CAM: capture from connected camera
 	VID: capture from a video
-[-e] shows detections
+[-e <path>] export model after run to <path>
 [-f] shows foreground
 [-i <path>] <path> to the images or to the video
 [-h] shows help

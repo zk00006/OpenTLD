@@ -210,9 +210,10 @@ void Main::doWork() {
 		} else {
 			reuseFrameOnce = false;
 		}
-		//cvWaitKey();
+	}
 
-
+	if(exportModelAfterRun) {
+		tldWriteToFile(tld, modelExportFile);
 	}
 }
 
