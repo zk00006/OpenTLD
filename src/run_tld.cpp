@@ -10,7 +10,7 @@ using namespace std;
 Rect box;
 bool drawing_box = false;
 bool gotBB = false;
-bool tl = false;
+bool tl = true;
 bool rep = false;
 bool fromfile=false;
 string video;
@@ -91,8 +91,8 @@ void read_options(int argc, char** argv,VideoCapture& capture,FileStorage &fs){
           else
             print_help(argv);
       }
-      if (strcmp(argv[i],"-tl")==0){
-          tl = true;
+      if (strcmp(argv[i],"-no_tl")==0){
+          tl = false;
       }
       if (strcmp(argv[i],"-r")==0){
           rep = true;

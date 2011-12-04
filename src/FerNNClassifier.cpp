@@ -54,12 +54,12 @@ void FerNNClassifier::prepare(const vector<Size>& scales){
   }
 }
 
-void FerNNClassifier::getFeatures(const cv::Mat& image,const cv::Rect& box,const int& scale_idx, vector<int>& fern){
+void FerNNClassifier::getFeatures(const cv::Mat& image,const int& scale_idx, vector<int>& fern){
   int leaf;
   for (int t=0;t<nstructs;t++){
       leaf=0;
       for (int f=0; f<structSize; f++){
-          leaf = (leaf << 1) + features[scale_idx][t*nstructs+f](image(box));
+          leaf = (leaf << 1) + features[scale_idx][t*nstructs+f](image);
       }
       fern[t]=leaf;
   }
