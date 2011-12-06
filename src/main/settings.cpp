@@ -45,6 +45,7 @@ Settings::Settings() :
 		m_numFeatures(10),
 		m_numTrees(10),
 		m_minSize(25),
+		m_camNo(0),
 		m_threshold(0.7),
 		m_proportionalShift(0.1),
 		m_modelExportFile("model"),
