@@ -33,7 +33,7 @@ namespace tld {
 
 ForegroundDetector::ForegroundDetector() {
 	fgThreshold = 16;
-	minBlobSize = 0; //Should be set to objWidth*objHeight
+	minBlobSize = 0;
 }
 
 ForegroundDetector::~ForegroundDetector() {
@@ -53,11 +53,13 @@ void ForegroundDetector::nextIteration(Mat img) {
 	absdiff(bgImg, img, absImg);
 	threshold(absImg, threshImg, fgThreshold, 255, CV_THRESH_BINARY );
 
-	CBlobResult blobs;
+	IplImage im = (IplImage)threshImg;
+	CBlobResult blobs = CBlobResult(&im, NULL, 0);
 
 	blobs.Filter( blobs, B_EXCLUDE, CBlobGetArea(), B_LESS, minBlobSize );
 
-	vector<Rect>* fgList = new vector<Rect>();
+	vector<Rect>* fgList = detectionResult->fgList;
+	fgList->clear();
 
 	for(int i = 0; i < blobs.GetNumBlobs(); i++) {
 		CBlob * blob = blobs.GetBlob(i);

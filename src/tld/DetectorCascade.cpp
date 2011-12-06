@@ -96,6 +96,8 @@ void DetectorCascade::propagateMembers() {
 	clustering->windows = windows;
 	clustering->numWindows = numWindows;
 
+	foregroundDetector->minBlobSize = minSize*minSize;
+
 	foregroundDetector->detectionResult = detectionResult;
 	varianceFilter->detectionResult = detectionResult;
 	ensembleClassifier->detectionResult = detectionResult;
@@ -253,7 +255,7 @@ void DetectorCascade::detect(Mat img) {
 
 				int bgBox[4];
 				tldRectToArray(detectionResult->fgList->at(j), bgBox);
-				if(tldIsInside(window,bgBox)) {
+				if(tldIsInside(window,bgBox)) { //TODO: This is inefficient and should be replaced by a quadtree
 					isInside = true;
 				}
 			}
