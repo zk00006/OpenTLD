@@ -92,6 +92,8 @@ void DetectorCascade::propagateMembers() {
 	ensembleClassifier->imgWidthStep = imgWidthStep;
 	ensembleClassifier->numScales = numScales;
 	ensembleClassifier->scales = scales;
+	ensembleClassifier->numFeatures = numFeatures;
+	ensembleClassifier->numTrees = numTrees;
 	nnClassifier->windows = windows;
 	clustering->windows = windows;
 	clustering->numWindows = numWindows;
