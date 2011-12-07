@@ -59,7 +59,8 @@ void MedianFlowTracker::track(Mat prevMat, Mat currMat, Rect* prevBB) {
 		w = floor(bb_tracker[2]-bb_tracker[0]+1+0.5);
 		h = floor(bb_tracker[3]-bb_tracker[1]+1+0.5);
 
-		if(!success || x < 0 || y < 0 || w <= 0 || h <= 0 || x +w > currMat.cols || y+h > currMat.rows) {
+		//TODO: Introduce a check for a minimum size
+		if(!success || x < 0 || y < 0 || w <= 0 || h <= 0 || x +w > currMat.cols || y+h > currMat.rows || x!=x || y!=y || w!=w || h!=h) { //x!=x is check for nan
 			//Leave it empty
 		} else {
 			trackerBB = new Rect(x,y,w,h);
