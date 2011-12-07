@@ -189,6 +189,7 @@ void tldReadFromFile(TLD * tld, const char * path) {
 
 	int size = 2 * 2 * ec->numFeatures * ec->numTrees;
 	ec->features = new float[size];
+	ec->numIndices = pow(2.0f, ec->numFeatures);
 	ec->initPosteriors();
 
 	for(int i = 0; i < ec->numTrees; i++) {

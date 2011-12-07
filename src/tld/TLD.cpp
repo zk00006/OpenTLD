@@ -40,6 +40,7 @@ TLD::TLD() {
 	valid = false;
 	wasValid = false;
 	learning = false;
+	currBB = NULL;
 
 	detectorCascade = new DetectorCascade();
 	nnClassifier = detectorCascade->nnClassifier;

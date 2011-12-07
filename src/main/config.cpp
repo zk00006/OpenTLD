@@ -62,10 +62,12 @@ Config::Config() :
 		m_showForegroundSet(false),
 		m_thetaSet(false),
 		m_printResultsSet(false),
+		m_camNoSet(false),
 		m_imagePath(false),
 		m_modelPathSet(false),
 		m_initialBBset(false),
-		m_showOutputSet(false) {
+		m_showOutputSet(false),
+		m_exportModelAfterRun(false){
 }
 
 Config::~Config() {
