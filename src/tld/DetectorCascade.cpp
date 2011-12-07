@@ -116,6 +116,8 @@ void DetectorCascade::release() {
 
 	foregroundDetector->release();
 	ensembleClassifier->release();
+	nnClassifier->release();
+	
 	clustering->release();
 
 	numWindows = 0;

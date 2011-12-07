@@ -57,6 +57,7 @@ TLD::~TLD() {
 void TLD::release() {
 	detectorCascade->release();
 	medianFlowTracker->cleanPreviousData();
+	delete currBB;
 }
 
 void TLD::storeCurrentData() {
@@ -156,7 +157,7 @@ void TLD::fuseHypotheses() {
 }
 
 void TLD::initialLearning() {
-	learning = true;
+	learning = true; //TODO: Why is this here?
 
 	DetectionResult* detectionResult = detectorCascade->detectionResult;
 

@@ -54,8 +54,8 @@ void DetectionResult::init(int numWindows, int numTrees) {
 
 void DetectionResult::reset() {
 	containsValidData = false;
-	fgList->clear();
-	confidentIndices->clear();
+	if(fgList != NULL) fgList->clear();
+	if(confidentIndices != NULL) confidentIndices->clear();
 	numClusters = 0;
 	delete detectorBB;
 	detectorBB = NULL;
@@ -73,6 +73,7 @@ void DetectionResult::release() {
 	confidentIndices = NULL;
 	delete detectorBB;
 	detectorBB = NULL;
+	containsValidData = false;
 }
 
 } /* namespace tld */
