@@ -65,7 +65,9 @@ void tldWriteToFile(TLD * tld, const char * path) {
 	}
 
 	fprintf(file,"%d #numtrees\n", ec->numTrees);
+	tld->detectorCascade->numTrees = ec->numTrees;
 	fprintf(file,"%d #numFeatures\n", ec->numFeatures);
+	tld->detectorCascade->numFeatures = ec->numFeatures;
 	for(int i = 0; i < ec->numTrees; i++) {
 		fprintf(file, "#Tree %d\n", i);
 
