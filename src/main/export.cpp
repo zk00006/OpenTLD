@@ -182,9 +182,11 @@ void tldReadFromFile(TLD * tld, const char * path) {
 	}
 
 	fscanf(file,"%d \n", &ec->numTrees);
+	tld->detectorCascade->numTrees = ec->numTrees;
 	fgets(str_buf, MAX_LEN, file); /*Skip rest of line*/
 
 	fscanf(file,"%d \n", &ec->numFeatures);
+	tld->detectorCascade->numFeatures = ec->numFeatures;
 	fgets(str_buf, MAX_LEN, file); /*Skip rest of line*/
 
 	int size = 2 * 2 * ec->numFeatures * ec->numTrees;
