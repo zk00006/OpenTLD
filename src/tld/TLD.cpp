@@ -158,7 +158,7 @@ void TLD::fuseHypotheses() {
 }
 
 void TLD::initialLearning() {
-	learning = true; //TODO: Why is this here?
+	learning = true; //This is just for display purposes
 
 	DetectionResult* detectionResult = detectorCascade->detectionResult;
 
