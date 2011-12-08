@@ -266,7 +266,7 @@ void TLD::learn() {
 		}
 
 		if(overlap[i] < 0.2) {
-			if(detectionResult->posteriors[i] > 0.1) {
+			if(detectionResult->posteriors[i] > 0.1) { //TODO: Shouldn't this read as 0.5?
 				negativeIndices.push_back(i);
 			}
 
