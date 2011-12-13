@@ -100,6 +100,7 @@ void Clustering::clusterConfidentIndices() {
 	cluster(distances, clusterIndices);
 	if(detectionResult->numClusters == 1) {
 		calcMeanRect(detectionResult->confidentIndices);
+		//TODO: Take the maximum confidence as the result confidence.
 	}
 
 

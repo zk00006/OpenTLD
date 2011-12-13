@@ -56,6 +56,8 @@ public:
 	int m_maxScale; //!< number of scales larger than initial object size
 	int m_numFeatures; //!< number of features
 	int m_numTrees; //!< number of trees
+	float m_thetaP;
+	float m_thetaN;
 	int m_minSize; //!< minimum size of scanWindows
 	int m_camNo; //!< Which camera to use
 	float m_threshold; //!< threshold for determining positive results

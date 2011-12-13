@@ -63,11 +63,11 @@ Config::Config() :
 		m_thetaSet(false),
 		m_printResultsSet(false),
 		m_camNoSet(false),
-		m_imagePath(false),
+		m_imagePathSet(false),
 		m_modelPathSet(false),
-		m_initialBBset(false),
+		m_initialBBSet(false),
 		m_showOutputSet(false),
-		m_exportModelAfterRun(false){
+		m_exportModelAfterRunSet(false){
 }
 
 Config::~Config() {
@@ -268,6 +268,10 @@ int Config::init(int argc, char ** argv) {
 		// numFeatures
 		m_cfg.lookupValue("detector.numFeatures", m_settings.m_numFeatures);
 
+		// numFeatures
+		m_cfg.lookupValue("detector.thetaP", m_settings.m_thetaP);
+		m_cfg.lookupValue("detector.thetaN", m_settings.m_thetaN);
+
 		// backgroundFrame
 		// TODO
 		//const char * backgroundFrame = NULL;
@@ -326,7 +330,7 @@ int Config::init(int argc, char ** argv) {
 		m_cfg.lookupValue("modelExportFile", m_settings.m_modelExportFile);
 
 		// exportModelAfterRun
-		if(!m_exportModelAfterRun)
+		if(!m_exportModelAfterRunSet)
 			m_cfg.lookupValue("exportModelAfterRun", m_settings.m_exportModelAfterRun);
 
 		// initialBoundingBox
@@ -385,6 +389,8 @@ int Config::configure(Main* main) {
 	detectorCascade->minSize = m_settings.m_minSize;
 	detectorCascade->numTrees = m_settings.m_numTrees;
 	detectorCascade->numFeatures = m_settings.m_numFeatures;
+	detectorCascade->nnClassifier->thetaTP = m_settings.m_thetaP;
+	detectorCascade->nnClassifier->thetaFP = m_settings.m_thetaN;
 
 	return SUCCESS;
 }
