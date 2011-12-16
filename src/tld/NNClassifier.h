@@ -40,6 +40,8 @@ namespace tld {
 class NNClassifier {
 	float ncc(float *f1,float *f2);
 public:
+	bool enabled;
+
 	int * windows;
 	float thetaFP;
 	float thetaTP;
@@ -53,8 +55,9 @@ public:
 	void release();
 	float classifyPatch(NormalizedPatch * patch);
 	float classifyBB(Mat img, Rect* bb);
-	void classifyWindow(Mat img, int windowIdx);
+	float classifyWindow(Mat img, int windowIdx);
 	void learn(vector<NormalizedPatch> patches);
+	bool filter(Mat img, int windowIdx);
 };
 
 } /* namespace tld */

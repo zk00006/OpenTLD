@@ -40,6 +40,8 @@ class EnsembleClassifier {
 	void calcFeatureVector(int windowIdx, int * featureVector);
 	void updatePosteriors(int *featureVector, int positive, int amount);
 public:
+	bool enabled;
+
 	//Configurable members
 	int numTrees;
 	int numFeatures;
@@ -71,6 +73,7 @@ public:
 	void classifyWindow(int windowIdx);
 	void updatePosterior(int treeIdx, int idx, int positive, int amount);
 	void learn(Mat img, int * boundary, int positive, int * featureVector);
+	bool filter(int i);
 };
 
 } /* namespace tld */

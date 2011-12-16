@@ -41,7 +41,8 @@ namespace tld {
 
 EnsembleClassifier::EnsembleClassifier() {
 	numTrees=10;
-	numFeatures = 10;
+	numFeatures = 13;
+	enabled = true;
 }
 
 EnsembleClassifier::~EnsembleClassifier() {
@@ -122,6 +123,8 @@ void EnsembleClassifier::initPosteriors() {
 }
 
 void EnsembleClassifier::nextIteration(Mat img) {
+	if(!enabled) return;
+
 	this->img = (unsigned char *)img.data;
 }
 
@@ -163,8 +166,14 @@ void EnsembleClassifier::classifyWindow(int windowIdx) {
 	calcFeatureVector(windowIdx, featureVector);
 
 	detectionResult->posteriors[windowIdx] = calcConfidence(featureVector);
+}
 
+bool EnsembleClassifier::filter(int i)  {
+	if(!enabled) return true;
 
+	classifyWindow(i);
+	if(detectionResult->posteriors[i] < 0.5) return false;
+	return true;
 }
 
 void EnsembleClassifier::updatePosterior(int treeIdx, int idx, int positive, int amount) {
@@ -184,7 +193,9 @@ void EnsembleClassifier::updatePosteriors(int *featureVector, int positive, int 
 }
 
 void EnsembleClassifier::learn(Mat img, int * boundary, int positive, int * featureVector) {
-    float conf = calcConfidence(featureVector);
+    if(!enabled) return;
+
+	float conf = calcConfidence(featureVector);
 
     //Update if positive patch and confidence < 0.5 or negative and conf > 0.5
     if((positive && conf < 0.5) || (!positive && conf > 0.5)) {

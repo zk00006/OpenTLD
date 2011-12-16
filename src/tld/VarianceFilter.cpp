@@ -30,6 +30,7 @@
 namespace tld {
 
 VarianceFilter::VarianceFilter() {
+	enabled = true;
 	minVar = 0;
 	integralImg = NULL;
 	integralImg_squared = NULL;
@@ -58,6 +59,8 @@ float VarianceFilter::calcVariance(int *off) {
 }
 
 void VarianceFilter::nextIteration(Mat img) {
+	if(!enabled) return;
+
 	release();
 
 	integralImg = new IntegralImage<int>(img.size());
@@ -68,6 +71,8 @@ void VarianceFilter::nextIteration(Mat img) {
 }
 
 bool VarianceFilter::filter(int i) {
+	if(!enabled) return true;
+
 	float bboxvar = calcVariance(windowOffsets + TLD_WINDOW_OFFSET_SIZE*i);
 
 	detectionResult->variances[i] = bboxvar;

@@ -110,16 +110,25 @@ float NNClassifier::classifyBB(Mat img, Rect* bb) {
 
 }
 
-void NNClassifier::classifyWindow(Mat img, int windowIdx) {
+float NNClassifier::classifyWindow(Mat img, int windowIdx) {
 	NormalizedPatch patch;
 
 	int * bbox = &windows[TLD_WINDOW_SIZE*windowIdx];
 	tldExtractNormalizedPatchBB(img, bbox, patch.values);
 
-	float conf = classifyPatch(&patch);
-	if(conf > thetaTP) {
-		detectionResult->confidentIndices->push_back(windowIdx);
+	return classifyPatch(&patch);
+}
+
+bool NNClassifier::filter(Mat img, int windowIdx) {
+	if(!enabled) return true;
+
+	float conf = classifyWindow(img, windowIdx);
+
+	if(conf < thetaTP) {
+		return false;
 	}
+
+	return true;
 }
 
 void NNClassifier::learn(vector<NormalizedPatch> patches) {

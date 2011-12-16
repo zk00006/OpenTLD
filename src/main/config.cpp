@@ -298,10 +298,19 @@ int Config::init(int argc, char ** argv) {
 		// learningEnabled
 		m_cfg.lookupValue("learningEnabled", m_settings.m_learningEnabled);
 
-		// learningEnabled
+		// trackerEnabled
 		m_cfg.lookupValue("trackerEnabled", m_settings.m_trackerEnabled);
 
-		// selectManuall
+		// varianceFilterEnabled
+		m_cfg.lookupValue("detector.varianceFilterEnabled", m_settings.m_varianceFilterEnabled);
+
+		// emnsembleClassifierEnabled
+		m_cfg.lookupValue("detector.ensembleClassifierEnabled", m_settings.m_ensembleClassifierEnabled);
+
+		// nnClassifierEnabled
+		m_cfg.lookupValue("detector.nnClassifierEnabled", m_settings.m_nnClassifierEnabled);
+
+		// selectManually
 		if(!m_selectManuallySet)
 			m_cfg.lookupValue("selectManually", m_settings.m_selectManually);
 
@@ -380,6 +389,9 @@ int Config::configure(Main* main) {
 	}
 
 	DetectorCascade* detectorCascade = main->tld->detectorCascade;
+	detectorCascade->varianceFilter->enabled = m_settings.m_varianceFilterEnabled;
+	detectorCascade->ensembleClassifier->enabled = m_settings.m_ensembleClassifierEnabled;
+	detectorCascade->nnClassifier->enabled = m_settings.m_nnClassifierEnabled;
 
 	// classifier
 	detectorCascade->useShift = m_settings.m_useProportionalShift;

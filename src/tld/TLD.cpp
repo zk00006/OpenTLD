@@ -192,7 +192,7 @@ void TLD::initialLearning() {
 		if(overlap[i] < 0.2) {
 			float variance = detectionResult->variances[i];
 
-			if(variance > detectorCascade->varianceFilter->minVar) { //TODO: This check is unnecessary if minVar would be set before calling detect.
+			if(!detectorCascade->varianceFilter->enabled || variance > detectorCascade->varianceFilter->minVar) { //TODO: This check is unnecessary if minVar would be set before calling detect.
 				negativeIndices.push_back(i);
 			}
 		}
@@ -266,11 +266,11 @@ void TLD::learn() {
 		}
 
 		if(overlap[i] < 0.2) {
-			if(detectionResult->posteriors[i] > 0.1) { //TODO: Shouldn't this read as 0.5?
+			if(!detectorCascade->ensembleClassifier->enabled || detectionResult->posteriors[i] > 0.1) { //TODO: Shouldn't this read as 0.5?
 				negativeIndices.push_back(i);
 			}
 
-			if(detectionResult->posteriors[i] > 0.5) {
+			if(!detectorCascade->ensembleClassifier->enabled || detectionResult->posteriors[i] > 0.5) {
 				negativeIndicesForNN.push_back(i);
 			}
 

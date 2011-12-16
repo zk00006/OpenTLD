@@ -36,6 +36,9 @@ public:
 	Settings();
 	~Settings();
 	bool m_trackerEnabled;
+	bool m_varianceFilterEnabled;
+	bool m_ensembleClassifierEnabled;
+	bool m_nnClassifierEnabled;
 	bool m_useProportionalShift; //!< sets scanwindows off by a percentage value of the window dimensions (specified in proportionalShift) rather than 1px.
 	bool m_loadModel; //!< if true, model specified by "modelPath" is loaded at startup
 	bool m_selectManually; //!< if true, user can select initial bounding box (which then overrides the setting "initialBoundingBox")

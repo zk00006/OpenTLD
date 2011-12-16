@@ -39,6 +39,7 @@ class VarianceFilter {
 	IntegralImage<long long>* integralImg_squared;
 
 public:
+	bool enabled;
 	int * windowOffsets;
 
 	DetectionResult * detectionResult;
