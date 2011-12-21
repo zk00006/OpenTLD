@@ -312,6 +312,8 @@ void TLD::learn() {
 
 	detectorCascade->nnClassifier->learn(patches);
 
+	//cout << "NN has now " << detectorCascade->nnClassifier->truePositives->size() << " positives and " << detectorCascade->nnClassifier->falsePositives->size() << " negatives.\n";
+
 	delete[] overlap;
 }
 
