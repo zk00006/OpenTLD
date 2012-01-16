@@ -26,13 +26,9 @@ project(tld)
 
 cmake_minimum_required(VERSION 2.6)
 
-if(NOT GENERATE_DEB_PACKAGE)
-	FIND_PACKAGE( OpenCV REQUIRED )
-endif(NOT GENERATE_DEB_PACKAGE)
-
-if(GENERATE_DEB_PACKAGE)
+if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
 	include_directories(/usr/include/opencv)
-endif(GENERATE_DEB_PACKAGE)
+endif(${CMAKE_SYSTEM_NAME} MATCHES Linux)
 
 #-------------------------------------------------------------------------------
 #version
@@ -41,9 +37,11 @@ set(TLD_VERSION_MINOR 1)
 set(TLD_VERSION_PATCH 0)
 set(TLD_VERSION ${TLD_VERSION_MAJOR}.${TLD_VERSION_MINOR}.${TLD_VERSION_PATCH})
 
+
 #-------------------------------------------------------------------------------
 #executable name
 set(TLD_EXECUTABLE_NAME tld)
+
 
 #------------------------------------------------------------------------------
 #options
@@ -51,14 +49,27 @@ option(BUILD_WITH_QT "Build the program with QT-GUI support." OFF)
 
 if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
     option(GENERATE_DEB_PACKAGE "Gererates a Debian (.deb) package." OFF)
+    option(GENERATE_RPM_PACKAGE "Gererates a Red Hat (.rpm) package." OFF)
 endif(${CMAKE_SYSTEM_NAME} MATCHES Linux)
+
 
 #------------------------------------------------------------------------------
 #CPack
+
+if(GENERATE_DEB_PACKAGE AND GENERATE_RPM_PACKAGE)
+    message(FATAL_ERROR "It's not possible to create a deb and rpm package at the same time!")
+endif(GENERATE_DEB_PACKAGE AND GENERATE_RPM_PACKAGE)
+
 if(GENERATE_DEB_PACKAGE)
     set(CPACK_GENERATOR DEB)
 endif(GENERATE_DEB_PACKAGE)
+
+if(GENERATE_RPM_PACKAGE)
+    set(CPACK_GENERATOR RPM)
+endif(GENERATE_RPM_PACKAGE)
+
 set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
+set(CPACK_PACKAGE_SUMMARY "This is a C++ implementation of OpenTLD that was originally published in MATLAB by Zdenek Kalal. OpenTLD is used for tracking objects in video streams. What makes this algorithm outstanding is that it does not make use of any training data.")
 set(CPACK_PACKAGE_VERSION_MAJOR ${TLD_VERSION_MAJOR})
 set(CPACK_PACKAGE_VERSION_MINOR ${TLD_VERSION_MINOR})
 set(CPACK_PACKAGE_VERSION_PATCH ${TLD_VERSION_PATCH})
@@ -66,14 +77,21 @@ set(CPACK_PACKAGE_VERSION ${TLD_VERSION})
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Georg Nebehay")
 if(BUILD_WITH_QT)
     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqtgui4 (>= 4.0.0), libqtcore4 (>= 4.0.0), libhighgui4 (>= 2.0.0)")
+else(BUILD_WITH_QT)
+     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libhighgui4 (>= 2.0.0)")
 endif(BUILD_WITH_QT)
 include(CPack)
 
+
 #------------------------------------------------------------------------------
 #find packages
+
+find_package(OpenCV REQUIRED)
+
 if(BUILD_WITH_QT)
     find_package(Qt4)
 endif(BUILD_WITH_QT)
+
 
 #------------------------------------------------------------------------------
 #package specific
@@ -86,6 +104,7 @@ if(BUILD_WITH_QT)
     endif(QT4_FOUND)
 endif(BUILD_WITH_QT)
 
+
 #------------------------------------------------------------------------------
 #build type
 if(NOT CMAKE_BUILD_TYPE)
@@ -93,6 +112,7 @@ if(NOT CMAKE_BUILD_TYPE)
         "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
         FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
+
 
 #-------------------------------------------------------------------------------
 #compiler and linker options
@@ -103,6 +123,7 @@ set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 if(WIN32)
 	add_definitions(-DLIBCONFIGXX_STATIC -DLIBCONFIG_STATIC) #Needed when linking libconfig statically
 endif(WIN32)
+
 
 #-------------------------------------------------------------------------------
 #add subdirectories
@@ -116,14 +137,15 @@ add_subdirectory(src/main)
 
 #-------------------------------------------------------------------------------
 #configure & install
-if(NOT GENERATE_DEB_PACKAGE)
-    install(FILES README DESTINATION .)
-else(NOT GENERATE_DEB_PACKAGE)
+if(NOT (GENERATE_DEB_PACKAGE OR GENERATE_RPM_PACKAGE))
+    install(FILES README.md DESTINATION .)
+else(NOT (GENERATE_DEB_PACKAGE OR GENERATE_RPM_PACKAGE))
     configure_file(tld.desktop.in
         ${PROJECT_BINARY_DIR}/tld.desktop)
     install(FILES ${PROJECT_BINARY_DIR}/tld.desktop DESTINATION share/applications)
     install(FILES res/tld.png DESTINATION share/app-install/icons)
-endif(NOT GENERATE_DEB_PACKAGE)
+endif(NOT (GENERATE_DEB_PACKAGE OR GENERATE_RPM_PACKAGE))
+
 
 #-------------------------------------------------------------------------------
 #messages

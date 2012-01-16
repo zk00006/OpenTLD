@@ -30,9 +30,9 @@ command line options
 --------------------
 
 __usage__  
-`tld [option arguments] [CONFIGFILE]`
+`tld [option arguments] [arguments]`
 
-option arguments:  
+__option arguments__  
 `[-a <startFrameNumber>]` video starts at the frameNumber _startFrameNumber_  
 `[-b <x,y,w,h>]` Initial bounding box  
 `[-c]` shows color images instead of greyscale  
