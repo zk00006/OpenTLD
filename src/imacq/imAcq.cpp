@@ -21,6 +21,8 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
+#include "TLDUtil.h" //TODO: Get rid of this dependency, OpenCV also has a function similar to getCurrentTime()
+
 #include "imAcq.h"
 
 using namespace tld;
@@ -31,6 +33,7 @@ ImAcq * imAcqAlloc() {
 	imAcq->currentFrame = 1;
 	imAcq->lastFrame = 0;
 	imAcq->camNo = 0;
+	imAcq->fps = 24;
 	return imAcq;
 }
 
@@ -66,6 +69,9 @@ void imAcqInit(ImAcq * imAcq) {
 		//This produces strange results on some videos and is deactivated for now.
 		//imAcqVidSetNextFrameNumber(imAcq, imAcq->currentFrame);
 	}
+
+	imAcq->startFrame = imAcq->currentFrame;
+	imAcq->startTime = getCurrentTime();
 }
 
 void imAcqFree(ImAcq * imAcq) {
@@ -87,13 +93,31 @@ IplImage * imAcqLoadImg(ImAcq * imAcq, char * path) {
 
 }
 
+IplImage * imAcqLoadFrame(ImAcq * imAcq, int fNo) {
+    char path[255];
+	sprintf(path, imAcq->imgPath, fNo);
+
+	printf("load path %s\n", path);
+
+	return cvLoadImage(path);
+}
+
 IplImage * imAcqLoadCurrentFrame(ImAcq * imAcq) {
 
-    char currentPath[255];
+	return imAcqLoadFrame(imAcq, imAcq->currentFrame);
+}
 
-	sprintf(currentPath, imAcq->imgPath, imAcq->currentFrame);
+IplImage * imAcqGetImgByCurrentTime(ImAcq * imAcq) {
+	long int currentTime = getCurrentTime();
+	float secondsPassed = (currentTime - imAcq->startTime) / 1000.0;
 
-	return imAcqLoadImg(imAcq, currentPath);
+	int framesPassed = secondsPassed*imAcq->fps;
+
+	int currentFrame = imAcq->startFrame + framesPassed;
+
+	if(imAcq->lastFrame > 0 && currentFrame > imAcq->lastFrame) return NULL;
+
+	return imAcqLoadFrame(imAcq, currentFrame);
 }
 
 IplImage * imAcqGetImg(ImAcq * imAcq) {
@@ -106,6 +130,10 @@ IplImage * imAcqGetImg(ImAcq * imAcq) {
 
 	if(imAcq->method == IMACQ_IMGS) {
 		img = imAcqLoadCurrentFrame(imAcq);
+	}
+
+	if(imAcq->method == IMACQ_LIVESIM) {
+		img = imAcqGetImgByCurrentTime(imAcq);
 	}
 
 	imAcqAdvance(imAcq);

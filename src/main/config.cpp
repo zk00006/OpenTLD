@@ -218,6 +218,19 @@ int Config::init(int argc, char ** argv) {
 			}
 		} else if(method.compare("CAM") == 0) {
 			m_settings.m_method = IMACQ_CAM;
+		} else if(method.compare("LIVESIM") == 0) {
+			m_settings.m_method = IMACQ_LIVESIM;
+			//fps
+			m_cfg.lookupValue("acq.fps", m_settings.m_fps);
+
+			try {
+				m_cfg.lookupValue("acq.imgPath", m_settings.m_imagePath);
+			} catch(const libconfig::SettingNotFoundException &nfex) {
+				cerr << "Error: Unable to read image path." << endl;
+				return PROGRAM_EXIT;
+			}
+
+
 		}
 
 		// startFrame
@@ -365,6 +378,7 @@ int Config::configure(Main* main) {
 	imAcq->lastFrame = m_settings.m_lastFrame;
 	imAcq->currentFrame = m_settings.m_startFrame;
 	imAcq->camNo = m_settings.m_camNo;
+	imAcq->fps = m_settings.m_fps;
 
 	// main
 	main->tld->trackerEnabled = m_settings.m_trackerEnabled;

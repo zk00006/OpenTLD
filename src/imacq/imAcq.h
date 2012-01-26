@@ -36,7 +36,8 @@ namespace tld {
 enum ImacqMethod {
 	IMACQ_IMGS, //!< Images
 	IMACQ_CAM, //!< Camera
-	IMACQ_VID //!< Video
+	IMACQ_VID, //!< Video
+	IMACQ_LIVESIM //!< Livesim
 };
 
 }
@@ -47,7 +48,10 @@ typedef struct {
 	CvCapture * capture;
 	int lastFrame;
 	int currentFrame;
+	int startFrame;
 	int camNo;
+	long startTime;
+	float fps;
 } ImAcq ;
 
 ImAcq * imAcqAlloc();
