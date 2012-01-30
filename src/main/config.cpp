@@ -355,6 +355,9 @@ int Config::init(int argc, char ** argv) {
 		if(!m_exportModelAfterRunSet)
 			m_cfg.lookupValue("exportModelAfterRun", m_settings.m_exportModelAfterRun);
 
+		// seed
+		m_cfg.lookupValue("seed", m_settings.m_seed);
+
 		// initialBoundingBox
 		try {
 			libconfig::Setting & initBB_setting = m_cfg.lookup("initialBoundingBox");
@@ -388,13 +391,14 @@ int Config::configure(Main* main) {
 	main->threshold = m_settings.m_threshold;
 	main->showForeground = m_settings.m_showForeground;
 	main->showNotConfident = m_settings.m_showNotConfident;
-	main->alternating = m_settings.m_alternating;
-	main->learningEnabled = m_settings.m_learningEnabled;
+	main->tld->alternating = m_settings.m_alternating;
+	main->tld->learningEnabled = m_settings.m_learningEnabled;
 	main->selectManually = m_settings.m_selectManually;
 	main->exportModelAfterRun = m_settings.m_exportModelAfterRun;
 	main->modelExportFile = m_settings.m_modelExportFile.c_str();
 	main->loadModel = m_settings.m_loadModel;
 	main->modelPath = (m_settings.m_modelPath.empty()) ? NULL : m_settings.m_modelPath.c_str();
+	main->seed = m_settings.m_seed;
 	if(m_settings.m_initialBoundingBox.size() > 0) {
 		main->initialBB = new int[4];
 		for(int i = 0; i < 4; i++) {

@@ -233,6 +233,8 @@ int main(int argc, char ** argv) {
 
 	config.configure(main);
 
+	srand(main->seed);
+
 	imAcqInit(imAcq);
 
 	if(main->showOutput) {

@@ -106,8 +106,6 @@ void EnsembleClassifier::initFeatureOffsets() {
 	}
 }
 
-
-
 void EnsembleClassifier::initPosteriors() {
 	posteriors = new float[numTrees * numIndices];
 	positives = new int[numTrees * numIndices];

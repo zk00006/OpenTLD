@@ -48,8 +48,6 @@ public:
 	double threshold;
 	bool showForeground;
 	bool showNotConfident;
-	bool alternating;
-	bool learningEnabled;
 	bool selectManually;
 	int * initialBB;
 	bool reinit;
@@ -57,6 +55,7 @@ public:
 	bool loadModel;
 	const char * modelPath;
 	const char * modelExportFile;
+	int seed;
 
 	Main() {
 		tld = new TLD();
@@ -65,10 +64,6 @@ public:
 		saveDir = ".";
 		threshold = 0.5;
 		showForeground = 0;
-
-		alternating = 0;
-
-		learningEnabled = 1;
 
 		selectManually = 0;
 
@@ -81,6 +76,7 @@ public:
 
 		exportModelAfterRun = false;
 		modelExportFile = "model";
+		seed = 0;
 	}
 
 	~Main() {

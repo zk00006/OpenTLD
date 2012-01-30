@@ -61,6 +61,7 @@ public:
 	int m_numTrees; //!< number of trees
 	float m_thetaP;
 	float m_thetaN;
+	int m_seed;
 	int m_minSize; //!< minimum size of scanWindows
 	int m_camNo; //!< Which camera to use
 	float m_fps; //!< Frames per second
