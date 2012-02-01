@@ -212,6 +212,8 @@ void TLD::initialLearning() {
 		detectorCascade->ensembleClassifier->learn(currImg, &detectorCascade->windows[TLD_WINDOW_SIZE*idx], true, &detectionResult->featureVectors[detectorCascade->numTrees*idx]);
 	}
 
+	srand(1); //TODO: This is not guaranteed to affect random_shuffle
+
 	random_shuffle(negativeIndices.begin(), negativeIndices.end());
 
 	//Choose 100 random patches for negative examples
