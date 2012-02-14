@@ -93,7 +93,7 @@ void Main::doWork() {
 		}
 
 		if(!skipProcessingOnce) {
-			tld->processImage(grey);
+			tld->processImage(img);
 		} else {
 			skipProcessingOnce = false;
 		}
@@ -207,6 +207,7 @@ void Main::doWork() {
 
 		if(!reuseFrameOnce) {
 			cvReleaseImage(&img);
+			cvReleaseImage(&grey);
 		} else {
 			reuseFrameOnce = false;
 		}

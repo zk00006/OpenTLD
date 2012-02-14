@@ -91,18 +91,18 @@ void TLD::selectObject(Mat img, Rect * bb) {
 
 }
 
-//img must be a non-null grayscale uint8 image
 void TLD::processImage(Mat img) {
 	storeCurrentData();
-
-	currImg = img;	//Store new image
+	Mat grey_frame;
+	cvtColor( img,grey_frame, CV_RGB2GRAY );
+	currImg = grey_frame; // Store new image , right after storeCurrentData();
 
 	if(trackerEnabled) {
 		medianFlowTracker->track(prevImg, currImg, prevBB);
 	}
 
 	if(detectorEnabled && (!alternating || medianFlowTracker->trackerBB == NULL)) {
-		detectorCascade->detect(img);
+		detectorCascade->detect(grey_frame);
 	}
 
 	fuseHypotheses();
