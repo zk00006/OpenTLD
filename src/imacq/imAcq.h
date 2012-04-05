@@ -67,6 +67,7 @@ int imAcqHasMoreFrames(ImAcq * imAcq);
 IplImage * imAcqGetImgAndAdvance(ImAcq * imAcq);
 IplImage * imAcqGetImg(ImAcq * imAcq);
 IplImage * imAcqGetImgByFrame(ImAcq * imAcq, int fNo);
+IplImage * imAcqGetImgByCurrentTime(ImAcq * imAcq);
 IplImage * imAcqLoadImg(ImAcq * imAcq, char * path);
 IplImage * imAcqLoadCurrentFrame(ImAcq * imAcq);
 IplImage * imAcqLoadVidFrame(CvCapture * capture);
