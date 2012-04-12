@@ -116,7 +116,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 #-------------------------------------------------------------------------------
 #compiler and linker options
-include_directories(${PROJECT_SOURCE_DIR}/src/cvblobs ${PROJECT_SOURCE_DIR}/src/config ${PROJECT_SOURCE_DIR}/src/tld ${PROJECT_SOURCE_DIR}/src/tld/tracker ${PROJECT_SOURCE_DIR}/src/imacq ${PROJECT_SOURCE_DIR}/src)
+include_directories(${PROJECT_SOURCE_DIR}/src/cvblobs ${PROJECT_SOURCE_DIR}/src/config ${PROJECT_SOURCE_DIR}/src/tld ${PROJECT_SOURCE_DIR}/src/tld/tracker ${PROJECT_SOURCE_DIR}/src/imacq ${PROJECT_SOURCE_DIR}/src/main)
 #link_directories(${PROJECT_SOURCE_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
 
@@ -132,8 +132,7 @@ add_subdirectory(src/cvblobs)
 add_subdirectory(src/config)
 add_subdirectory(src/tld)
 add_subdirectory(src/main)
-
-
+add_subdirectory(src)
 
 #-------------------------------------------------------------------------------
 #configure & install
@@ -158,4 +157,6 @@ message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
 message(STATUS "Change a value with: cmake -D<Variable>=<Value>")
 message(STATUS "-------------------------------------------------------------------------------")
 message(STATUS)
+
+configure_file("${PROJECT_SOURCE_DIR}/OpenTLDConfig.cmake.in" "${PROJECT_BINARY_DIR}/OpenTLDConfig.cmake" @ONLY)
 
