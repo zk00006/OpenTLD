@@ -1,9 +1,9 @@
 /************************************************************************
   			BlobResult.h
   			
-FUNCIONALITAT: Definició de la classe CBlobResult
+FUNCIONALITAT: Definiciï¿½ de la classe CBlobResult
 AUTOR: Inspecta S.L.
-MODIFICACIONS (Modificació, Autor, Data):
+MODIFICACIONS (Modificaciï¿½, Autor, Data):
 
 FUNCTIONALITY: Definition of the CBlobResult class
 AUTHOR: Inspecta S.L.
@@ -62,12 +62,12 @@ MODIFICATIONS (Modification, Author, Date):
 	Excepcions / Exceptions
 **************************************************************************/
 
-//! Excepcions llençades per les funcions:
+//! Excepcions llenï¿½ades per les funcions:
 #define EXCEPTION_BLOB_OUT_OF_BOUNDS	1000
 #define EXCEPCIO_CALCUL_BLOBS			1001
 
 /** 
-	Classe que conté un conjunt de blobs i permet extreure'n propietats 
+	Classe que contï¿½ un conjunt de blobs i permet extreure'n propietats 
 	o filtrar-los segons determinats criteris.
 	Class to calculate the blobs of an image and calculate some properties 
 	on them. Also, the class provides functions to filter the blobs using
@@ -83,7 +83,7 @@ public:
 	//! constructor a partir d'una imatge
 	//! Image constructor, it creates an object with the blobs of the image
 	CBlobResult(IplImage *source, IplImage *mask, uchar backgroundColor);
-	//! constructor de còpia
+	//! constructor de cï¿½pia
 	//! Copy constructor
 	CBlobResult( const CBlobResult &source );
 	//! Destructor
@@ -122,11 +122,11 @@ public:
 				int filterAction, funcio_calculBlob *evaluador, 
 				int condition, double lowLimit, double highLimit = 0 ) const;
 			
-	//! Retorna l'enèssim blob segons un determinat criteri
+	//! Retorna l'enï¿½ssim blob segons un determinat criteri
 	//! Sorts the blobs of the class acording to some criteria and returns the n-th blob
 	void GetNthBlob( funcio_calculBlob *criteri, int nBlob, CBlob &dst ) const;
 	
-	//! Retorna el blob enèssim
+	//! Retorna el blob enï¿½ssim
 	//! Gets the n-th blob of the class ( without sorting )
 	CBlob GetBlob(int indexblob) const;
 	CBlob *GetBlob(int indexblob);
@@ -152,7 +152,7 @@ public:
 
 private:
 
-	//! Funció per gestionar els errors
+	//! Funciï¿½ per gestionar els errors
 	//! Function to manage the errors
 	void RaiseError(const int errorCode) const;
 

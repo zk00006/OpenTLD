@@ -1,0 +1,15 @@
+find_package(OpenCV)
+
+set(bin_dir "@PROJECT_BINARY_DIR@")
+set(src_dir "@PROJECT_SOURCE_DIR@")
+
+set(OPENTLD_INCLUDE_DIRS ${src_dir}/src/cvblobs ${src_dir}/src/config ${src_dir}/src/tld ${src_dir}/src/tld/tracker ${src_dir}/src/imacq ${src_dir}/src/main)
+INCLUDE_DIRECTORIES(${OPENTLD_INCLUDE_DIRS})
+
+SET(OPENTLD_LIB_DIRS ${bin_dir}/src/cvblobs ${bin_dir}/src/config ${bin_dir}/src/tld ${bin_dir}/src/tld/tracker ${bin_dir}/src/imacq ${bin_dir}/src/main)
+LINK_DIRECTORIES(${OPENTLD_LIB_DIRS})
+
+set(OPENTLD_LIBS main tld config imacq cvblobs )
+
+
+
