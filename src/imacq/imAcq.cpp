@@ -108,6 +108,11 @@ IplImage * imAcqLoadCurrentFrame(ImAcq * imAcq) {
 }
 
 IplImage * imAcqGetImgByCurrentTime(ImAcq * imAcq) {
+	//Calculate current image number
+	if(imAcq->method == IMACQ_CAM) {
+		//printf("grabbing image from sensor");
+		return imAcqGrab(imAcq->capture);
+	}
 	long int currentTime = getCurrentTime();
 	float secondsPassed = (currentTime - imAcq->startTime) / 1000.0;
 
