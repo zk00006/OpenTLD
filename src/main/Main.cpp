@@ -94,7 +94,7 @@ void Main::doWork() {
 	}
 
 	while(imAcqHasMoreFrames(imAcq)) {
-		long int elapsedTime = getCurrentTime();
+		double tic = cvGetTickCount();
 
 		if(!reuseFrameOnce) {
 			img = imAcqGetImg(imAcq);
@@ -120,9 +120,11 @@ void Main::doWork() {
 			}
     	}
 
-		elapsedTime = getCurrentTime() - elapsedTime;
+    	double toc = (cvGetTickCount() - tic)/cvGetTickFrequency();
 
-		float fps = 1000/(float)elapsedTime;
+    	toc = toc / 1000000;
+
+		float fps = 1/toc;
 
 		int confident = (tld->currConf >= threshold) ? 1 : 0;
 

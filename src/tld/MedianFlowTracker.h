@@ -26,7 +26,7 @@
 #ifndef MEDIANFLOWTRACKER_H_
 #define MEDIANFLOWTRACKER_H_
 
-#include <cv.h>
+#include <opencv/cv.h>
 
 using namespace cv;
 

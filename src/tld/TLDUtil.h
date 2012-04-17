@@ -27,14 +27,12 @@
 #define TLDUTIL_H_
 
 #include <utility>
-#include <cv.h>
+#include <opencv/cv.h>
 
 using namespace cv;
 using namespace std;
 
 namespace tld {
-
-long getCurrentTime();
 
 template <class T1, class T2>
 void tldConvertBB(T1 * src, T2 * dest) {
