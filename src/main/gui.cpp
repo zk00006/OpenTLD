@@ -107,10 +107,10 @@ int getBBFromUser(IplImage * img, CvRect & rect, Gui * gui) {
 		if(tolower(key) == 'q') {
 			return PROGRAM_EXIT;
 		}
-#if defined __unix__ || defined __APPLE__
+#ifdef __unix__
 		if((key == '\n') && (bb->x != -1) && (bb->y != -1)) {
 #endif
-#ifdef _WIN32
+#if defined _WIN32 || defined __APPLE__
 		if((key == '\r') && (bb->x != -1) && (bb->y != -1)) {
 #endif
 			correctBB = true;
