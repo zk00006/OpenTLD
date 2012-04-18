@@ -1,3 +1,7 @@
+cmake_minimum_required(VERSION 2.6)
+
+find_package(OpenCV REQUIRED)
+
 add_library(tld
     Clustering.cpp
     DetectionResult.cpp
@@ -8,21 +12,6 @@ add_library(tld
     NNClassifier.cpp
     TLD.cpp
     TLDUtil.cpp
-    VarianceFilter.cpp
-    tracker/bb.cpp
-    tracker/bb_predict.cpp
-    tracker/fbtrack.cpp
-    tracker/lk.cpp
-    tracker/median.cpp)
+    VarianceFilter.cpp)
     
-#-------------------------------------------------------------------------------
-#platform specific
-#TODO: Make this configurable
-if(UNIX)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
-endif(UNIX)
-
-if(WINDOWS)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /openmp")
-endif(WINDOWS)
-
+target_link_libraries(tld cvblobs mftracker ${OpenCV_LIBS})

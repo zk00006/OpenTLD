@@ -28,8 +28,6 @@
 
 #include <opencv/highgui.h>
 
-namespace tld {
-
 /**
  * Capturing method
  */
@@ -40,8 +38,6 @@ enum ImacqMethod {
 	IMACQ_LIVESIM //!< Livesim
 };
 
-}
-
 typedef struct {
 	int method;
 	const char * imgPath;
@@ -50,7 +46,7 @@ typedef struct {
 	int currentFrame;
 	int startFrame;
 	int camNo;
-	long startTime;
+	double startTime;
 	float fps;
 } ImAcq ;
 

@@ -21,11 +21,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-#include "TLDUtil.h" //TODO: Get rid of this dependency, OpenCV also has a function similar to getCurrentTime()
-
 #include "imAcq.h"
-
-using namespace tld;
 
 ImAcq * imAcqAlloc() {
 	ImAcq * imAcq = (ImAcq *)malloc(sizeof(ImAcq));
@@ -71,7 +67,7 @@ void imAcqInit(ImAcq * imAcq) {
 	}
 
 	imAcq->startFrame = imAcq->currentFrame;
-	imAcq->startTime = getCurrentTime();
+	imAcq->startTime = cvGetTickCount();
 }
 
 void imAcqFree(ImAcq * imAcq) {
@@ -113,8 +109,9 @@ IplImage * imAcqGetImgByCurrentTime(ImAcq * imAcq) {
 		//printf("grabbing image from sensor");
 		return imAcqGrab(imAcq->capture);
 	}
-	long int currentTime = getCurrentTime();
-	float secondsPassed = (currentTime - imAcq->startTime) / 1000.0;
+
+	float secondsPassed = (cvGetTickCount() - imAcq->startTime)/cvGetTickFrequency();
+	secondsPassed = secondsPassed/1000000;
 
 	int framesPassed = secondsPassed*imAcq->fps;
 

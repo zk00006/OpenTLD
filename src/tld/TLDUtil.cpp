@@ -25,34 +25,6 @@ using namespace std;
 
 namespace tld {
 
-#if defined __unix__ || defined __APPLE__
-
-#include <sys/time.h>
-#include <stddef.h>
-
-
-
-//Returns milliseconds
-long getCurrentTime() {
-	timeval t;
-	gettimeofday(&t,NULL); // ignoring the 2nd parameter which is the timezone
-	return t.tv_sec*1000 + t.tv_usec/1000;
-}
-
-#endif
-
-
-#ifdef _WIN32
-
-#include <Windows.h>
-
-	long getCurrentTime() {
-		unsigned long time =timeGetTime();
-		return time;
-	}
-
-#endif
-
 void tldRectToPoints(Rect rect, CvPoint * p1, CvPoint * p2) {
 	p1->x = rect.x;
 	p1->y = rect.y;

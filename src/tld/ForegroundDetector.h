@@ -27,7 +27,7 @@
 #define FOREGROUNDDETECTOR_H_
 
 #include <vector>
-#include <cv.h>
+#include <opencv/cv.h>
 
 #include "DetectionResult.h"
 

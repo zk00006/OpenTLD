@@ -22,88 +22,16 @@
 # 5) build the project "PACKAGE" to create an NSIS-installer (NSIS is required)
 
 
-project(tld)
+project(OpenTLD)
 
 cmake_minimum_required(VERSION 2.6)
-
-if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
-	include_directories(/usr/include/opencv)
-endif(${CMAKE_SYSTEM_NAME} MATCHES Linux)
 
 #-------------------------------------------------------------------------------
 #version
 set(TLD_VERSION_MAJOR 1)
-set(TLD_VERSION_MINOR 1)
+set(TLD_VERSION_MINOR 2)
 set(TLD_VERSION_PATCH 0)
 set(TLD_VERSION ${TLD_VERSION_MAJOR}.${TLD_VERSION_MINOR}.${TLD_VERSION_PATCH})
-
-
-#-------------------------------------------------------------------------------
-#executable name
-set(TLD_EXECUTABLE_NAME tld)
-
-
-#------------------------------------------------------------------------------
-#options
-option(BUILD_WITH_QT "Build the program with QT-GUI support." OFF)
-
-if(${CMAKE_SYSTEM_NAME} MATCHES Linux)
-    option(GENERATE_DEB_PACKAGE "Gererates a Debian (.deb) package." OFF)
-    option(GENERATE_RPM_PACKAGE "Gererates a Red Hat (.rpm) package." OFF)
-endif(${CMAKE_SYSTEM_NAME} MATCHES Linux)
-
-
-#------------------------------------------------------------------------------
-#CPack
-
-if(GENERATE_DEB_PACKAGE AND GENERATE_RPM_PACKAGE)
-    message(FATAL_ERROR "It's not possible to create a deb and rpm package at the same time!")
-endif(GENERATE_DEB_PACKAGE AND GENERATE_RPM_PACKAGE)
-
-if(GENERATE_DEB_PACKAGE)
-    set(CPACK_GENERATOR DEB)
-endif(GENERATE_DEB_PACKAGE)
-
-if(GENERATE_RPM_PACKAGE)
-    set(CPACK_GENERATOR RPM)
-endif(GENERATE_RPM_PACKAGE)
-
-set(CPACK_PACKAGE_NAME ${CMAKE_PROJECT_NAME})
-set(CPACK_PACKAGE_SUMMARY "This is a C++ implementation of OpenTLD that was originally published in MATLAB by Zdenek Kalal. OpenTLD is used for tracking objects in video streams. What makes this algorithm outstanding is that it does not make use of any training data.")
-set(CPACK_PACKAGE_VERSION_MAJOR ${TLD_VERSION_MAJOR})
-set(CPACK_PACKAGE_VERSION_MINOR ${TLD_VERSION_MINOR})
-set(CPACK_PACKAGE_VERSION_PATCH ${TLD_VERSION_PATCH})
-set(CPACK_PACKAGE_VERSION ${TLD_VERSION})
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Georg Nebehay")
-if(BUILD_WITH_QT)
-    set(CPACK_DEBIAN_PACKAGE_DEPENDS "libqtgui4 (>= 4.0.0), libqtcore4 (>= 4.0.0), libhighgui4 (>= 2.0.0)")
-else(BUILD_WITH_QT)
-     set(CPACK_DEBIAN_PACKAGE_DEPENDS "libhighgui4 (>= 2.0.0)")
-endif(BUILD_WITH_QT)
-include(CPack)
-
-
-#------------------------------------------------------------------------------
-#find packages
-
-find_package(OpenCV REQUIRED)
-
-if(BUILD_WITH_QT)
-    find_package(Qt4)
-endif(BUILD_WITH_QT)
-
-
-#------------------------------------------------------------------------------
-#package specific
-if(BUILD_WITH_QT)
-    if(QT4_FOUND)
-        include(${QT_USE_FILE})
-        add_definitions(-DWITH_QT)
-    else(QT4_FOUND)
-        message(FATAL_ERROR "Unable to find Qt4!")      
-    endif(QT4_FOUND)
-endif(BUILD_WITH_QT)
-
 
 #------------------------------------------------------------------------------
 #build type
@@ -113,13 +41,6 @@ if(NOT CMAKE_BUILD_TYPE)
         FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
 
-
-#-------------------------------------------------------------------------------
-#compiler and linker options
-include_directories(${PROJECT_SOURCE_DIR}/src/cvblobs ${PROJECT_SOURCE_DIR}/src/config ${PROJECT_SOURCE_DIR}/src/tld ${PROJECT_SOURCE_DIR}/src/tld/tracker ${PROJECT_SOURCE_DIR}/src/imacq ${PROJECT_SOURCE_DIR}/src/main)
-#link_directories(${PROJECT_SOURCE_DIR}/lib)
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
-
 if(WIN32)
 	add_definitions(-DLIBCONFIGXX_STATIC -DLIBCONFIG_STATIC) #Needed when linking libconfig statically
 endif(WIN32)
@@ -128,38 +49,21 @@ if(APPLE)
 	add_definitions(-DHAVE_XLOCALE_H)
 endif(APPLE)
 
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgomp")
+
+include_directories(src/cvblobs src/imacq src/config src/tld src/mftracker src/main)
+
 #-------------------------------------------------------------------------------
 #add subdirectories
 add_subdirectory(src/imacq)
 add_subdirectory(src/cvblobs)
 add_subdirectory(src/config)
 add_subdirectory(src/tld)
+add_subdirectory(src/mftracker)
 add_subdirectory(src/main)
 add_subdirectory(src)
-
-#-------------------------------------------------------------------------------
-#configure & install
-if(NOT (GENERATE_DEB_PACKAGE OR GENERATE_RPM_PACKAGE))
-    install(FILES README.md DESTINATION .)
-else(NOT (GENERATE_DEB_PACKAGE OR GENERATE_RPM_PACKAGE))
-    configure_file(tld.desktop.in
-        ${PROJECT_BINARY_DIR}/tld.desktop)
-    install(FILES ${PROJECT_BINARY_DIR}/tld.desktop DESTINATION share/applications)
-    install(FILES res/tld.png DESTINATION share/app-install/icons)
-endif(NOT (GENERATE_DEB_PACKAGE OR GENERATE_RPM_PACKAGE))
-
-
-#-------------------------------------------------------------------------------
-#messages
-message(STATUS)
-message(STATUS "-------------------------------------------------------------------------------")
-message(STATUS "CMAKE_SOURCE_DIR = ${CMAKE_SOURCE_DIR}")
-message(STATUS "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}")
-message(STATUS "CMAKE_BUILD_TYPE = ${CMAKE_BUILD_TYPE}")
-message(STATUS "CMAKE_BINARY_DIR = ${CMAKE_BINARY_DIR}")
-message(STATUS "Change a value with: cmake -D<Variable>=<Value>")
-message(STATUS "-------------------------------------------------------------------------------")
-message(STATUS)
 
 configure_file("${PROJECT_SOURCE_DIR}/OpenTLDConfig.cmake.in" "${PROJECT_BINARY_DIR}/OpenTLDConfig.cmake" @ONLY)
 
