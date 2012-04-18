@@ -76,7 +76,7 @@ Use CMake to build the project. You can use "cmake-gui", if you need a graphical
 
 * CMake
 	* Specify the source path (root path of the dictionary) and the binary path (where to build the program, out
-	  of source buid recommended)
+	  of source build recommended)
 	* Configure
 	* Select compiler
 	* Define the install path and other options
@@ -89,6 +89,14 @@ Use CMake to build the project. You can use "cmake-gui", if you need a graphical
 	* make: build the project
 	* make install all: install the project
 	* make package: generates a package (.tgz file if GENERATE_DEB_PACKAGE=false, .deb file if GENERATE_DEB_PACKAGE=true)
+* Mac
+`brew install python
+`brew install gfortran
+`easy_install numpy
+`mkdir build
+`cd build
+`cmake ..
+`make
 
 Options
 -------

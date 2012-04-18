@@ -25,7 +25,7 @@ using namespace std;
 
 namespace tld {
 
-#ifdef __unix__
+#if defined __unix__ || defined __APPLE__
 
 #include <sys/time.h>
 #include <stddef.h>
