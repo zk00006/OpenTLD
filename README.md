@@ -90,13 +90,17 @@ Use CMake to build the project. You can use "cmake-gui", if you need a graphical
 	* make install all: install the project
 	* make package: generates a package (.tgz file if GENERATE_DEB_PACKAGE=false, .deb file if GENERATE_DEB_PACKAGE=true)
 * Mac
-`brew install python
-`brew install gfortran
-`easy_install numpy
-`mkdir build
-`cd build
-`cmake ..
-`make
+```
+brew install python
+brew install gfortran
+easy_install numpy
+mkdir build
+cd build
+cmake ..
+cd ..
+make
+./tld
+```
 
 Options
 -------
