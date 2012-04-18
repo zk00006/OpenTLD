@@ -95,6 +95,8 @@ Use CMake to build the project. You can use "cmake-gui", if you need a graphical
 brew install python
 brew install gfortran
 easy_install numpy
+brew install cmake
+brew install opencv
 mkdir build
 cd build
 cmake ..
