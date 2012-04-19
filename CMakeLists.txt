@@ -45,6 +45,9 @@ if(WIN32)
 	add_definitions(-DLIBCONFIGXX_STATIC -DLIBCONFIG_STATIC) #Needed when linking libconfig statically
 endif(WIN32)
 
+if(APPLE)
+	add_definitions(-DHAVE_XLOCALE_H)
+endif(APPLE)
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp")
