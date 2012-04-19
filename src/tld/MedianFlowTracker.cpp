@@ -44,6 +44,9 @@ void MedianFlowTracker::cleanPreviousData() {
 
 void MedianFlowTracker::track(Mat prevMat, Mat currMat, Rect* prevBB) {
 	if(prevBB != NULL) {
+		if(prevBB->width <= 0 || prevBB->height <= 0) {
+			return;
+		}
 		float bb_tracker[] = {prevBB->x, prevBB->y, prevBB->width+prevBB->x-1, prevBB->height+prevBB->y-1};
 		float scale;
 
