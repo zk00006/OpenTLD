@@ -27,7 +27,6 @@
 #include "config.h"
 #include "imAcq.h"
 #include "gui.h"
-#include "export.h"
 #include "TLDUtil.h"
 
 void Main::doWork() {
@@ -81,7 +80,7 @@ void Main::doWork() {
 	bool reuseFrameOnce = false;
 	bool skipProcessingOnce = false;
 	if(loadModel && modelPath != NULL) {
-		tldReadFromFile(tld, modelPath);
+		tld->readFromFile(modelPath);
 		reuseFrameOnce = true;
 	} else if(initialBB != NULL) {
 		Rect bb = tldArrayToRect(initialBB);
@@ -194,11 +193,11 @@ void Main::doWork() {
 				}
 
 				if(key == 'e') {
-					tldWriteToFile(tld, modelExportFile);
+					tld->writeToFile(modelExportFile);
 				}
 
 				if(key == 'i') {
-					tldReadFromFile(tld, modelPath);
+					tld->readFromFile(modelPath);
 				}
 
 				if(key == 'r') {
@@ -230,6 +229,6 @@ void Main::doWork() {
 	}
 
 	if(exportModelAfterRun) {
-		tldWriteToFile(tld, modelExportFile);
+		tld->writeToFile(modelExportFile);
 	}
 }

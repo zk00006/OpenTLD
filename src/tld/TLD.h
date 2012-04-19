@@ -63,6 +63,8 @@ public:
 	void release();
 	void selectObject(Mat img, Rect * bb);
 	void processImage(Mat img);
+	void writeToFile(const char * path);
+	void readFromFile(const char * path);
 };
 
 } /* namespace tld */
