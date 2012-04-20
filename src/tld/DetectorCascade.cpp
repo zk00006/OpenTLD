@@ -241,14 +241,14 @@ void DetectorCascade::detect(Mat img) {
 
 	detectionResult->reset();
 
+	if(!initialised) {
+		return;
+	}
+
 	//Prepare components
 	foregroundDetector->nextIteration(img); //Calculates foreground
 	varianceFilter->nextIteration(img); //Calculates integral images
 	ensembleClassifier->nextIteration(img);
-
-	if(!initialised) {
-		return;
-	}
 
 	#pragma omp parallel for
 	for (int i = 0; i < numWindows; i++) {
