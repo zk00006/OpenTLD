@@ -1,8 +1,7 @@
 [Desktop Entry]
 Type=Application
-Name=tld
+Name=OpenTLD
 Comment=Tracking-Learning-Detection
 Exec=tld
-Icon=/usr/share/app-install/icons/tld.png
 Terminal=false
 Categories=Education;Science;
