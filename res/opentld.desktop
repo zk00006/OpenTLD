@@ -3,5 +3,6 @@ Type=Application
 Name=OpenTLD
 Comment=Tracking-Learning-Detection
 Exec=tld
+Icon=opentld
 Terminal=false
 Categories=Education;Science;
