@@ -4,7 +4,7 @@ OpenTLD - an object tracking program.
 
 =head1 SYNOPSIS
 
-B<tld> [B<-a> <startFrameNumber>] [B<-b> <x,y,w,h>] [B<-d> <device>] [B<-e>
+B<opentld> [B<-a> <startFrameNumber>] [B<-b> <x,y,w,h>] [B<-d> <device>] [B<-e>
 <path>] [B<-f>] [B<-i> <path>] [B<-h>] [B<-m> <path>] [B<-n> <number>] [B<-p>
 <path>] [B<-s>] [B<-t> <theta>] [B<-z> <lastFrameNumber>] [<configfile>]
 
@@ -16,7 +16,7 @@ What makes this algorithm outstanding is that it does not make use of any
 training data. This implementation is based solely on open source libraries,
 meaning that you do not need any commercial products to compile or run it.
 
-If you have a webcam attached to your PC, you can simply execute tld in order to
+If you have a webcam attached to your PC, you can simply execute opentld in order to
 try it out.
 
 =head1 OPTIONS

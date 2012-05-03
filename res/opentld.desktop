@@ -2,7 +2,7 @@
 Type=Application
 Name=OpenTLD
 Comment=Tracking-Learning-Detection
-Exec=tld
-Icon=opentld
+Exec=opentld
+Icon=opentld.png
 Terminal=false
 Categories=Education;Science;

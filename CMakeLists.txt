@@ -16,7 +16,7 @@
 # Microsoft Visual C++:
 # 1) open the .sln file
 # 2) change the mode to "Release" -> only Release is supported!
-# 3) build the project "ALL_BUILD" to build the tld project
+# 3) build the project "ALL_BUILD" to build the opentld project
 # 4) build the project "INSTALL" to install the files into the install
 #    directory
 # 5) build the project "PACKAGE" to create an NSIS-installer (NSIS is required)

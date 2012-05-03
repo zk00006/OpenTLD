@@ -8,7 +8,7 @@ http://dl.dropbox.com/u/8715460/tld.deb
 and a windows installer file here:
 http://dl.dropbox.com/u/8715460/tld.zip
 
-If you have a webcam attached to your PC, you can simply execute tld (on Ubuntu) or tld.exe (on Windows) in order to
+If you have a webcam attached to your PC, you can simply execute opentld (on Ubuntu) or opentld.exe (on Windows) in order to
 try it out. For other configuration options, please see below.
 
  Usage
@@ -30,7 +30,7 @@ command line options
 --------------------
 
 __usage__  
-`tld [option arguments] [arguments]`
+`opentld [option arguments] [arguments]`
 
 __option arguments__  
 `[-a <startFrameNumber>]` video starts at the frameNumber _startFrameNumber_  
@@ -77,7 +77,7 @@ Use CMake to build the project. You can use "cmake-gui", if you need a graphical
 	* Define the install path and other options
 	* Generate
 * Windows: go to the binary directory and build the solutions you want (You have to compile in RELEASE mode):
-	* tld: build the project
+	* opentld: build the project
 	* INSTALL: install the project
 * Linux: go with the terminal to the build directory
 	* make: build the project
@@ -92,7 +92,7 @@ Use CMake to build the project. You can use "cmake-gui", if you need a graphical
 	* cmake ..
 	* cd ..
 	* make
-	* ./tld
+	* ./opentld
 
 Generate Package
 ----------------
