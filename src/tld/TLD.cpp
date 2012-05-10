@@ -204,7 +204,7 @@ void TLD::initialLearning() {
 
 	patches.push_back(patch); //Add first patch to patch list
 
-	int numIterations = min<size_t>(positiveIndices.size(), 10); //Take at most 10 bounding boxes (sorted by overlap)
+	int numIterations = std::min<size_t>(positiveIndices.size(), 10); //Take at most 10 bounding boxes (sorted by overlap)
 	for(int i = 0; i < numIterations; i++) {
 		int idx = positiveIndices.at(i).first;
 		//Learn this bounding box
@@ -217,7 +217,7 @@ void TLD::initialLearning() {
 	random_shuffle(negativeIndices.begin(), negativeIndices.end());
 
 	//Choose 100 random patches for negative examples
-	for(size_t i = 0; i < min<size_t>(100,negativeIndices.size()); i++) {
+	for(size_t i = 0; i < std::min<size_t>(100,negativeIndices.size()); i++) {
 		int idx = negativeIndices.at(i);
 
 		NormalizedPatch patch;
@@ -288,7 +288,7 @@ void TLD::learn() {
 	//TODO: Flip
 
 
-	int numIterations = min<size_t>(positiveIndices.size(), 10); //Take at most 10 bounding boxes (sorted by overlap)
+	int numIterations = std::min<size_t>(positiveIndices.size(), 10); //Take at most 10 bounding boxes (sorted by overlap)
 
 	for(size_t i = 0; i < negativeIndices.size(); i++) {
 		int idx = negativeIndices.at(i);
