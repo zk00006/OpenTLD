@@ -39,7 +39,13 @@ namespace tld {
 //TODO: Convert this to a function
 #define sub2idx(x,y,widthstep) ((int) (floor((x)+0.5) + floor((y)+0.5)*(widthstep)))
 
-EnsembleClassifier::EnsembleClassifier() {
+EnsembleClassifier::EnsembleClassifier() :
+	features(NULL),
+	featureOffsets(NULL),
+	posteriors(NULL),
+	positives(NULL),
+	negatives(NULL)
+{
 	numTrees=10;
 	numFeatures = 13;
 	enabled = true;
