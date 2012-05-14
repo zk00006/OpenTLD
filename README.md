@@ -100,5 +100,5 @@ Generate Package
 * Debian package
 	* Navigate with the terminal into the root dictionary of OpenTLD (OpenTLD/)
 	* Type `debuild -us -uc`
-	* (For now it's not possible to `make clean` therefore there are lots of remaining junk files in the source tree after the package-build)
+	* Delete the temporary files in the source tree with `debuild clean`
 
