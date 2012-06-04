@@ -13,5 +13,7 @@ add_library(tld
     TLD.cpp
     TLDUtil.cpp
     VarianceFilter.cpp)
+
+include_directories(${OpenCV_INCLUDE_DIRS})
     
 target_link_libraries(tld cvblobs mftracker ${OpenCV_LIBS})
