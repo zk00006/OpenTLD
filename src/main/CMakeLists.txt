@@ -5,6 +5,6 @@ find_package(OpenCV REQUIRED)
 #Compile
 add_library(main ${MAIN_SOURCES})
 
-include_directories(../imacq ../tld ../config ${OpenCV_INcLUDE_DIRS})
+include_directories(../imacq ../tld ../config ${OpenCV_INCLUDE_DIRS})
 
 target_link_libraries(main imacq tld config)
