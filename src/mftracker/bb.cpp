@@ -29,7 +29,7 @@
  ***********************************************************/
 #include "bb.h"
 
-int calculateBBCenter(float** bb, float**center);
+int calculateBBCenter(float bb[4], float center[2]);
 
 /***********************************************************
  * FUNCTION
@@ -44,13 +44,11 @@ int calculateBBCenter(float** bb, float**center);
  * @param pts       Contains the calculated points in the form (x1, y1, x2, y2).
  *                  Size of the array must be numM * numN * 2.
  */
-int getFilledBBPoints(float *bb, int numM, int numN, int margin, float**pts)
-{
-  float* pt = *pts;
+int getFilledBBPoints(float *bb, int numM, int numN, int margin, float* pts)
+{  
   int pointDim = 2;
   int i;
   int j;
-  float* pbb_local;
   /**
    * gap between points in width direction
    */
@@ -63,18 +61,16 @@ int getFilledBBPoints(float *bb, int numM, int numN, int margin, float**pts)
   float center[2];
   float spaceN;
   float spaceM;
-  float *cen;
   /*add margin*/
   bb_local[0] = bb[0] + margin;
   bb_local[1] = bb[1] + margin;
   bb_local[2] = bb[2] - margin;
   bb_local[3] = bb[3] - margin;
-  pbb_local = bb_local;
-  /*  printf("PointArraySize should be: %d\n", numM * numN * pointDim);*/
+   /*  printf("PointArraySize should be: %d\n", numM * numN * pointDim);*/
   /*handle cases numX = 1*/
   if (numN == 1 && numM == 1)
   {
-    calculateBBCenter(&pbb_local, pts);
+    calculateBBCenter(bb_local, pts);
     return 1;
   }
   else if (numN == 1 && numM > 1)
@@ -84,15 +80,14 @@ int getFilledBBPoints(float *bb, int numM, int numN, int margin, float**pts)
     /*maybe save center coordinate into bb[1] instead of loop again*/
     /*calculate step width*/
     spaceM = (bb_local[3] - bb_local[1]) / divM;
-    cen = center;
-    calculateBBCenter(&pbb_local, &cen);
+    calculateBBCenter(bb_local, center);
     /*calculate points and save them to the array*/
     for (i = 0; i < numN; i++)
     {
       for (j = 0; j < numM; j++)
       {
-        pt[i * numM * pointDim + j * pointDim + 0] = cen[0];
-        pt[i * numM * pointDim + j * pointDim + 1] = bb_local[1] + j * spaceM;
+        pts[i * numM * pointDim + j * pointDim + 0] = center[0];
+        pts[i * numM * pointDim + j * pointDim + 1] = bb_local[1] + j * spaceM;
       }
     }
     return 1;
@@ -107,14 +102,14 @@ int getFilledBBPoints(float *bb, int numM, int numN, int margin, float**pts)
     //calculate step width
     spaceN = (bb_local[2] - bb_local[0]) / divN;
     cen = center;
-    calculateBBCenter(&pbb_local, &cen);
+    calculateBBCenter(bb_local, center);
     //calculate points and save them to the array
     for (i = 0; i < numN; i++)
     {
       for (j = 0; j < numM; j++)
       {
-        pt[i * numM * pointDim + j * pointDim + 0] = bb_local[0] + i * spaceN;
-        pt[i * numM * pointDim + j * pointDim + 1] = cen[1];
+        pts[i * numM * pointDim + j * pointDim + 0] = bb_local[0] + i * spaceN;
+        pts[i * numM * pointDim + j * pointDim + 1] = cen[1];
       }
     }
     return 1;
@@ -132,8 +127,8 @@ int getFilledBBPoints(float *bb, int numM, int numN, int margin, float**pts)
   {
     for (j = 0; j < numM; j++)
     {
-      pt[i * numM * pointDim + j * pointDim + 0] = bb_local[0] + i * spaceN;
-      pt[i * numM * pointDim + j * pointDim + 1] = bb_local[1] + j * spaceM;
+      pts[i * numM * pointDim + j * pointDim + 0] = bb_local[0] + i * spaceN;
+      pts[i * numM * pointDim + j * pointDim + 1] = bb_local[1] + j * spaceM;
     }
   }
   return 1;
@@ -141,19 +136,16 @@ int getFilledBBPoints(float *bb, int numM, int numN, int margin, float**pts)
 /**
  * Calculates center of a Rectangle/Boundingbox.
  * @param bb defined with 2 points x,y,x1,y1
- * @param center point center[0]=x,center[1]=y
+ * @param center Output. point center[0]=x,center[1]=y
+ * @return 0 if bb is NULL and the center couldn't be computed, 1 on success.
  */
-int calculateBBCenter(float** bb, float**center)
+int calculateBBCenter(float bb[4], float center[2])
 {
-  float* bbnow = *bb;
-  float* centernow = *center;
-  if (bbnow == 0)
-  {
-    centernow = 0;
+  if (bb == 0)
     return 0;
-  }
-  centernow[0] = 0.5 * (bbnow[0] + bbnow[2]);
-  centernow[1] = 0.5 * (bbnow[1] + bbnow[3]);
+
+  center[0] = 0.5 * (bb[0] + bb[2]);
+  center[1] = 0.5 * (bb[1] + bb[3]);
   return 1;
 }
 /***********************************************************

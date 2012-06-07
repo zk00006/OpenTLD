@@ -50,17 +50,17 @@ int fbtrack(IplImage *imgI, IplImage *imgJ, float* bb, float* bbnew,
     float* scaleshift)
 {
   char level = 5;
-  int numM = 10;
-  int numN = 10;
-  int nPoints = numM * numN;
-  int sizePointsArray = nPoints * 2;
+  const int numM = 10;
+  const int numN = 10;
+  const int nPoints = numM * numN;
+  const int sizePointsArray = nPoints * 2;
 
-  float* fb = (float*) malloc(nPoints * sizeof(float));
-  float* ncc = (float*) malloc(nPoints * sizeof(float));
-  char* status = (char*) malloc(nPoints);
+  float fb[nPoints];
+  float ncc[nPoints];
+  char status[nPoints];
 
-  float * pt = (float*) malloc(sizeof(float) * sizePointsArray);
-  float * ptTracked = (float*) malloc(sizeof(float) * sizePointsArray);
+  float pt[sizePointsArray];
+  float ptTracked[sizePointsArray];
   int nlkPoints;
   CvPoint2D32f* startPoints;
   CvPoint2D32f* targetPoints;
@@ -71,7 +71,7 @@ int fbtrack(IplImage *imgI, IplImage *imgJ, float* bb, float* bbnew,
   float medFb;
   float medNcc;
   int nAfterFbUsage;
-  getFilledBBPoints(bb, numM, numN, 5, &pt);
+  getFilledBBPoints(bb, numM, numN, 5, pt);
   //getFilledBBPoints(bb, numM, numN, 5, &ptTracked);
   memcpy(ptTracked, pt, sizeof(float) * sizePointsArray);
 
@@ -109,9 +109,7 @@ int fbtrack(IplImage *imgI, IplImage *imgJ, float* bb, float* bbnew,
       nccLkCleaned[nRealPoints] = ncc[i];
       nRealPoints++;
     }
-  }
-  free(pt);
-  free(ptTracked);
+  } 
   //assert nRealPoints==nlkPoints
   medFb = getMedian(fbLkCleaned, nlkPoints);
   medNcc = getMedian(nccLkCleaned, nlkPoints);
@@ -139,10 +137,7 @@ int fbtrack(IplImage *imgI, IplImage *imgJ, float* bb, float* bbnew,
    printf("relative scale: %f \n", scaleshift[0]);*/
   //show picture with tracked bb
   //  drawRectFromBB(imgJ, bbnew);
-  //  showIplImage(imgJ);
-  free(fb);
-  free(ncc);
-  free(status);
+  //  showIplImage(imgJ);  
   free(startPoints);
   free(targetPoints);
   free(fbLkCleaned);
