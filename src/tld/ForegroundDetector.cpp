@@ -42,7 +42,7 @@ ForegroundDetector::~ForegroundDetector() {
 void ForegroundDetector::release() {
 }
 
-void ForegroundDetector::nextIteration(Mat img) {
+void ForegroundDetector::nextIteration(const Mat& img) {
 	if(bgImg.empty()) {
 		return;
 	}

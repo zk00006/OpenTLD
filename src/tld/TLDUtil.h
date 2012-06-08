@@ -87,13 +87,13 @@ int tldIsInside(int * bb1, int * bb2);
 void tldRectToPoints(CvRect rect, CvPoint * p1, CvPoint * p2);
 void tldBoundingBoxToPoints(int * bb, CvPoint * p1, CvPoint * p2);
 
-void tldNormalizeImg(IplImage * img, float * result, int size);
+void tldNormalizeImg(const Mat& img, float * result, int size);
 
-void tldExtractNormalizedPatch(Mat img, int x, int y, int w, int h, float * output);
-void tldExtractNormalizedPatchBB(Mat img, int * boundary, float * output);
-void tldExtractNormalizedPatchRect(Mat img, Rect* rect, float * output);
-IplImage * tldExtractSubImage(IplImage * img, int * boundary);
-IplImage * tldExtractSubImage(IplImage * img, int x, int y, int w, int h);
+void tldExtractNormalizedPatch(const Mat& img, int x, int y, int w, int h, float * output);
+void tldExtractNormalizedPatchBB(const Mat& img, int * boundary, float * output);
+void tldExtractNormalizedPatchRect(const Mat& img, Rect* rect, float * output);
+void tldExtractSubImage(const Mat& img, Mat& subImage, int * boundary);
+void tldExtractSubImage(const Mat& img, Mat& subImage, int x, int y, int w, int h);
 
 float tldCalcMean(float * value, int n);
 float tldCalcVariance(float * value, int n);

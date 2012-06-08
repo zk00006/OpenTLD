@@ -48,9 +48,9 @@ public:
 		delete[] data;
 	}
 
-	void calcIntImg(Mat img, bool squared = false)
+	void calcIntImg(const Mat& img, bool squared = false)
 	{
-		unsigned char *input = (unsigned char*)(img.data);
+		const unsigned char *input = (const unsigned char*)(img.data);
 		T *output = data;
 		for(int i = 0;i < img.cols;i++){
 			for(int j = 0;j < img.rows;j++){

@@ -42,7 +42,7 @@ void tldBoundingBoxToPoints(int * bb, CvPoint * p1, CvPoint * p2) {
 
 
 //Returns mean-normalized patch, image must be greyscale
-void tldNormalizeImg(Mat img, float * output) {
+void tldNormalizeImg(const Mat& img, float * output) {
 	int size = TLD_PATCH_SIZE;
 
 	Mat result;
@@ -73,28 +73,28 @@ CvRect tldBoundaryToRect(int * boundary) {
 	return Rect(boundary[0], boundary[1],boundary[2],boundary[3]);
 }
 
-Mat tldExtractSubImage(Mat img, CvRect rect) {
-	Mat subImg = img(rect).clone();
-	return subImg;
+void tldExtractSubImage(const Mat& img, Mat& subImage, CvRect rect) {
+	subImage = img(rect).clone();
 }
 
-Mat tldExtractSubImage(Mat img, int * boundary) {
-	return tldExtractSubImage(img, tldBoundaryToRect(boundary));
+void tldExtractSubImage(const Mat& img, Mat& subImage, int * boundary) {
+	tldExtractSubImage(img, subImage, tldBoundaryToRect(boundary));
 }
 
-void tldExtractNormalizedPatch(Mat img, int x, int y, int w, int h, float * output) {
-	Mat subImage = tldExtractSubImage(img, Rect(x,y,w,h));
+void tldExtractNormalizedPatch(const Mat& img, int x, int y, int w, int h, float * output) {
+	Mat subImage;
+	tldExtractSubImage(img, subImage, Rect(x,y,w,h));
 	tldNormalizeImg(subImage, output);
 }
 
 //TODO: Rename
-void tldExtractNormalizedPatchBB(Mat img, int * boundary, float * output) {
+void tldExtractNormalizedPatchBB(const Mat& img, int * boundary, float * output) {
 	int x,y,w,h;
 	tldExtractDimsFromArray(boundary, &x,&y,&w,&h);
 	tldExtractNormalizedPatch(img, x,y,w,h,output);
 }
 
-void tldExtractNormalizedPatchRect(Mat img, Rect* rect, float * output) {
+void tldExtractNormalizedPatchRect(const Mat& img, Rect* rect, float * output) {
 	tldExtractNormalizedPatch(img, rect->x,rect->y,rect->width,rect->height,output);
 }
 

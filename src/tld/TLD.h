@@ -61,8 +61,8 @@ public:
 	TLD();
 	virtual ~TLD();
 	void release();
-	void selectObject(Mat img, Rect * bb);
-	void processImage(Mat img);
+	void selectObject(const Mat& img, Rect * bb);
+	void processImage(const Mat& img);
 	void writeToFile(const char * path);
 	void readFromFile(const char * path);
 };

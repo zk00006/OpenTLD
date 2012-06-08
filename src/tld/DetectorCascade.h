@@ -90,7 +90,7 @@ public:
 
 	void release();
 	void cleanPreviousData();
-	void detect(Mat img);
+	void detect(const Mat& img);
 };
 
 } /* namespace tld */

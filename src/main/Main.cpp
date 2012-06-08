@@ -32,12 +32,12 @@
 void Main::doWork() {
 
 	IplImage * img = imAcqGetImg(imAcq);
-	IplImage * grey = cvCreateImage( cvGetSize(img), 8, 1 );
-	cvCvtColor( img,grey, CV_BGR2GRAY );
+	Mat grey(img->height, img->width, CV_8UC1);
+	cvtColor( img,grey, CV_BGR2GRAY );
 
-	tld->detectorCascade->imgWidth = grey->width;
-	tld->detectorCascade->imgHeight = grey->height;
-	tld->detectorCascade->imgWidthStep = grey->widthStep;
+	tld->detectorCascade->imgWidth = grey.cols;
+	tld->detectorCascade->imgHeight = grey.rows;
+	tld->detectorCascade->imgWidthStep = grey.step;
 
 	if(selectManually) {
 
@@ -101,8 +101,7 @@ void Main::doWork() {
 				printf("current image is NULL, assuming end of input.\n");
 				break;
 			}
-			grey = cvCreateImage( cvGetSize(img), 8, 1 );
-			cvCvtColor( img, grey, CV_BGR2GRAY );
+			cvtColor( img, grey, CV_BGR2GRAY );
 		}
 
 		if(!skipProcessingOnce) {
@@ -171,7 +170,7 @@ void Main::doWork() {
 					ForegroundDetector* fg = tld->detectorCascade->foregroundDetector;
 
 					if(fg->bgImg.empty()) {
-						fg->bgImg = cvCloneImage(grey);
+						fg->bgImg = grey.clone();
 					} else {
 						fg->bgImg.release();
 					}
@@ -222,7 +221,6 @@ void Main::doWork() {
 
 		if(!reuseFrameOnce) {
 			cvReleaseImage(&img);
-			cvReleaseImage(&grey);
 		} else {
 			reuseFrameOnce = false;
 		}

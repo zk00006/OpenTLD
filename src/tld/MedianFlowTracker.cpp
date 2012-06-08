@@ -42,7 +42,7 @@ void MedianFlowTracker::cleanPreviousData() {
 	trackerBB = NULL;
 }
 
-void MedianFlowTracker::track(Mat prevMat, Mat currMat, Rect* prevBB) {
+void MedianFlowTracker::track(const Mat& prevMat, const Mat& currMat, Rect* prevBB) {
 	if(prevBB != NULL) {
 		if(prevBB->width <= 0 || prevBB->height <= 0) {
 			return;

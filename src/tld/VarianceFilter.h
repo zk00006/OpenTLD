@@ -50,7 +50,7 @@ public:
 	virtual ~VarianceFilter();
 
 	void release();
-	void nextIteration(Mat img);
+	void nextIteration(const Mat& img);
 	bool filter(int idx);
 	float calcVariance(int *off);
 };

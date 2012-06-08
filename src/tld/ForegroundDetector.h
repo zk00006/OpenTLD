@@ -46,7 +46,7 @@ public:
 	ForegroundDetector();
 	virtual ~ForegroundDetector();
 	void release();
-	void nextIteration(Mat img);
+	void nextIteration(const Mat& img);
 	bool isActive();
 };
 

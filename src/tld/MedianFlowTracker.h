@@ -39,7 +39,7 @@ public:
 	MedianFlowTracker();
 	virtual ~MedianFlowTracker();
 	void cleanPreviousData();
-	void track(Mat prevImg, Mat currImg, Rect* prevBB);
+	void track(const Mat& prevImg, const Mat& currImg, Rect* prevBB);
 };
 
 } /* namespace tld */

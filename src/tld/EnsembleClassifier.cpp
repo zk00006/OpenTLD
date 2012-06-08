@@ -126,10 +126,10 @@ void EnsembleClassifier::initPosteriors() {
 	}
 }
 
-void EnsembleClassifier::nextIteration(Mat img) {
+void EnsembleClassifier::nextIteration(const Mat& img) {
 	if(!enabled) return;
 
-	this->img = (unsigned char *)img.data;
+	this->img = (const unsigned char *)img.data;
 }
 
 //Classical fern algorithm
@@ -196,7 +196,7 @@ void EnsembleClassifier::updatePosteriors(int *featureVector, int positive, int 
 	}
 }
 
-void EnsembleClassifier::learn(Mat img, int * boundary, int positive, int * featureVector) {
+void EnsembleClassifier::learn(int * boundary, int positive, int * featureVector) {
     if(!enabled) return;
 
 	float conf = calcConfidence(featureVector);
