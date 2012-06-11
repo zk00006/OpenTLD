@@ -11,6 +11,9 @@ http://dl.dropbox.com/u/8715460/tld.zip
 If you have a webcam attached to your PC, you can simply execute opentld (on Ubuntu) or opentld.exe (on Windows) in order to
 try it out. For other configuration options, please see below.
 
+A documentation of the internals as well as other possibly helful information is contained in this master thesis:
+http://dl.dropbox.com/u/8715460/gnebehay_thesis_msc.pdf
+
  Usage
 =======
 
