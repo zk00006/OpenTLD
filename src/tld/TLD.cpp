@@ -435,14 +435,14 @@ void TLD::readFromFile(const char * path) {
 			fgets(str_buf, MAX_LEN, file); /*Read sample*/
 
 			char * pch;
-			pch = strtok (str_buf," ");
+			pch = strtok (str_buf," \n");
 			int j = 0;
 			while (pch != NULL)
 			{
 				float val = atof(pch);
 				patch.values[i*TLD_PATCH_SIZE+j] = val;
 
-				pch = strtok (NULL, " ");
+				pch = strtok (NULL, " \n");
 
 				j++;
 			}
@@ -463,14 +463,14 @@ void TLD::readFromFile(const char * path) {
 			fgets(str_buf, MAX_LEN, file); /*Read sample*/
 
 			char * pch;
-			pch = strtok (str_buf," ");
+			pch = strtok (str_buf," \n");
 			int j = 0;
 			while (pch != NULL)
 			{
 				float val = atof(pch);
 				patch.values[i*TLD_PATCH_SIZE+j] = val;
 
-				pch = strtok (NULL, " ");
+				pch = strtok (NULL, " \n");
 
 				j++;
 			}
