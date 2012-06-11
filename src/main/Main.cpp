@@ -52,24 +52,9 @@ void Main::doWork() {
 
 		initialBB[0] = box.x;
 		initialBB[1] = box.y;
-		
-		if (box.width < 0) {
-			initialBB[0] += box.width;
-			initialBB[2] = abs(box.width);
-		}
-		else {
-			initialBB[2] = box.width;
-		}
-		if (box.height < 0) {
-			initialBB[1] += box.height;
-			initialBB[3] = abs(box.height);
-		}
-		else {
-			initialBB[3] = box.height;
-		}
+		initialBB[2] = box.width;
+		initialBB[3] = box.height;
 	}
-
-
 
 	FILE * resultsFile = NULL;
 

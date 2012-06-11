@@ -117,6 +117,15 @@ int getBBFromUser(IplImage * img, CvRect & rect, Gui * gui) {
 		}
 	}
 
+	if (rect.width < 0) {
+		rect.x += rect.width;
+		rect.width = abs(rect.width);
+	}
+	if (rect.height < 0) {
+		rect.y += rect.height;
+		rect.height = abs(rect.height);
+	}
+
 	cvSetMouseCallback(window_name.c_str(), NULL, NULL);
 
 	cvReleaseImage(&img0);
