@@ -40,7 +40,7 @@ TLD::TLD() {
 	valid = false;
 	wasValid = false;
 	learning = false;
-	currBB = NULL;
+	currBB = prevBB = NULL;
 
 	detectorCascade = new DetectorCascade();
 	nnClassifier = detectorCascade->nnClassifier;
@@ -64,6 +64,8 @@ void TLD::release() {
 void TLD::storeCurrentData() {
 	prevImg.release();
 	prevImg = currImg; //Store old image (if any)
+	if(prevBB != NULL)
+		delete prevBB;
 	prevBB = currBB;		//Store old bounding box (if any)
 
 	detectorCascade->cleanPreviousData(); //Reset detector results
@@ -83,7 +85,7 @@ void TLD::selectObject(const Mat& img, Rect * bb) {
 	detectorCascade->init();
 
 	currImg = img;
-	currBB = bb;
+	currBB = tldCopyRect(bb);
 	currConf = 1;
 	valid = true;
 
