@@ -3,6 +3,7 @@
 #include "imAcq.h"
 #include "gui.h"
 
+using namespace tld;
 
 int main(int argc, char ** argv) {
 

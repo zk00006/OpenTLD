@@ -32,9 +32,6 @@
 #include "NormalizedPatch.h"
 #include "DetectionResult.h"
 
-using namespace std;
-using namespace cv;
-
 namespace tld {
 
 class NNClassifier {
@@ -46,18 +43,18 @@ public:
 	float thetaFP;
 	float thetaTP;
 	DetectionResult* detectionResult;
-	vector<NormalizedPatch>* falsePositives;
-	vector<NormalizedPatch>* truePositives;
+	std::vector<NormalizedPatch>* falsePositives;
+	std::vector<NormalizedPatch>* truePositives;
 
 	NNClassifier();
 	virtual ~NNClassifier();
 
 	void release();
 	float classifyPatch(NormalizedPatch * patch);
-	float classifyBB(const Mat& img, Rect* bb);
-	float classifyWindow(const Mat& img, int windowIdx);
-	void learn(vector<NormalizedPatch> patches);
-	bool filter(const Mat& img, int windowIdx);
+	float classifyBB(const cv::Mat& img, cv::Rect* bb);
+	float classifyWindow(const cv::Mat& img, int windowIdx);
+	void learn(std::vector<NormalizedPatch> patches);
+	bool filter(const cv::Mat& img, int windowIdx);
 };
 
 } /* namespace tld */

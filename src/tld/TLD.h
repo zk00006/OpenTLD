@@ -31,8 +31,6 @@
 #include "MedianFlowTracker.h"
 #include "DetectorCascade.h"
 
-using namespace cv;
-
 namespace tld {
 
 class TLD {
@@ -51,18 +49,18 @@ public:
 	NNClassifier* nnClassifier;
 	bool valid;
 	bool wasValid;
-	Mat prevImg;
-	Mat currImg;
-	Rect* prevBB;
-	Rect* currBB;
+	cv::Mat prevImg;
+	cv::Mat currImg;
+	cv::Rect* prevBB;
+	cv::Rect* currBB;
 	float currConf;
 	bool learning;
 
 	TLD();
 	virtual ~TLD();
 	void release();
-	void selectObject(const Mat& img, Rect * bb);
-	void processImage(const Mat& img);
+	void selectObject(const cv::Mat& img, cv::Rect * bb);
+	void processImage(const cv::Mat& img);
 	void writeToFile(const char * path);
 	void readFromFile(const char * path);
 };

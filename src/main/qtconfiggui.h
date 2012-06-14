@@ -11,8 +11,6 @@
 
 #include "ui_qtconfiggui.h"
 
-using namespace tld;
-
 /**
  * Creates a dialog and provides the configured parameters
  * @param argc number of command line arguments
@@ -21,7 +19,7 @@ using namespace tld;
  * @return true if everything went right, false if not
  */
 bool getSettingsFromQtConfigGUI(int argc, char * argv[],
-		Settings * settings);
+		tld::Settings * settings);
 
 /**
  * Qt-Dialog to configure the program
@@ -35,14 +33,14 @@ public:
 	 * @param correctClosed true if everything went right, false if not
 	 */
 	QtConfigGUI() {}
-	QtConfigGUI(Settings * settings, bool * correctClosed, QWidget * parent = 0);
+	QtConfigGUI(tld::Settings * settings, bool * correctClosed, QWidget * parent = 0);
 	~QtConfigGUI();
 
 protected:
 	void changeEvent(QEvent *e);
 
 private:
-	Settings * m_settings;
+	tld::Settings * m_settings;
 	bool * m_correctClosed;
 	Ui_QtConfigGUI *ui;
 

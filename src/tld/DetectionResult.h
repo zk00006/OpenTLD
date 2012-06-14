@@ -29,21 +29,18 @@
 #include <vector>
 #include <opencv/cv.h>
 
-using namespace std;
-using namespace cv;
-
 namespace tld {
 
 class DetectionResult {
 public:
 	bool containsValidData;
-	vector<Rect>* fgList;
+	std::vector<cv::Rect>* fgList;
 	float * posteriors; /* Contains the posteriors for each slding window. Is of size numWindows. Allocated by tldInitClassifier. */
-	vector<int>* confidentIndices;
+	std::vector<int>* confidentIndices;
 	int * featureVectors;
 	float * variances;
 	int numClusters;
-	Rect* detectorBB; //Contains a valid result only if numClusters = 1
+	cv::Rect* detectorBB; //Contains a valid result only if numClusters = 1
 
 	DetectionResult();
 	virtual ~DetectionResult();

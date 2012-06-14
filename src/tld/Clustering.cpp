@@ -27,6 +27,8 @@
 #include "TLDUtil.h"
 #include "DetectorCascade.h"
 
+using namespace cv;
+
 namespace tld {
 
 Clustering::Clustering() {

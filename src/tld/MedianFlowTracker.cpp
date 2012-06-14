@@ -27,6 +27,8 @@
 #include "fbtrack.h"
 #include <cmath>
 
+using namespace cv;
+
 namespace tld {
 
 MedianFlowTracker::MedianFlowTracker() {

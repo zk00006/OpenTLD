@@ -31,22 +31,19 @@
 
 #include "DetectionResult.h"
 
-using namespace std;
-using namespace cv;
-
 namespace tld {
 
 class ForegroundDetector {
 public:
 	int fgThreshold;
 	int minBlobSize;
-	Mat bgImg;
+	cv::Mat bgImg;
 	DetectionResult * detectionResult;
 
 	ForegroundDetector();
 	virtual ~ForegroundDetector();
 	void release();
-	void nextIteration(const Mat& img);
+	void nextIteration(const cv::Mat& img);
 	bool isActive();
 };
 

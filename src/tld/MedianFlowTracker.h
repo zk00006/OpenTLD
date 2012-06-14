@@ -28,18 +28,16 @@
 
 #include <opencv/cv.h>
 
-using namespace cv;
-
 namespace tld {
 
 class MedianFlowTracker {
 public:
-	Rect* trackerBB;
+	cv::Rect* trackerBB;
 
 	MedianFlowTracker();
 	virtual ~MedianFlowTracker();
 	void cleanPreviousData();
-	void track(const Mat& prevImg, const Mat& currImg, Rect* prevBB);
+	void track(const cv::Mat& prevImg, const cv::Mat& currImg, cv::Rect* prevBB);
 };
 
 } /* namespace tld */

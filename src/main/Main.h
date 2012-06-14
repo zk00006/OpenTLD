@@ -30,8 +30,6 @@
 #include "imAcq.h"
 #include "gui.h"
 
-using namespace tld;
-
 enum Retval {
 	PROGRAM_EXIT = 0,
 	SUCCESS = 1
@@ -39,9 +37,9 @@ enum Retval {
 
 class Main {
 public:
-	TLD * tld;
+	tld::TLD * tld;
 	ImAcq * imAcq;
-	Gui * gui;
+	tld::Gui * gui;
 	bool showOutput;
 	const char * printResults;
 	const char * saveDir;
@@ -58,7 +56,7 @@ public:
 	int seed;
 
 	Main() {
-		tld = new TLD();
+		tld = new tld::TLD();
 		showOutput = 1;
 		printResults = NULL;
 		saveDir = ".";

@@ -29,6 +29,9 @@
 #include "gui.h"
 #include "TLDUtil.h"
 
+using namespace tld;
+using namespace cv;
+
 void Main::doWork() {
 
 	IplImage * img = imAcqGetImg(imAcq);

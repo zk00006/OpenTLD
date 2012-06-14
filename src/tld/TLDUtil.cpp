@@ -20,8 +20,8 @@
 #include "NormalizedPatch.h"
 #include "DetectorCascade.h"
 
-
 using namespace std;
+using namespace cv;
 
 namespace tld {
 

@@ -27,6 +27,8 @@
 #include "IntegralImage.h"
 #include "DetectorCascade.h"
 
+using namespace cv;
+
 namespace tld {
 
 VarianceFilter::VarianceFilter() {

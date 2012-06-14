@@ -29,6 +29,8 @@
 
 #include "TLDUtil.h"
 
+using namespace cv;
+
 namespace tld {
 
 //TODO: Convert this to a function

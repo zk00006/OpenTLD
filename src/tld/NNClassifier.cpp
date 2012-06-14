@@ -27,6 +27,9 @@
 #include "DetectorCascade.h"
 #include "TLDUtil.h"
 
+using namespace std;
+using namespace cv;
+
 namespace tld {
 
 NNClassifier::NNClassifier() {

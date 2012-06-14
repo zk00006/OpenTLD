@@ -31,13 +31,10 @@
 
 #include "DetectionResult.h"
 
-using namespace std;
-using namespace cv;
-
 namespace tld {
 
 class Clustering {
-	void calcMeanRect(vector<int> * indices);
+	void calcMeanRect(std::vector<int> * indices);
 	void calcDistances(float * distances);
 	void cluster(float * distances, int * clusterIndices);
 public:

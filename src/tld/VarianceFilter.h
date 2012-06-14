@@ -30,8 +30,6 @@
 #include "IntegralImage.h"
 #include "DetectionResult.h"
 
-using namespace cv;
-
 namespace tld {
 
 class VarianceFilter {
@@ -50,7 +48,7 @@ public:
 	virtual ~VarianceFilter();
 
 	void release();
-	void nextIteration(const Mat& img);
+	void nextIteration(const cv::Mat& img);
 	bool filter(int idx);
 	float calcVariance(int *off);
 };

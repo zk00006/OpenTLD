@@ -29,9 +29,6 @@
 #include <utility>
 #include <opencv/cv.h>
 
-using namespace cv;
-using namespace std;
-
 namespace tld {
 
 template <class T1, class T2>
@@ -64,7 +61,7 @@ void tldExtractDimsFromArray(T * boundary, T * x, T * y, T *width, T * height) {
 }
 
 template <class T>
-void tldRectToArray(Rect rect, T * boundary) {
+void tldRectToArray(cv::Rect rect, T * boundary) {
 	boundary[0] = rect.x;
 	boundary[1] = rect.y;
 	boundary[2] = rect.width;
@@ -72,7 +69,7 @@ void tldRectToArray(Rect rect, T * boundary) {
 }
 
 template <class T>
-Rect tldArrayToRect(T * boundary) {
+cv::Rect tldArrayToRect(T * boundary) {
 	Rect rect;
 	rect.x = boundary[0];
 	rect.y = boundary[1];
@@ -87,25 +84,25 @@ int tldIsInside(int * bb1, int * bb2);
 void tldRectToPoints(CvRect rect, CvPoint * p1, CvPoint * p2);
 void tldBoundingBoxToPoints(int * bb, CvPoint * p1, CvPoint * p2);
 
-void tldNormalizeImg(const Mat& img, float * result, int size);
+void tldNormalizeImg(const cv::Mat& img, float * result, int size);
 
-void tldExtractNormalizedPatch(const Mat& img, int x, int y, int w, int h, float * output);
-void tldExtractNormalizedPatchBB(const Mat& img, int * boundary, float * output);
-void tldExtractNormalizedPatchRect(const Mat& img, Rect* rect, float * output);
-void tldExtractSubImage(const Mat& img, Mat& subImage, int * boundary);
-void tldExtractSubImage(const Mat& img, Mat& subImage, int x, int y, int w, int h);
+void tldExtractNormalizedPatch(const cv::Mat& img, int x, int y, int w, int h, float * output);
+void tldExtractNormalizedPatchBB(const cv::Mat& img, int * boundary, float * output);
+void tldExtractNormalizedPatchRect(const cv::Mat& img, cv::Rect* rect, float * output);
+void tldExtractSubImage(const cv::Mat& img, cv::Mat& subImage, int * boundary);
+void tldExtractSubImage(const cv::Mat& img, cv::Mat& subImage, int x, int y, int w, int h);
 
 float tldCalcMean(float * value, int n);
 float tldCalcVariance(float * value, int n);
 
 bool tldSortByOverlapDesc(pair<int,float> bb1 , pair<int,float> bb2);
-Rect* tldCopyRect(Rect* r);
+cv::Rect* tldCopyRect(cv::Rect* r);
 
 //TODO: Change function names
-float tldOverlapRectRect(Rect r1, Rect r2);
-void tldOverlapOne(int * windows, int numWindows, int index, vector<int> * indices, float * overlap);
+float tldOverlapRectRect(cv::Rect r1, cv::Rect r2);
+void tldOverlapOne(int * windows, int numWindows, int index, std::vector<int> * indices, float * overlap);
 void tldOverlap(int * windows, int numWindows, int * boundary, float * overlap);
-void tldOverlapRect(int * windows, int numWindows, Rect * boundary, float * overlap);
+void tldOverlapRect(int * windows, int numWindows, cv::Rect * boundary, float * overlap);
 
 float tldCalcVariance(float * value, int n);
 

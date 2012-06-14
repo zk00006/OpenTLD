@@ -26,6 +26,9 @@
 #include "DetectionResult.h"
 #include "TLDUtil.h"
 
+using namespace cv;
+using namespace std;
+
 namespace tld {
 
 DetectionResult::DetectionResult() {
