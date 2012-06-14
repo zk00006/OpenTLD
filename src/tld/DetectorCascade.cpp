@@ -129,8 +129,11 @@ void DetectorCascade::release() {
 	numScales = 0;
 
 	delete[] scales;
+	scales = NULL;
 	delete[] windows;
+	windows = NULL;
 	delete[] windowOffsets;
+	windowOffsets = NULL;
 
 	objWidth = -1;
 	objHeight = -1;
