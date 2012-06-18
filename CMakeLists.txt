@@ -26,6 +26,8 @@ project(OpenTLD)
 
 cmake_minimum_required(VERSION 2.6)
 
+find_package(OpenCV REQUIRED)
+
 #-------------------------------------------------------------------------------
 #version
 set(TLD_VERSION_MAJOR 1)
