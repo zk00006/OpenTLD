@@ -36,7 +36,7 @@ void Main::doWork() {
 
 	IplImage * img = imAcqGetImg(imAcq);
 	Mat grey(img->height, img->width, CV_8UC1);
-	cvtColor( img,grey, CV_BGR2GRAY );
+    cvtColor( cv::Mat(img),grey, CV_BGR2GRAY );
 
 	tld->detectorCascade->imgWidth = grey.cols;
 	tld->detectorCascade->imgHeight = grey.rows;
@@ -89,7 +89,7 @@ void Main::doWork() {
 				printf("current image is NULL, assuming end of input.\n");
 				break;
 			}
-			cvtColor( img, grey, CV_BGR2GRAY );
+            cvtColor( cv::Mat(img), grey, CV_BGR2GRAY );
 		}
 
 		if(!skipProcessingOnce) {

@@ -70,7 +70,7 @@ void tldRectToArray(cv::Rect rect, T * boundary) {
 
 template <class T>
 cv::Rect tldArrayToRect(T * boundary) {
-	Rect rect;
+    cv::Rect rect;
 	rect.x = boundary[0];
 	rect.y = boundary[1];
 	rect.width = boundary[2];
@@ -95,7 +95,7 @@ void tldExtractSubImage(const cv::Mat& img, cv::Mat& subImage, int x, int y, int
 float tldCalcMean(float * value, int n);
 float tldCalcVariance(float * value, int n);
 
-bool tldSortByOverlapDesc(pair<int,float> bb1 , pair<int,float> bb2);
+bool tldSortByOverlapDesc(std::pair<int,float> bb1 , std::pair<int,float> bb2);
 cv::Rect* tldCopyRect(cv::Rect* r);
 
 //TODO: Change function names
