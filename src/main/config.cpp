@@ -18,7 +18,6 @@
 */
 #include "Main.h"
 #include "config.h"
-#include "qtconfiggui.h"
 
 using namespace std;
 

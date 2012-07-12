@@ -1,4 +1,4 @@
-set(MAIN_SOURCES config.cpp gui.cpp Main.cpp settings.cpp qtconfiggui.cpp)
+set(MAIN_SOURCES config.cpp gui.cpp Main.cpp settings.cpp)
 
 #Compile
 add_library(main ${MAIN_SOURCES})
