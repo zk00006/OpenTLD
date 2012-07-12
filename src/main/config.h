@@ -65,7 +65,6 @@ private:
 	libconfig::Config m_cfg; //!< libconfig++
 	std::string m_configPath; //!< path to the config file
 	Settings m_settings; //!< adjusted settings
-	bool m_qtConfigGui;
 	///@{
 	/**
 	 * Flags if parameters were set by cli-arguments.

@@ -41,7 +41,6 @@ static char help_text[] =
 		"[-m <path>] if specified load a model from <path>. An initialBoundingBox must be specified or selectManually must be true.\n"
 		"[-n <number>] specifies which camera device to use.\n"
 		"[-p <path>] prints results into the file <path>\n"
-		"[-q] open QT-Config GUI\n"
 		"[-s] if set, user can select initial bounding box\n"
 		"[-t <theta>] threshold for determining positive results\n"
 		"[-z <lastFrameNumber>] video ends at the frameNumber <lastFrameNumber>.\n"
@@ -51,7 +50,6 @@ static char help_text[] =
 		"[<path>] <path> to the config file\n";
 
 Config::Config() :
-		m_qtConfigGui(false),
 		m_selectManuallySet(false),
 		m_methodSet(false),
 		m_startFrameSet(false),
@@ -139,13 +137,6 @@ int Config::init(int argc, char ** argv) {
 			m_settings.m_showOutput = false;
 			m_showOutputSet = true;
 			break;
-		case 'q':
-#ifndef WITH_QT
-			cerr << "Program was build without QT-support!" << endl;
-			return PROGRAM_EXIT;
-#endif
-			m_qtConfigGui = true;
-			break;
 		case 's':
 			m_settings.m_selectManually = true;
 			m_selectManuallySet = true;
@@ -160,17 +151,6 @@ int Config::init(int argc, char ** argv) {
 			break;
 		}
 	}
-
-	#ifdef WITH_QT
-		if(m_qtConfigGui || (argc == 1)) {
-			bool correctClosed;
-					Settings settings;
-					if(getSettingsFromQtConfigGUI(argc, argv, &settings)) {
-							m_settings = settings;
-				return SUCCESS;
-			}
-		}
-	#endif
 
 	if(!m_imagePathSet && m_methodSet && (m_settings.m_method == IMACQ_VID || m_settings.m_method == IMACQ_IMGS)) {
 		cerr <<  "Error: Must set imagePath and method if capturing from images or a video." << endl;
