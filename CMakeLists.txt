@@ -55,17 +55,15 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp -fPIC")
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fopenmp -fPIC")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgomp")
 
-include_directories(src/cvblobs src/imacq src/config src/tld src/mftracker src/main)
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin)
+set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 
 #-------------------------------------------------------------------------------
 #add subdirectories
-add_subdirectory(src/imacq)
-add_subdirectory(src/cvblobs)
-add_subdirectory(src/config)
-add_subdirectory(src/tld)
-add_subdirectory(src/mftracker)
-add_subdirectory(src/main)
-add_subdirectory(src)
+add_subdirectory(src/3rdparty/cvblobs)
+add_subdirectory(src/3rdparty/libconfig)
+add_subdirectory(src/libopentld)
+add_subdirectory(src/opentld)
 
 configure_file("${PROJECT_SOURCE_DIR}/OpenTLDConfig.cmake.in" "${PROJECT_BINARY_DIR}/OpenTLDConfig.cmake" @ONLY)
 
