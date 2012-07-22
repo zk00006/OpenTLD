@@ -3,8 +3,10 @@ Section: science
 Priority: optional
 Maintainer: Georg Nebehay <georg.nebehay.fl@ait.ac.at>
 Build-Depends: debhelper (>= 8.0.0),
-               cmake, libopencv-core-dev,
-               libopencv-highgui-dev
+               cmake,
+               libcv-dev,
+               libopencv-dev,
+               libhighgui-dev
 Standards-Version: 3.9.3
 Homepage: https://github.com/gnebehay/OpenTLD
 #Vcs-Git: git://github.com/gnebehay/OpenTLD.git
