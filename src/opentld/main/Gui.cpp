@@ -23,7 +23,7 @@
  *      Author: clemensk
  */
 
-#include "gui.h"
+#include "Gui.h"
 #include "Main.h"
 
 #include <string>

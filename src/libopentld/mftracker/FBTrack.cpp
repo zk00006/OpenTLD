@@ -27,11 +27,11 @@
  * INCLUDES
  ***********************************************************/
 
-#include "bb.h"
-#include "bb_predict.h"
-#include "median.h"
+#include "BB.h"
+#include "BBPredict.h"
+#include "Median.h"
 #include "stdio.h"
-#include "lk.h"
+#include "Lk.h"
 
 /***********************************************************
  * FUNCTION

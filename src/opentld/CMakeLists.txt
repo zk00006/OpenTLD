@@ -11,10 +11,10 @@ include_directories(main
 
 add_executable(opentld
     OpenTLD.cpp
-    main/config.cpp
-    main/gui.cpp
+    main/Config.cpp
+    main/Gui.cpp
     main/Main.cpp
-    main/settings.cpp)
+    main/Settings.cpp)
 
 target_link_libraries(opentld libopentld cvblobs libconfig ${OpenCV_LIBS})
 

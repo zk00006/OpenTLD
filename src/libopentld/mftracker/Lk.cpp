@@ -27,7 +27,7 @@
  * INCLUDES
  ***********************************************************/
 
-#include "lk.h"
+#include "Lk.h"
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 #include <math.h>

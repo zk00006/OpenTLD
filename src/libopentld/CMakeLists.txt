@@ -7,12 +7,12 @@ include_directories(imacq
 link_directories(${OpenCV_LIB_DIR})
 
 add_library(libopentld
-    imacq/imAcq.cpp
-    mftracker/bb.cpp
-    mftracker/bb_predict.cpp
-    mftracker/fbtrack.cpp
-    mftracker/lk.cpp
-    mftracker/median.cpp
+    imacq/ImAcq.cpp
+    mftracker/BB.cpp
+    mftracker/BBPredict.cpp
+    mftracker/FBTrack.cpp
+    mftracker/Lk.cpp
+    mftracker/Median.cpp
     tld/Clustering.cpp
     tld/DetectionResult.cpp
     tld/DetectorCascade.cpp

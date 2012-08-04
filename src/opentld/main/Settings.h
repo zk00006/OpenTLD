@@ -21,7 +21,7 @@
 
 #include <vector>
 
-#include "imAcq.h"
+#include "ImAcq.h"
 
 namespace tld {
 

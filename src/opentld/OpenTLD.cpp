@@ -1,7 +1,7 @@
 #include "Main.h"
-#include "config.h"
-#include "imAcq.h"
-#include "gui.h"
+#include "Config.h"
+#include "ImAcq.h"
+#include "Gui.h"
 
 using namespace tld;
 

@@ -16,7 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-#include "settings.h"
+#include "Settings.h"
 
 using namespace std;
 

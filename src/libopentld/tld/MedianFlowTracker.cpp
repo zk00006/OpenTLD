@@ -24,7 +24,7 @@
  */
 
 #include "MedianFlowTracker.h"
-#include "fbtrack.h"
+#include "FBTrack.h"
 #include <cmath>
 
 using namespace cv;

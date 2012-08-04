@@ -27,8 +27,8 @@
 #define MAIN_H_
 
 #include "TLD.h"
-#include "imAcq.h"
-#include "gui.h"
+#include "ImAcq.h"
+#include "Gui.h"
 
 enum Retval {
 	PROGRAM_EXIT = 0,

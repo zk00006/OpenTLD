@@ -24,8 +24,8 @@
 #include <libconfig.h++>
 #include <string>
 
-#include "imAcq.h"
-#include "settings.h"
+#include "ImAcq.h"
+#include "Settings.h"
 #include "Main.h"
 
 namespace tld {

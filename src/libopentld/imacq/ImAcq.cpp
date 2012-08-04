@@ -21,7 +21,7 @@
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
 
-#include "imAcq.h"
+#include "ImAcq.h"
 
 ImAcq * imAcqAlloc() {
 	ImAcq * imAcq = (ImAcq *)malloc(sizeof(ImAcq));
