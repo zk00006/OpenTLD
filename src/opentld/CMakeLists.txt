@@ -14,7 +14,11 @@ add_executable(opentld
     main/Config.cpp
     main/Gui.cpp
     main/Main.cpp
-    main/Settings.cpp)
+    main/Settings.cpp
+    main/Config.h
+    main/Gui.h
+    main/Main.h
+    main/Settings.h)
 
 target_link_libraries(opentld libopentld cvblobs libconfig ${OpenCV_LIBS})
 

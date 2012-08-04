@@ -22,7 +22,25 @@ add_library(libopentld
     tld/NNClassifier.cpp
     tld/TLD.cpp
     tld/TLDUtil.cpp
-    tld/VarianceFilter.cpp)
+    tld/VarianceFilter.cpp
+    imacq/ImAcq.h
+    mftracker/BB.h
+    mftracker/BBPredict.h
+    mftracker/FBTrack.h
+    mftracker/Lk.h
+    mftracker/Median.h
+    tld/Clustering.h
+    tld/DetectionResult.h
+    tld/DetectorCascade.h
+    tld/EnsembleClassifier.h
+    tld/ForegroundDetector.h
+    tld/IntegralImage.h
+    tld/MedianFlowTracker.h
+    tld/NNClassifier.h
+    tld/NormalizedPatch.h
+    tld/TLD.h
+    tld/TLDUtil.h
+    tld/VarianceFilter.h)
 
 target_link_libraries(libopentld ${OpenCV_LIBS})
 
