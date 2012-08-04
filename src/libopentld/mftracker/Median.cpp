@@ -16,8 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-#include <stdlib.h>
-#include <string.h>
+
 /**
  * @file median.c
  *
@@ -26,14 +25,13 @@
  * @brief
  */
 
-#define ELEM_SWAP(a,b) { register float t=(a);(a)=(b);(b)=t; }
-/***********************************************************
- * INCLUDES
- ***********************************************************/
 #include "Median.h"
-/***********************************************************
- * FUNCTION
- ***********************************************************/
+
+#include <cstdlib>
+#include <cstring>
+
+#define ELEM_SWAP(a,b) { register float t=(a);(a)=(b);(b)=t; }
+
 /**
  * Returns median of the array. Changes array!
  * @param arr the array
@@ -105,6 +103,7 @@ float getMedianUnmanaged(float arr[], int n)
       high = hh - 1;
   }
 }
+
 /**
  * Calculates Median of the array. Don't change array(makes copy).
  * @param arr the array
@@ -126,7 +125,3 @@ float getMedian(float arr[], int n)
 }
 
 #undef ELEM_SWAP
-
-/***********************************************************
- * END OF FILE
- ***********************************************************/

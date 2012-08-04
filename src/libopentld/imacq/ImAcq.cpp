@@ -16,12 +16,13 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-#include <stdio.h>
+
+#include "ImAcq.h"
+
+#include <cstdio>
 
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-
-#include "ImAcq.h"
 
 ImAcq * imAcqAlloc() {
 	ImAcq * imAcq = (ImAcq *)malloc(sizeof(ImAcq));

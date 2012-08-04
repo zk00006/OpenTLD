@@ -16,8 +16,10 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
-#include "Main.h"
+
 #include "Config.h"
+
+#include "Main.h"
 
 using namespace std;
 

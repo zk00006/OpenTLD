@@ -23,11 +23,13 @@
  *      Author: Georg Nebehay
  */
 
+#include "DetectorCascade.h"
+
 #include <cstdlib>
-#include <math.h>
+#include <cmath>
+
 #include <opencv/cv.h>
 
-#include "DetectorCascade.h"
 #include "EnsembleClassifier.h"
 
 
@@ -207,7 +209,6 @@ void EnsembleClassifier::learn(int * boundary, int positive, int * featureVector
     }
 
 }
-
 
 
 } /* namespace tld */

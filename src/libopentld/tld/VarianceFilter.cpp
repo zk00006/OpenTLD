@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * VarianceFilter.cpp
  *
@@ -24,6 +25,7 @@
  */
 
 #include "VarianceFilter.h"
+
 #include "IntegralImage.h"
 #include "DetectorCascade.h"
 

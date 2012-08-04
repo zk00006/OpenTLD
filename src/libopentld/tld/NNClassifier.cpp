@@ -24,6 +24,7 @@
  */
 
 #include "NNClassifier.h"
+
 #include "DetectorCascade.h"
 #include "TLDUtil.h"
 

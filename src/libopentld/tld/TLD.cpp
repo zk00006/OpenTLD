@@ -24,9 +24,11 @@
  */
 
 #include "TLD.h"
+
+#include <iostream>
+
 #include "NNClassifier.h"
 #include "TLDUtil.h"
-#include <iostream>
 
 using namespace std;
 using namespace cv;

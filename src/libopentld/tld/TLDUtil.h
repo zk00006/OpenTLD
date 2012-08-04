@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * util.h
  *
@@ -27,6 +28,7 @@
 #define TLDUTIL_H_
 
 #include <utility>
+
 #include <opencv/cv.h>
 
 namespace tld {

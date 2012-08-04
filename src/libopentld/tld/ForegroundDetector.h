@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * ForegroundDetector.h
  *
@@ -27,6 +28,7 @@
 #define FOREGROUNDDETECTOR_H_
 
 #include <vector>
+
 #include <opencv/cv.h>
 
 #include "DetectionResult.h"

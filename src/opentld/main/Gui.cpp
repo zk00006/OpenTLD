@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * gui.cpp
  *
@@ -24,10 +25,12 @@
  */
 
 #include "Gui.h"
+
 #include "Main.h"
 
 #include <string>
-	using std::string;
+
+using std::string;
 
 namespace tld {
 

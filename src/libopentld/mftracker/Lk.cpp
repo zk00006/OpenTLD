@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /**
  * @file lk.c
  *
@@ -23,19 +24,13 @@
  *      @author Bernd Lukatschek
  */
 
-/***********************************************************
- * INCLUDES
- ***********************************************************/
-
 #include "Lk.h"
+
+#include <cmath>
+#include <cstdio>
+
 #include <opencv/cv.h>
 #include <opencv/highgui.h>
-#include <math.h>
-#include <stdio.h>
-
-/***********************************************************
- * CONSTANT AND MACRO DEFINITIONS
- ***********************************************************/
 
 const int MAX_COUNT = 500;
 const int MAX_IMG = 2;
@@ -47,9 +42,6 @@ int win_size_lk = 4;
 CvPoint2D32f* points[3] = { 0, 0, 0 };
 static IplImage **PYR = 0;
 
-/***********************************************************
- * FUNCTION
- ***********************************************************/
 /**
  * Calculates euclidean distance between the point pairs.
  * @param point1    Array of points. Pairs with point2 at every Position.
@@ -68,6 +60,7 @@ void euclideanDistance(CvPoint2D32f *point1, CvPoint2D32f *point2,
         + (point1[i].y - point2[i].y) * (point1[i].y - point2[i].y));
   }
 }
+
 /**
  * Calculates normalized cross correlation for every point.
  * @param imgI      Image 1.
@@ -112,6 +105,7 @@ void normCrossCorrelation(IplImage *imgI, IplImage *imgJ,
   cvReleaseImage(&rec1);
   cvReleaseImage(&res);
 }
+
 /**
  * Needed before start of trackLK and at the end of the program for cleanup.
  * Handles PYR(Pyramid cache) variable.
@@ -158,6 +152,7 @@ void initImgs()
  * Based Matlab function:
  * lk(2,imgI,imgJ,ptsI,ptsJ,Level) (Level is optional)
  */
+
 int trackLK(IplImage *imgI, IplImage *imgJ, float ptsI[], int nPtsI,
     float ptsJ[], int nPtsJ, int level, float * fb, float*ncc, char*status)
 {
@@ -255,7 +250,3 @@ int trackLK(IplImage *imgI, IplImage *imgJ, float ptsI[], int nPtsI,
   free(statusBacktrack);
   return 1;
 }
-
-/***********************************************************
- * END OF FILE
- ***********************************************************/

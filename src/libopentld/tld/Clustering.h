@@ -27,6 +27,7 @@
 #define CLUSTERING_H_
 
 #include <vector>
+
 #include <opencv/cv.h>
 
 #include "DetectionResult.h"

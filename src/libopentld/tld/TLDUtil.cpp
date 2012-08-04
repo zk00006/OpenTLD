@@ -16,7 +16,9 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 #include "TLDUtil.h"
+
 #include "NormalizedPatch.h"
 #include "DetectorCascade.h"
 

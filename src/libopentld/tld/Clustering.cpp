@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * Clustering.cpp
  *
@@ -24,6 +25,7 @@
  */
 
 #include "Clustering.h"
+
 #include "TLDUtil.h"
 #include "DetectorCascade.h"
 

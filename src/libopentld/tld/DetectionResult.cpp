@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * DetectionResult.cpp
  *
@@ -24,6 +25,7 @@
  */
 
 #include "DetectionResult.h"
+
 #include "TLDUtil.h"
 
 using namespace cv;

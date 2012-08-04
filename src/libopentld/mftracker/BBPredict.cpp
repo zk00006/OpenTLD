@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /**
  * @file bb_predict.c
  *
@@ -24,15 +25,12 @@
  * @brief
  */
 
-/***********************************************************
- * INCLUDES
- ***********************************************************/
-#include "Median.h"
 #include "BBPredict.h"
-#include "math.h"
-/***********************************************************
- * FUNCTION
- ***********************************************************/
+
+#include <cmath>
+
+#include "Median.h"
+
 /**
  * Returns width of Boundingbox.
  * @param bb Boundingbox
@@ -115,6 +113,3 @@ int predictbb(float *bb0, CvPoint2D32f* pt0, CvPoint2D32f* pt1, int nPts,
 
   return 1;
 }
-/***********************************************************
- * END OF FILE
- ***********************************************************/

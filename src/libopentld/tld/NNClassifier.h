@@ -27,6 +27,7 @@
 #define NNCLASSIFIER_H_
 
 #include <vector>
+
 #include <opencv/cv.h>
 
 #include "NormalizedPatch.h"

@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * fbtrack.h
  *
@@ -25,14 +26,9 @@
 
 #ifndef FBTRACK_H_
 #define FBTRACK_H_
-/***********************************************************
- * INCLUDES
- ***********************************************************/
+
 #include <opencv/cv.h>
 
-/***********************************************************
- * FUNCTION
- ***********************************************************/
 /*
  * @param imgI       Image contain Object with known BoundingBox
  * @param imgJ       Following Image.
@@ -43,6 +39,3 @@
 int fbtrack(IplImage *imgI, IplImage *imgJ, float* bb, float* bbnew, float* scaleshift);
 
 #endif /* FBTRACK_H_ */
-/***********************************************************
- * END OF FILE
- ***********************************************************/

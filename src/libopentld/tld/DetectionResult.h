@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * DetectionResult.h
  *
@@ -27,6 +28,7 @@
 #define DETECTIONRESULT_H_
 
 #include <vector>
+
 #include <opencv/cv.h>
 
 namespace tld {

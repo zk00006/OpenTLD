@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /**
  * @file track.c
  *
@@ -23,19 +24,14 @@
  *      @author bernd
  */
 
-/***********************************************************
- * INCLUDES
- ***********************************************************/
+#include "FBTrack.h"
+
+#include <cstdio>
 
 #include "BB.h"
 #include "BBPredict.h"
 #include "Median.h"
-#include "stdio.h"
 #include "Lk.h"
-
-/***********************************************************
- * FUNCTION
- ***********************************************************/
 
 /**
  * Calculate the bounding box of an Object in a following Image.
@@ -147,6 +143,3 @@ int fbtrack(IplImage *imgI, IplImage *imgJ, float* bb, float* bbnew,
   else return 1;
 
 }
-/***********************************************************
- * END OF FILE
- ***********************************************************/

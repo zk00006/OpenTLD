@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /**
  * @file bb.c
  *
@@ -24,16 +25,10 @@
  * @brief
  */
 
-/***********************************************************
- * INCLUDES
- ***********************************************************/
 #include "BB.h"
 
 int calculateBBCenter(float bb[4], float center[2]);
 
-/***********************************************************
- * FUNCTION
- ***********************************************************/
 /**
  * Creates numM x numN points grid on BBox.
  * Points ordered in 1 dimensional array (x1, y1, x2, y2).
@@ -133,6 +128,7 @@ int getFilledBBPoints(float *bb, int numM, int numN, int margin, float* pts)
   }
   return 1;
 }
+
 /**
  * Calculates center of a Rectangle/Boundingbox.
  * @param bb defined with 2 points x,y,x1,y1
@@ -148,6 +144,3 @@ int calculateBBCenter(float bb[4], float center[2])
   center[1] = 0.5 * (bb[1] + bb[3]);
   return 1;
 }
-/***********************************************************
- * END OF FILE
- ***********************************************************/

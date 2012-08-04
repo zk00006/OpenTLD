@@ -16,6 +16,7 @@
 *   along with OpenTLD.  If not, see <http://www.gnu.org/licenses/>.
 *
 */
+
 /*
  * MedianFlowTracker.cpp
  *
@@ -24,8 +25,10 @@
  */
 
 #include "MedianFlowTracker.h"
-#include "FBTrack.h"
+
 #include <cmath>
+
+#include "FBTrack.h"
 
 using namespace cv;
 

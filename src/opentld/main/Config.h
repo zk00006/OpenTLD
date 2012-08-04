@@ -21,8 +21,9 @@
 #define CONFIG_H
 
 #include <iostream>
-#include <libconfig.h++>
 #include <string>
+
+#include <libconfig.h++>
 
 #include "ImAcq.h"
 #include "Settings.h"
