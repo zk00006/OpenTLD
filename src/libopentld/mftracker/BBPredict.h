@@ -41,7 +41,7 @@
  *              BoundingBox moved completely out of picture
  *              (not validated)
  */
-int predictbb(float *bb0, CvPoint2D32f* pt0, CvPoint2D32f* pt1, int nPts,
-    float*bb1, float*shift);
+int predictbb(float *bb0, CvPoint2D32f *pt0, CvPoint2D32f *pt1, int nPts,
+              float *bb1, float *shift);
 
 #endif /* BBPREDICT_H_ */

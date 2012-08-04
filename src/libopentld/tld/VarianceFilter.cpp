@@ -31,61 +31,71 @@
 
 using namespace cv;
 
-namespace tld {
+namespace tld
+{
 
-VarianceFilter::VarianceFilter() {
-	enabled = true;
-	minVar = 0;
-	integralImg = NULL;
-	integralImg_squared = NULL;
+VarianceFilter::VarianceFilter()
+{
+    enabled = true;
+    minVar = 0;
+    integralImg = NULL;
+    integralImg_squared = NULL;
 }
 
-VarianceFilter::~VarianceFilter() {
-	release();
+VarianceFilter::~VarianceFilter()
+{
+    release();
 }
 
-void VarianceFilter::release() {
-	if(integralImg != NULL) delete integralImg;
-	integralImg = NULL;
+void VarianceFilter::release()
+{
+    if(integralImg != NULL) delete integralImg;
 
-	if(integralImg_squared != NULL) delete integralImg_squared;
-	integralImg_squared = NULL;
+    integralImg = NULL;
+
+    if(integralImg_squared != NULL) delete integralImg_squared;
+
+    integralImg_squared = NULL;
 }
 
-float VarianceFilter::calcVariance(int *off) {
+float VarianceFilter::calcVariance(int *off)
+{
 
-	int * ii1 = integralImg->data;
-	long long * ii2 = integralImg_squared->data;
+    int *ii1 = integralImg->data;
+    long long *ii2 = integralImg_squared->data;
 
-	float mX  = (ii1[off[3]] - ii1[off[2]] - ii1[off[1]] + ii1[off[0]]) / (float) off[5]; //Sum of Area divided by area
-	float mX2 = (ii2[off[3]] - ii2[off[2]] - ii2[off[1]] + ii2[off[0]]) / (float) off[5];
-	return mX2 - mX*mX;
+    float mX  = (ii1[off[3]] - ii1[off[2]] - ii1[off[1]] + ii1[off[0]]) / (float) off[5]; //Sum of Area divided by area
+    float mX2 = (ii2[off[3]] - ii2[off[2]] - ii2[off[1]] + ii2[off[0]]) / (float) off[5];
+    return mX2 - mX * mX;
 }
 
-void VarianceFilter::nextIteration(const Mat& img) {
-	if(!enabled) return;
+void VarianceFilter::nextIteration(const Mat &img)
+{
+    if(!enabled) return;
 
-	release();
+    release();
 
-	integralImg = new IntegralImage<int>(img.size());
-	integralImg->calcIntImg(img);
+    integralImg = new IntegralImage<int>(img.size());
+    integralImg->calcIntImg(img);
 
-	integralImg_squared = new IntegralImage<long long>(img.size());
-	integralImg_squared->calcIntImg(img, true);
+    integralImg_squared = new IntegralImage<long long>(img.size());
+    integralImg_squared->calcIntImg(img, true);
 }
 
-bool VarianceFilter::filter(int i) {
-	if(!enabled) return true;
+bool VarianceFilter::filter(int i)
+{
+    if(!enabled) return true;
 
-	float bboxvar = calcVariance(windowOffsets + TLD_WINDOW_OFFSET_SIZE*i);
+    float bboxvar = calcVariance(windowOffsets + TLD_WINDOW_OFFSET_SIZE * i);
 
-	detectionResult->variances[i] = bboxvar;
+    detectionResult->variances[i] = bboxvar;
 
-	if(bboxvar < minVar) {
-		return false;
-	}
+    if(bboxvar < minVar)
+    {
+        return false;
+    }
 
-	return true;
+    return true;
 }
 
 } /* namespace tld */

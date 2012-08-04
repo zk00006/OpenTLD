@@ -32,44 +32,46 @@
 /**
  * Capturing method
  */
-enum ImacqMethod {
-	IMACQ_IMGS, //!< Images
-	IMACQ_CAM, //!< Camera
-	IMACQ_VID, //!< Video
-	IMACQ_LIVESIM //!< Livesim
+enum ImacqMethod
+{
+    IMACQ_IMGS, //!< Images
+    IMACQ_CAM, //!< Camera
+    IMACQ_VID, //!< Video
+    IMACQ_LIVESIM //!< Livesim
 };
 
-typedef struct {
-	int method;
-	const char * imgPath;
-	CvCapture * capture;
-	int lastFrame;
-	int currentFrame;
-	int startFrame;
-	int camNo;
-	double startTime;
-	float fps;
+typedef struct
+{
+    int method;
+    const char *imgPath;
+    CvCapture *capture;
+    int lastFrame;
+    int currentFrame;
+    int startFrame;
+    int camNo;
+    double startTime;
+    float fps;
 } ImAcq ;
 
-ImAcq * imAcqAlloc();
+ImAcq *imAcqAlloc();
 
-void imAcqInit(ImAcq * imAcq);
+void imAcqInit(ImAcq *imAcq);
 
-void imAcqRelease(ImAcq * imAcq);
+void imAcqRelease(ImAcq *imAcq);
 
-void imAcqVidSetNextFrameNumber(ImAcq * imAcq, int nFrame);
-int imAcqVidGetNextFrameNumber(ImAcq * imAcq);
-int imAcqVidGetNumberOfFrames(ImAcq * imAcq);
-int imAcqHasMoreFrames(ImAcq * imAcq);
-IplImage * imAcqGetImgAndAdvance(ImAcq * imAcq);
-IplImage * imAcqGetImg(ImAcq * imAcq);
-IplImage * imAcqGetImgByFrame(ImAcq * imAcq, int fNo);
-IplImage * imAcqGetImgByCurrentTime(ImAcq * imAcq);
-IplImage * imAcqLoadImg(ImAcq * imAcq, char * path);
-IplImage * imAcqLoadCurrentFrame(ImAcq * imAcq);
-IplImage * imAcqLoadVidFrame(CvCapture * capture);
-IplImage * imAcqGrab(CvCapture* capture);
-void imAcqAdvance(ImAcq * imAcq);
+void imAcqVidSetNextFrameNumber(ImAcq *imAcq, int nFrame);
+int imAcqVidGetNextFrameNumber(ImAcq *imAcq);
+int imAcqVidGetNumberOfFrames(ImAcq *imAcq);
+int imAcqHasMoreFrames(ImAcq *imAcq);
+IplImage *imAcqGetImgAndAdvance(ImAcq *imAcq);
+IplImage *imAcqGetImg(ImAcq *imAcq);
+IplImage *imAcqGetImgByFrame(ImAcq *imAcq, int fNo);
+IplImage *imAcqGetImgByCurrentTime(ImAcq *imAcq);
+IplImage *imAcqLoadImg(ImAcq *imAcq, char *path);
+IplImage *imAcqLoadCurrentFrame(ImAcq *imAcq);
+IplImage *imAcqLoadVidFrame(CvCapture *capture);
+IplImage *imAcqGrab(CvCapture *capture);
+void imAcqAdvance(ImAcq *imAcq);
 void imAcqFree(ImAcq *);
 
 #endif /* IMACQ_H_ */

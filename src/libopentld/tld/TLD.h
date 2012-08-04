@@ -32,38 +32,40 @@
 #include "MedianFlowTracker.h"
 #include "DetectorCascade.h"
 
-namespace tld {
+namespace tld
+{
 
-class TLD {
-	void storeCurrentData();
-	void fuseHypotheses();
-	void learn();
-	void initialLearning();
+class TLD
+{
+    void storeCurrentData();
+    void fuseHypotheses();
+    void learn();
+    void initialLearning();
 public:
-	bool trackerEnabled;
-	bool detectorEnabled;
-	bool learningEnabled;
-	bool alternating;
+    bool trackerEnabled;
+    bool detectorEnabled;
+    bool learningEnabled;
+    bool alternating;
 
-	MedianFlowTracker* medianFlowTracker;
-	DetectorCascade* detectorCascade;
-	NNClassifier* nnClassifier;
-	bool valid;
-	bool wasValid;
-	cv::Mat prevImg;
-	cv::Mat currImg;
-	cv::Rect* prevBB;
-	cv::Rect* currBB;
-	float currConf;
-	bool learning;
+    MedianFlowTracker *medianFlowTracker;
+    DetectorCascade *detectorCascade;
+    NNClassifier *nnClassifier;
+    bool valid;
+    bool wasValid;
+    cv::Mat prevImg;
+    cv::Mat currImg;
+    cv::Rect *prevBB;
+    cv::Rect *currBB;
+    float currConf;
+    bool learning;
 
-	TLD();
-	virtual ~TLD();
-	void release();
-	void selectObject(const cv::Mat& img, cv::Rect * bb);
-	void processImage(const cv::Mat& img);
-	void writeToFile(const char * path);
-	void readFromFile(const char * path);
+    TLD();
+    virtual ~TLD();
+    void release();
+    void selectObject(const cv::Mat &img, cv::Rect *bb);
+    void processImage(const cv::Mat &img);
+    void writeToFile(const char *path);
+    void readFromFile(const char *path);
 };
 
 } /* namespace tld */

@@ -34,7 +34,7 @@
  */
 void initImgs();
 int trackLK(IplImage *imgI, IplImage *imgJ, float ptsI[], int nPtsI,
-    float ptsJ[], int nPtsJ, int level, float * fbOut, float*nccOut,
-    char*statusOut);
+            float ptsJ[], int nPtsJ, int level, float *fbOut, float *nccOut,
+            char *statusOut);
 
 #endif /* LK_H_ */

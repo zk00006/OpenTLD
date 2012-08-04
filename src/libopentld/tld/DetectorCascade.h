@@ -34,62 +34,64 @@
 #include "NNClassifier.h"
 
 
-namespace tld {
+namespace tld
+{
 
 //Constants
 static const int TLD_WINDOW_SIZE = 5;
 static const int TLD_WINDOW_OFFSET_SIZE = 6;
 
-class DetectorCascade {
-	//Working data
-	int numScales;
-	cv::Size* scales;
+class DetectorCascade
+{
+    //Working data
+    int numScales;
+    cv::Size *scales;
 public:
-	//Configurable members
-	int minScale;
-	int maxScale;
-	bool useShift;
-	float shift;
-	int minSize;
-	int numFeatures;
-	int numTrees;
+    //Configurable members
+    int minScale;
+    int maxScale;
+    bool useShift;
+    float shift;
+    int minSize;
+    int numFeatures;
+    int numTrees;
 
-	//Needed for init
-	int imgWidth;
-	int imgHeight;
-	int imgWidthStep;
-	int objWidth;
-	int objHeight;
+    //Needed for init
+    int imgWidth;
+    int imgHeight;
+    int imgWidthStep;
+    int objWidth;
+    int objHeight;
 
-	int numWindows;
-	int* windows;
-	int* windowOffsets;
+    int numWindows;
+    int *windows;
+    int *windowOffsets;
 
-	//State data
-	bool initialised;
+    //State data
+    bool initialised;
 
-	//Components of Detector Cascade
-	ForegroundDetector* foregroundDetector;
-	VarianceFilter* varianceFilter;
-	EnsembleClassifier* ensembleClassifier;
-	Clustering* clustering;
-	NNClassifier* nnClassifier;
+    //Components of Detector Cascade
+    ForegroundDetector *foregroundDetector;
+    VarianceFilter *varianceFilter;
+    EnsembleClassifier *ensembleClassifier;
+    Clustering *clustering;
+    NNClassifier *nnClassifier;
 
-	DetectionResult* detectionResult;
+    DetectionResult *detectionResult;
 
-	void propagateMembers();
+    void propagateMembers();
 
-	DetectorCascade();
-	~DetectorCascade();
+    DetectorCascade();
+    ~DetectorCascade();
 
-	void init();
+    void init();
 
-	void initWindowOffsets();
-	void initWindowsAndScales();
+    void initWindowOffsets();
+    void initWindowsAndScales();
 
-	void release();
-	void cleanPreviousData();
-	void detect(const cv::Mat& img);
+    void release();
+    void cleanPreviousData();
+    void detect(const cv::Mat &img);
 };
 
 } /* namespace tld */

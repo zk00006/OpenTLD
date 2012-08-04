@@ -39,94 +39,102 @@ int calculateBBCenter(float bb[4], float center[2]);
  * @param pts       Contains the calculated points in the form (x1, y1, x2, y2).
  *                  Size of the array must be numM * numN * 2.
  */
-int getFilledBBPoints(float *bb, int numM, int numN, int margin, float* pts)
-{  
-  int pointDim = 2;
-  int i;
-  int j;
-  /**
-   * gap between points in width direction
-   */
-  float divN;
-  /**
-   * gap between points in height direction
-   */
-  float divM;
-  float bb_local[4];
-  float center[2];
-  float spaceN;
-  float spaceM;
-  /*add margin*/
-  bb_local[0] = bb[0] + margin;
-  bb_local[1] = bb[1] + margin;
-  bb_local[2] = bb[2] - margin;
-  bb_local[3] = bb[3] - margin;
-   /*  printf("PointArraySize should be: %d\n", numM * numN * pointDim);*/
-  /*handle cases numX = 1*/
-  if (numN == 1 && numM == 1)
-  {
-    calculateBBCenter(bb_local, pts);
-    return 1;
-  }
-  else if (numN == 1 && numM > 1)
-  {
-    divM = numM - 1;
-    divN = 2;
-    /*maybe save center coordinate into bb[1] instead of loop again*/
-    /*calculate step width*/
-    spaceM = (bb_local[3] - bb_local[1]) / divM;
-    calculateBBCenter(bb_local, center);
-    /*calculate points and save them to the array*/
-    for (i = 0; i < numN; i++)
-    {
-      for (j = 0; j < numM; j++)
-      {
-        pts[i * numM * pointDim + j * pointDim + 0] = center[0];
-        pts[i * numM * pointDim + j * pointDim + 1] = bb_local[1] + j * spaceM;
-      }
-    }
-    return 1;
-  }
-  else if (numN > 1 && numM == 1)
-  {
+int getFilledBBPoints(float *bb, int numM, int numN, int margin, float *pts)
+{
+    int pointDim = 2;
+    int i;
+    int j;
+    /**
+     * gap between points in width direction
+     */
+    float divN;
+    /**
+     * gap between points in height direction
+     */
+    float divM;
+    float bb_local[4];
     float center[2];
-    float *cen;
-    divM = 2;
-    divN = numN - 1;
-    //maybe save center coordinate into bb[1] instead of loop again
+    float spaceN;
+    float spaceM;
+    /*add margin*/
+    bb_local[0] = bb[0] + margin;
+    bb_local[1] = bb[1] + margin;
+    bb_local[2] = bb[2] - margin;
+    bb_local[3] = bb[3] - margin;
+
+    /*  printf("PointArraySize should be: %d\n", numM * numN * pointDim);*/
+    /*handle cases numX = 1*/
+    if(numN == 1 && numM == 1)
+    {
+        calculateBBCenter(bb_local, pts);
+        return 1;
+    }
+    else if(numN == 1 && numM > 1)
+    {
+        divM = numM - 1;
+        divN = 2;
+        /*maybe save center coordinate into bb[1] instead of loop again*/
+        /*calculate step width*/
+        spaceM = (bb_local[3] - bb_local[1]) / divM;
+        calculateBBCenter(bb_local, center);
+
+        /*calculate points and save them to the array*/
+        for(i = 0; i < numN; i++)
+        {
+            for(j = 0; j < numM; j++)
+            {
+                pts[i * numM * pointDim + j * pointDim + 0] = center[0];
+                pts[i * numM * pointDim + j * pointDim + 1] = bb_local[1] + j * spaceM;
+            }
+        }
+
+        return 1;
+    }
+    else if(numN > 1 && numM == 1)
+    {
+        float center[2];
+        float *cen;
+        divM = 2;
+        divN = numN - 1;
+        //maybe save center coordinate into bb[1] instead of loop again
+        //calculate step width
+        spaceN = (bb_local[2] - bb_local[0]) / divN;
+        cen = center;
+        calculateBBCenter(bb_local, center);
+
+        //calculate points and save them to the array
+        for(i = 0; i < numN; i++)
+        {
+            for(j = 0; j < numM; j++)
+            {
+                pts[i * numM * pointDim + j * pointDim + 0] = bb_local[0] + i * spaceN;
+                pts[i * numM * pointDim + j * pointDim + 1] = cen[1];
+            }
+        }
+
+        return 1;
+    }
+    else if(numN > 1 && numM > 1)
+    {
+        divM = numM - 1;
+        divN = numN - 1;
+    }
+
     //calculate step width
     spaceN = (bb_local[2] - bb_local[0]) / divN;
-    cen = center;
-    calculateBBCenter(bb_local, center);
+    spaceM = (bb_local[3] - bb_local[1]) / divM;
+
     //calculate points and save them to the array
-    for (i = 0; i < numN; i++)
+    for(i = 0; i < numN; i++)
     {
-      for (j = 0; j < numM; j++)
-      {
-        pts[i * numM * pointDim + j * pointDim + 0] = bb_local[0] + i * spaceN;
-        pts[i * numM * pointDim + j * pointDim + 1] = cen[1];
-      }
+        for(j = 0; j < numM; j++)
+        {
+            pts[i * numM * pointDim + j * pointDim + 0] = bb_local[0] + i * spaceN;
+            pts[i * numM * pointDim + j * pointDim + 1] = bb_local[1] + j * spaceM;
+        }
     }
+
     return 1;
-  }
-  else if (numN > 1 && numM > 1)
-  {
-    divM = numM - 1;
-    divN = numN - 1;
-  }
-  //calculate step width
-  spaceN = (bb_local[2] - bb_local[0]) / divN;
-  spaceM = (bb_local[3] - bb_local[1]) / divM;
-  //calculate points and save them to the array
-  for (i = 0; i < numN; i++)
-  {
-    for (j = 0; j < numM; j++)
-    {
-      pts[i * numM * pointDim + j * pointDim + 0] = bb_local[0] + i * spaceN;
-      pts[i * numM * pointDim + j * pointDim + 1] = bb_local[1] + j * spaceM;
-    }
-  }
-  return 1;
 }
 
 /**
@@ -137,10 +145,10 @@ int getFilledBBPoints(float *bb, int numM, int numN, int margin, float* pts)
  */
 int calculateBBCenter(float bb[4], float center[2])
 {
-  if (bb == 0)
-    return 0;
+    if(bb == 0)
+        return 0;
 
-  center[0] = 0.5 * (bb[0] + bb[2]);
-  center[1] = 0.5 * (bb[1] + bb[3]);
-  return 1;
+    center[0] = 0.5 * (bb[0] + bb[2]);
+    center[1] = 0.5 * (bb[1] + bb[3]);
+    return 1;
 }

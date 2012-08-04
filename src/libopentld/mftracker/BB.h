@@ -36,6 +36,6 @@
  * @param pts       Contains the calculated points in the form (x1, y1, x2, y2).
  *                  Size of the array must be numM * numN * 2.
  */
-int getFilledBBPoints(float *bb, int numM, int numN, int margin, float*pts);
+int getFilledBBPoints(float *bb, int numM, int numN, int margin, float *pts);
 
 #endif /* BB_H_ */

@@ -32,27 +32,29 @@
 
 #include "DetectionResult.h"
 
-namespace tld {
+namespace tld
+{
 
-class Clustering {
-	void calcMeanRect(std::vector<int> * indices);
-	void calcDistances(float * distances);
-	void cluster(float * distances, int * clusterIndices);
+class Clustering
+{
+    void calcMeanRect(std::vector<int> * indices);
+    void calcDistances(float *distances);
+    void cluster(float *distances, int *clusterIndices);
 public:
-	int* windows;
-	int numWindows;
+    int *windows;
+    int numWindows;
 
-	DetectionResult* detectionResult;
+    DetectionResult *detectionResult;
 
-	//Configurable members
-	float cutoff;
+    //Configurable members
+    float cutoff;
 
 
 
-	Clustering();
-	virtual ~Clustering();
-	void release();
-	void clusterConfidentIndices();
+    Clustering();
+    virtual ~Clustering();
+    void release();
+    void clusterConfidentIndices();
 };
 
 } /* namespace tld */

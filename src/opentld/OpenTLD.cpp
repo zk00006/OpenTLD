@@ -5,33 +5,36 @@
 
 using namespace tld;
 
-int main(int argc, char ** argv) {
+int main(int argc, char **argv)
+{
 
-	Main* main = new Main();
-	Config config;
-	ImAcq * imAcq = imAcqAlloc();
-	Gui * gui = new Gui();
+    Main *main = new Main();
+    Config config;
+    ImAcq *imAcq = imAcqAlloc();
+    Gui *gui = new Gui();
 
-	main->gui = gui;
-	main->imAcq = imAcq;
+    main->gui = gui;
+    main->imAcq = imAcq;
 
-	if(config.init(argc, argv) == PROGRAM_EXIT) {
-		return EXIT_FAILURE;
-	}
+    if(config.init(argc, argv) == PROGRAM_EXIT)
+    {
+        return EXIT_FAILURE;
+    }
 
-	config.configure(main);
+    config.configure(main);
 
-	srand(main->seed);
+    srand(main->seed);
 
-	imAcqInit(imAcq);
+    imAcqInit(imAcq);
 
-	if(main->showOutput) {
-		gui->init();
-	}
+    if(main->showOutput)
+    {
+        gui->init();
+    }
 
-	main->doWork();
+    main->doWork();
 
-	delete main;
+    delete main;
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
