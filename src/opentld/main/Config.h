@@ -29,67 +29,69 @@
 #include "Settings.h"
 #include "Main.h"
 
-namespace tld {
+namespace tld
+{
 
 /**
  * Config is used to configure the program by cli and/or by a config file
  */
-class Config {
+class Config
+{
 public:
-	/**
-	 * Constructor
-	 */
-	Config();
+    /**
+     * Constructor
+     */
+    Config();
 
-	/**
-	 * Destructor
-	 */
-	~Config();
+    /**
+     * Destructor
+     */
+    ~Config();
 
-	/**
-	 * Initializes the Config.
-	 * @param argc number of command line arguments
-	 * @param argv command line arguments
-	 * @return PROGRAM_EXIT when an error occurred, SUCCESS if not
-	 */
-	int init(int argc, char ** argv);
+    /**
+     * Initializes the Config.
+     * @param argc number of command line arguments
+     * @param argv command line arguments
+     * @return PROGRAM_EXIT when an error occurred, SUCCESS if not
+     */
+    int init(int argc, char **argv);
 
-	/**
-	 * Configures the CamNode, ImAcq and TldClassifier.
-	 * @param node
-	 * @param imAcq
-	 * @param classifier
-	 * @return SUCCESS
-	 */
-	int configure(Main* main);
+    /**
+     * Configures the CamNode, ImAcq and TldClassifier.
+     * @param node
+     * @param imAcq
+     * @param classifier
+     * @return SUCCESS
+     */
+    int configure(Main *main);
 private:
-	libconfig::Config m_cfg; //!< libconfig++
-	std::string m_configPath; //!< path to the config file
-	Settings m_settings; //!< adjusted settings
-	///@{
-	/**
-	 * Flags if parameters were set by cli-arguments.
-	 * When the flags are set, the parameters couldn't be
-	 * overwritten by the options in the config file.
-	 * The cli-arguments have a higher priority than the options
-	 * in the config file.
-	 */
-	bool m_selectManuallySet;
-	bool m_methodSet;
-	bool m_startFrameSet;
-	bool m_lastFrameSet;
-	bool m_trajectorySet;
-	bool m_showDetectionsSet;
-	bool m_showForegroundSet;
-	bool m_thetaSet;
-	bool m_printResultsSet;
-	bool m_camNoSet;
-	bool m_imagePathSet;
-	bool m_modelPathSet;
-	bool m_initialBBSet;
-	bool m_showOutputSet;
-	bool m_exportModelAfterRunSet;
-	///@}
+    libconfig::Config m_cfg; //!< libconfig++
+    std::string m_configPath; //!< path to the config file
+    Settings m_settings; //!< adjusted settings
+    ///@{
+    /**
+     * Flags if parameters were set by cli-arguments.
+     * When the flags are set, the parameters couldn't be
+     * overwritten by the options in the config file.
+     * The cli-arguments have a higher priority than the options
+     * in the config file.
+     */
+    bool m_selectManuallySet;
+    bool m_methodSet;
+    bool m_startFrameSet;
+    bool m_lastFrameSet;
+    bool m_trajectorySet;
+    bool m_showDetectionsSet;
+    bool m_showForegroundSet;
+    bool m_thetaSet;
+    bool m_printResultsSet;
+    bool m_camNoSet;
+    bool m_imagePathSet;
+    bool m_modelPathSet;
+    bool m_initialBBSet;
+    bool m_showOutputSet;
+    bool m_exportModelAfterRunSet;
+    ///@}
 };
 
 
@@ -101,7 +103,7 @@ private:
  Code given out at the 1985 UNIFORUM conference in Dallas.
  */
 #ifdef __GNUC__
-#	include <getopt.h>
+#   include <getopt.h>
 #endif
 
 #ifndef __GNUC__

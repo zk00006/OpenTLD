@@ -24,19 +24,21 @@
 
 #include <opencv/highgui.h>
 
-namespace tld {
+namespace tld
+{
 
-class Gui {
+class Gui
+{
 public:
-	Gui();
-	~Gui();
-	void init();
-	void showImage(IplImage * image);
-	char getKey();
-	std::string windowName();
+    Gui();
+    ~Gui();
+    void init();
+    void showImage(IplImage *image);
+    char getKey();
+    std::string windowName();
 
 private:
-	std::string m_window_name;
+    std::string m_window_name;
 };
 
 /**
@@ -46,7 +48,7 @@ private:
  * @param gui initialized gui
  * @return PROGRAM_EXIT if 'q' or 'Q' pressed, SUCCESS if everything went right
  */
-int getBBFromUser(IplImage * img, CvRect & rect, Gui * gui);
+int getBBFromUser(IplImage *img, CvRect &rect, Gui *gui);
 
 }
 

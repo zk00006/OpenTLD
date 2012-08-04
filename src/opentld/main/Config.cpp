@@ -23,387 +23,439 @@
 
 using namespace std;
 
-namespace tld {
+namespace tld
+{
 
 static char help_text[] =
-		"usage: tld [option arguments] [arguments]\n"
-		"option arguments:\n"
-		"[-a <startFrameNumber>] video starts at the frameNumber <startFrameNumber>\n"
-		"[-b <x,y,w,h>] Initial bounding box\n"
-		"[-c] shows color images instead of greyscale\n"
-		"[-d <device>] select input device: <device>=(IMGS|CAM|VID)\n"
-		"    IMGS: capture from images\n"
-		"    CAM: capture from connected camera\n"
-		"    VID: capture from a video\n"
-		"[-e <path>] export model after run to <path>\n"
-		"[-f] shows foreground\n"
-		"[-i <path>] <path> to the images or to the video\n"
-		"[-h] shows help\n"
-		"[-j <number>] specifies the <number> of the last frames which are considered by the trajectory; 0 disables the trajectory\n"
-		"[-m <path>] if specified load a model from <path>. An initialBoundingBox must be specified or selectManually must be true.\n"
-		"[-n <number>] specifies which camera device to use.\n"
-		"[-p <path>] prints results into the file <path>\n"
-		"[-s] if set, user can select initial bounding box\n"
-		"[-t <theta>] threshold for determining positive results\n"
-		"[-z <lastFrameNumber>] video ends at the frameNumber <lastFrameNumber>.\n"
-		"    If <lastFrameNumber> is 0 or the option argument isn't specified means\n"
-		"    take all frames.\n"
-		"arguments:\n"
-		"[<path>] <path> to the config file\n";
+    "usage: tld [option arguments] [arguments]\n"
+    "option arguments:\n"
+    "[-a <startFrameNumber>] video starts at the frameNumber <startFrameNumber>\n"
+    "[-b <x,y,w,h>] Initial bounding box\n"
+    "[-c] shows color images instead of greyscale\n"
+    "[-d <device>] select input device: <device>=(IMGS|CAM|VID)\n"
+    "    IMGS: capture from images\n"
+    "    CAM: capture from connected camera\n"
+    "    VID: capture from a video\n"
+    "[-e <path>] export model after run to <path>\n"
+    "[-f] shows foreground\n"
+    "[-i <path>] <path> to the images or to the video\n"
+    "[-h] shows help\n"
+    "[-j <number>] specifies the <number> of the last frames which are considered by the trajectory; 0 disables the trajectory\n"
+    "[-m <path>] if specified load a model from <path>. An initialBoundingBox must be specified or selectManually must be true.\n"
+    "[-n <number>] specifies which camera device to use.\n"
+    "[-p <path>] prints results into the file <path>\n"
+    "[-s] if set, user can select initial bounding box\n"
+    "[-t <theta>] threshold for determining positive results\n"
+    "[-z <lastFrameNumber>] video ends at the frameNumber <lastFrameNumber>.\n"
+    "    If <lastFrameNumber> is 0 or the option argument isn't specified means\n"
+    "    take all frames.\n"
+    "arguments:\n"
+    "[<path>] <path> to the config file\n";
 
 Config::Config() :
-		m_selectManuallySet(false),
-		m_methodSet(false),
-		m_startFrameSet(false),
-		m_lastFrameSet(false),
-		m_trajectorySet(false),
-		m_showDetectionsSet(false),
-		m_showForegroundSet(false),
-		m_thetaSet(false),
-		m_printResultsSet(false),
-		m_camNoSet(false),
-		m_imagePathSet(false),
-		m_modelPathSet(false),
-		m_initialBBSet(false),
-		m_showOutputSet(false),
-		m_exportModelAfterRunSet(false){
+    m_selectManuallySet(false),
+    m_methodSet(false),
+    m_startFrameSet(false),
+    m_lastFrameSet(false),
+    m_trajectorySet(false),
+    m_showDetectionsSet(false),
+    m_showForegroundSet(false),
+    m_thetaSet(false),
+    m_printResultsSet(false),
+    m_camNoSet(false),
+    m_imagePathSet(false),
+    m_modelPathSet(false),
+    m_initialBBSet(false),
+    m_showOutputSet(false),
+    m_exportModelAfterRunSet(false)
+{
 }
 
-Config::~Config() {
+Config::~Config()
+{
 }
 
-int Config::init(int argc, char ** argv) {
-	// check cli arguments
-	int c;
+int Config::init(int argc, char **argv)
+{
+    // check cli arguments
+    int c;
 
-	while((c = getopt(argc, argv, "a:b:d:e:fhi:j:m:n:Op:qst:z:")) != -1) {
-		switch(c) {
-		case 'a':
-			m_settings.m_startFrame = atoi(optarg);
-			m_startFrameSet = true;
-			break;
-		case 'b':
-			char * pch;
-			pch = strtok(optarg, ",");
-			while (pch != NULL) {
-				m_settings.m_initialBoundingBox.push_back(atoi(pch));
-				pch = strtok(NULL, ",");
-			}
-			break;
-		case 'd':
-			if(!strcmp(optarg, "CAM")) {
-				m_settings.m_method = IMACQ_CAM;
-				m_methodSet = true;
-			} else if(!strcmp(optarg, "VID")) {
-				m_settings.m_method = IMACQ_VID;
-				m_methodSet = true;
-			} else if(!strcmp(optarg, "IMGS")) {
-				m_settings.m_method = IMACQ_IMGS;
-				m_methodSet = true;
-			}
-			break;
-		case 'e':
-			m_settings.m_exportModelAfterRun = true;
-			m_settings.m_modelExportFile = optarg;
-			break;
-		case 'f':
-			m_settings.m_showForeground = true;
-			m_showForegroundSet = true;
-			break;
-		case 'h':
-			cout << help_text;
-			return PROGRAM_EXIT;
-			break;
-		case 'i':
-			m_settings.m_imagePath = optarg;
-			m_imagePathSet = true;
-			break;
-		case 'j':
-			m_settings.m_trajectory = atoi(optarg);
-			m_trajectorySet = true;
-			break;
-		case 'm':
-			m_settings.m_loadModel = true;
-			m_settings.m_modelPath = optarg;
-			m_modelPathSet = true;
-			break;
-		case 'n':
-			m_settings.m_camNo = atoi(optarg);
-			m_camNoSet = true;
-			break;
-		case 'p':
-			m_settings.m_printResults = optarg;
-			m_printResultsSet = true;
-			break;
-		case 'O':
-			m_settings.m_showOutput = false;
-			m_showOutputSet = true;
-			break;
-		case 's':
-			m_settings.m_selectManually = true;
-			m_selectManuallySet = true;
-			break;
-		case 't':
-			m_settings.m_threshold = atof(optarg);
-			m_thetaSet = true;
-			break;
-		case 'z':
-			m_settings.m_lastFrame = atoi(optarg);
-			m_lastFrameSet = true;
-			break;
-		}
-	}
+    while((c = getopt(argc, argv, "a:b:d:e:fhi:j:m:n:Op:qst:z:")) != -1)
+    {
+        switch(c)
+        {
+        case 'a':
+            m_settings.m_startFrame = atoi(optarg);
+            m_startFrameSet = true;
+            break;
+        case 'b':
+            char *pch;
+            pch = strtok(optarg, ",");
 
-	if(!m_imagePathSet && m_methodSet && (m_settings.m_method == IMACQ_VID || m_settings.m_method == IMACQ_IMGS)) {
-		cerr <<  "Error: Must set imagePath and method if capturing from images or a video." << endl;
-		return PROGRAM_EXIT;
-	}
+            while(pch != NULL)
+            {
+                m_settings.m_initialBoundingBox.push_back(atoi(pch));
+                pch = strtok(NULL, ",");
+            }
 
-	if(argc > optind)
-		m_configPath = argv[optind];
+            break;
+        case 'd':
 
+            if(!strcmp(optarg, "CAM"))
+            {
+                m_settings.m_method = IMACQ_CAM;
+                m_methodSet = true;
+            }
+            else if(!strcmp(optarg, "VID"))
+            {
+                m_settings.m_method = IMACQ_VID;
+                m_methodSet = true;
+            }
+            else if(!strcmp(optarg, "IMGS"))
+            {
+                m_settings.m_method = IMACQ_IMGS;
+                m_methodSet = true;
+            }
 
-	// load config file
-	if(!m_configPath.empty()) {
-		// read config file
-		try {
-			m_cfg.readFile(m_configPath.c_str());
-		} catch(const libconfig::FileIOException &fioex) {
-			cerr << "I/O error while reading config file." << endl;
-			return PROGRAM_EXIT;
-		} catch(const libconfig::ParseException &pex) {
-			cerr << "ConfigFile: Parse error" << endl;
-			return PROGRAM_EXIT;
-		}
+            break;
+        case 'e':
+            m_settings.m_exportModelAfterRun = true;
+            m_settings.m_modelExportFile = optarg;
+            break;
+        case 'f':
+            m_settings.m_showForeground = true;
+            m_showForegroundSet = true;
+            break;
+        case 'h':
+            cout << help_text;
+            return PROGRAM_EXIT;
+            break;
+        case 'i':
+            m_settings.m_imagePath = optarg;
+            m_imagePathSet = true;
+            break;
+        case 'j':
+            m_settings.m_trajectory = atoi(optarg);
+            m_trajectorySet = true;
+            break;
+        case 'm':
+            m_settings.m_loadModel = true;
+            m_settings.m_modelPath = optarg;
+            m_modelPathSet = true;
+            break;
+        case 'n':
+            m_settings.m_camNo = atoi(optarg);
+            m_camNoSet = true;
+            break;
+        case 'p':
+            m_settings.m_printResults = optarg;
+            m_printResultsSet = true;
+            break;
+        case 'O':
+            m_settings.m_showOutput = false;
+            m_showOutputSet = true;
+            break;
+        case 's':
+            m_settings.m_selectManually = true;
+            m_selectManuallySet = true;
+            break;
+        case 't':
+            m_settings.m_threshold = atof(optarg);
+            m_thetaSet = true;
+            break;
+        case 'z':
+            m_settings.m_lastFrame = atoi(optarg);
+            m_lastFrameSet = true;
+            break;
+        }
+    }
 
-		// method
-		string method;
-		m_cfg.lookupValue("acq.method", method);
+    if(!m_imagePathSet && m_methodSet && (m_settings.m_method == IMACQ_VID || m_settings.m_method == IMACQ_IMGS))
+    {
+        cerr <<  "Error: Must set imagePath and method if capturing from images or a video." << endl;
+        return PROGRAM_EXIT;
+    }
 
-		// imagePath
-		if(method.compare("IMGS") == 0) {
-			m_settings.m_method = IMACQ_IMGS;
-			try {
-				m_cfg.lookupValue("acq.imgPath", m_settings.m_imagePath);
-			} catch(const libconfig::SettingNotFoundException &nfex) {
-				cerr << "Error: Unable to read image path." << endl;
-				return PROGRAM_EXIT;
-			}
-		} else if(method.compare("VID") == 0) {
-			m_settings.m_method = IMACQ_VID;
-			try {
-				m_cfg.lookupValue("acq.imgPath", m_settings.m_imagePath);
-			} catch(const libconfig::SettingNotFoundException &nfex) {
-				cerr << "Error: Unable to read image path." << endl;
-				return PROGRAM_EXIT;
-			}
-		} else if(method.compare("CAM") == 0) {
-			m_settings.m_method = IMACQ_CAM;
-		} else if(method.compare("LIVESIM") == 0) {
-			m_settings.m_method = IMACQ_LIVESIM;
-			//fps
-			m_cfg.lookupValue("acq.fps", m_settings.m_fps);
-
-			try {
-				m_cfg.lookupValue("acq.imgPath", m_settings.m_imagePath);
-			} catch(const libconfig::SettingNotFoundException &nfex) {
-				cerr << "Error: Unable to read image path." << endl;
-				return PROGRAM_EXIT;
-			}
+    if(argc > optind)
+        m_configPath = argv[optind];
 
 
-		}
+    // load config file
+    if(!m_configPath.empty())
+    {
+        // read config file
+        try
+        {
+            m_cfg.readFile(m_configPath.c_str());
+        }
+        catch(const libconfig::FileIOException &fioex)
+        {
+            cerr << "I/O error while reading config file." << endl;
+            return PROGRAM_EXIT;
+        }
+        catch(const libconfig::ParseException &pex)
+        {
+            cerr << "ConfigFile: Parse error" << endl;
+            return PROGRAM_EXIT;
+        }
 
-		// startFrame
-		if(!m_startFrameSet)
-			m_cfg.lookupValue("acq.startFrame", m_settings.m_startFrame);
+        // method
+        string method;
+        m_cfg.lookupValue("acq.method", method);
 
-		// lastFrame
-		if(!m_lastFrameSet)
-			m_cfg.lookupValue("acq.lastFrame", m_settings.m_lastFrame);
+        // imagePath
+        if(method.compare("IMGS") == 0)
+        {
+            m_settings.m_method = IMACQ_IMGS;
 
-		// camNo
-		if(!m_camNoSet)
-			m_cfg.lookupValue("acq.camNo", m_settings.m_camNo);
+            try
+            {
+                m_cfg.lookupValue("acq.imgPath", m_settings.m_imagePath);
+            }
+            catch(const libconfig::SettingNotFoundException &nfex)
+            {
+                cerr << "Error: Unable to read image path." << endl;
+                return PROGRAM_EXIT;
+            }
+        }
+        else if(method.compare("VID") == 0)
+        {
+            m_settings.m_method = IMACQ_VID;
 
-		// loadModel
-		if(!m_modelPathSet)
-			m_cfg.lookupValue("loadModel", m_settings.m_loadModel);
+            try
+            {
+                m_cfg.lookupValue("acq.imgPath", m_settings.m_imagePath);
+            }
+            catch(const libconfig::SettingNotFoundException &nfex)
+            {
+                cerr << "Error: Unable to read image path." << endl;
+                return PROGRAM_EXIT;
+            }
+        }
+        else if(method.compare("CAM") == 0)
+        {
+            m_settings.m_method = IMACQ_CAM;
+        }
+        else if(method.compare("LIVESIM") == 0)
+        {
+            m_settings.m_method = IMACQ_LIVESIM;
+            //fps
+            m_cfg.lookupValue("acq.fps", m_settings.m_fps);
 
-		// modelPath
-		if(!m_modelPathSet)
-			m_cfg.lookupValue("modelPath", m_settings.m_modelPath);
+            try
+            {
+                m_cfg.lookupValue("acq.imgPath", m_settings.m_imagePath);
+            }
+            catch(const libconfig::SettingNotFoundException &nfex)
+            {
+                cerr << "Error: Unable to read image path." << endl;
+                return PROGRAM_EXIT;
+            }
 
-		// check if loadModel and modelPath are set, if one of them is set
-		if(!m_modelPathSet)
-			if(m_settings.m_loadModel && m_settings.m_modelPath.empty()) {
-				cerr << "Error: modelPath must be set when using loadModel" << endl;
-				return PROGRAM_EXIT;
-			}
 
-		// useProportionalShift
-		m_cfg.lookupValue("detector.useProportionalShift", m_settings.m_useProportionalShift);
+        }
 
-		// proportionalShift
-		m_cfg.lookupValue("detector.proportionalShift", m_settings.m_proportionalShift);
+        // startFrame
+        if(!m_startFrameSet)
+            m_cfg.lookupValue("acq.startFrame", m_settings.m_startFrame);
 
-		// minScale
-		m_cfg.lookupValue("detector.minScale", m_settings.m_minScale);
+        // lastFrame
+        if(!m_lastFrameSet)
+            m_cfg.lookupValue("acq.lastFrame", m_settings.m_lastFrame);
 
-		// maxScale
-		m_cfg.lookupValue("detector.maxScale", m_settings.m_maxScale);
+        // camNo
+        if(!m_camNoSet)
+            m_cfg.lookupValue("acq.camNo", m_settings.m_camNo);
 
-		// minSize
-		m_cfg.lookupValue("detector.minSize", m_settings.m_minSize);
+        // loadModel
+        if(!m_modelPathSet)
+            m_cfg.lookupValue("loadModel", m_settings.m_loadModel);
 
-		// numTrees
-		m_cfg.lookupValue("detector.numTrees", m_settings.m_numTrees);
+        // modelPath
+        if(!m_modelPathSet)
+            m_cfg.lookupValue("modelPath", m_settings.m_modelPath);
 
-		// numFeatures
-		m_cfg.lookupValue("detector.numFeatures", m_settings.m_numFeatures);
+        // check if loadModel and modelPath are set, if one of them is set
+        if(!m_modelPathSet)
+            if(m_settings.m_loadModel && m_settings.m_modelPath.empty())
+            {
+                cerr << "Error: modelPath must be set when using loadModel" << endl;
+                return PROGRAM_EXIT;
+            }
 
-		// numFeatures
-		m_cfg.lookupValue("detector.thetaP", m_settings.m_thetaP);
-		m_cfg.lookupValue("detector.thetaN", m_settings.m_thetaN);
+        // useProportionalShift
+        m_cfg.lookupValue("detector.useProportionalShift", m_settings.m_useProportionalShift);
 
-		// backgroundFrame
-		// TODO
-		//const char * backgroundFrame = NULL;
-		//config_lookup_string(&m_config, "backgroundFrame", &backgroundFrame);
-		//if(backgroundFrame != NULL) {
-		//	classifier->background = imAcqLoadImg(imAcq, (char *)backgroundFrame, CV_LOAD_IMAGE_GRAYSCALE);
-		//}
+        // proportionalShift
+        m_cfg.lookupValue("detector.proportionalShift", m_settings.m_proportionalShift);
 
-		// showOutput
-		if(!m_showOutputSet)
-			m_cfg.lookupValue("showOutput", m_settings.m_showOutput);
+        // minScale
+        m_cfg.lookupValue("detector.minScale", m_settings.m_minScale);
 
-		// trajectory
-		if(!m_trajectorySet)
-			m_cfg.lookupValue("trajectory", m_settings.m_trajectory);
+        // maxScale
+        m_cfg.lookupValue("detector.maxScale", m_settings.m_maxScale);
 
-		// printResults
-		if(!m_printResultsSet)
-			m_cfg.lookupValue("printResults", m_settings.m_printResults);
+        // minSize
+        m_cfg.lookupValue("detector.minSize", m_settings.m_minSize);
 
-		// printTiming
-		m_cfg.lookupValue("printTiming", m_settings.m_printTiming);
+        // numTrees
+        m_cfg.lookupValue("detector.numTrees", m_settings.m_numTrees);
 
-		// learningEnabled
-		m_cfg.lookupValue("learningEnabled", m_settings.m_learningEnabled);
+        // numFeatures
+        m_cfg.lookupValue("detector.numFeatures", m_settings.m_numFeatures);
 
-		// trackerEnabled
-		m_cfg.lookupValue("trackerEnabled", m_settings.m_trackerEnabled);
+        // numFeatures
+        m_cfg.lookupValue("detector.thetaP", m_settings.m_thetaP);
+        m_cfg.lookupValue("detector.thetaN", m_settings.m_thetaN);
 
-		// varianceFilterEnabled
-		m_cfg.lookupValue("detector.varianceFilterEnabled", m_settings.m_varianceFilterEnabled);
+        // backgroundFrame
+        // TODO
+        //const char * backgroundFrame = NULL;
+        //config_lookup_string(&m_config, "backgroundFrame", &backgroundFrame);
+        //if(backgroundFrame != NULL) {
+        //  classifier->background = imAcqLoadImg(imAcq, (char *)backgroundFrame, CV_LOAD_IMAGE_GRAYSCALE);
+        //}
 
-		// emnsembleClassifierEnabled
-		m_cfg.lookupValue("detector.ensembleClassifierEnabled", m_settings.m_ensembleClassifierEnabled);
+        // showOutput
+        if(!m_showOutputSet)
+            m_cfg.lookupValue("showOutput", m_settings.m_showOutput);
 
-		// nnClassifierEnabled
-		m_cfg.lookupValue("detector.nnClassifierEnabled", m_settings.m_nnClassifierEnabled);
+        // trajectory
+        if(!m_trajectorySet)
+            m_cfg.lookupValue("trajectory", m_settings.m_trajectory);
 
-		// selectManually
-		if(!m_selectManuallySet)
-			m_cfg.lookupValue("selectManually", m_settings.m_selectManually);
+        // printResults
+        if(!m_printResultsSet)
+            m_cfg.lookupValue("printResults", m_settings.m_printResults);
 
-		// saveDir
-		m_cfg.lookupValue("saveDir", m_settings.m_outputDir);
+        // printTiming
+        m_cfg.lookupValue("printTiming", m_settings.m_printTiming);
 
-		// theta
-		if(!m_thetaSet)
-			m_cfg.lookupValue("threshold", m_settings.m_threshold);
+        // learningEnabled
+        m_cfg.lookupValue("learningEnabled", m_settings.m_learningEnabled);
 
-		// showNotConfident
-		m_cfg.lookupValue("showNotConfident", m_settings.m_showNotConfident);
+        // trackerEnabled
+        m_cfg.lookupValue("trackerEnabled", m_settings.m_trackerEnabled);
 
-		// showForeground
-		if(!m_showForegroundSet)
-			m_cfg.lookupValue("showForeground", m_settings.m_showForeground);
+        // varianceFilterEnabled
+        m_cfg.lookupValue("detector.varianceFilterEnabled", m_settings.m_varianceFilterEnabled);
 
-		// showDetections
-		if(!m_showDetectionsSet)
-			m_cfg.lookupValue("showDetections", m_settings.m_showDetections);
+        // emnsembleClassifierEnabled
+        m_cfg.lookupValue("detector.ensembleClassifierEnabled", m_settings.m_ensembleClassifierEnabled);
 
-		// alternating
-		m_cfg.lookupValue("alternating", m_settings.m_alternating);
+        // nnClassifierEnabled
+        m_cfg.lookupValue("detector.nnClassifierEnabled", m_settings.m_nnClassifierEnabled);
 
-		// exportModelFile
-		m_cfg.lookupValue("modelExportFile", m_settings.m_modelExportFile);
+        // selectManually
+        if(!m_selectManuallySet)
+            m_cfg.lookupValue("selectManually", m_settings.m_selectManually);
 
-		// exportModelAfterRun
-		if(!m_exportModelAfterRunSet)
-			m_cfg.lookupValue("exportModelAfterRun", m_settings.m_exportModelAfterRun);
+        // saveDir
+        m_cfg.lookupValue("saveDir", m_settings.m_outputDir);
 
-		// seed
-		m_cfg.lookupValue("seed", m_settings.m_seed);
+        // theta
+        if(!m_thetaSet)
+            m_cfg.lookupValue("threshold", m_settings.m_threshold);
 
-		// initialBoundingBox
-		try {
-			libconfig::Setting & initBB_setting = m_cfg.lookup("initialBoundingBox");
-			for(int i = 0; i < 4; i++) {
-				m_settings.m_initialBoundingBox.push_back(initBB_setting[i]);
-			}
-		} catch(const libconfig::SettingNotFoundException &nfex) {
-			// Ignore
-		}
-	}
+        // showNotConfident
+        m_cfg.lookupValue("showNotConfident", m_settings.m_showNotConfident);
 
-	return SUCCESS;
+        // showForeground
+        if(!m_showForegroundSet)
+            m_cfg.lookupValue("showForeground", m_settings.m_showForeground);
+
+        // showDetections
+        if(!m_showDetectionsSet)
+            m_cfg.lookupValue("showDetections", m_settings.m_showDetections);
+
+        // alternating
+        m_cfg.lookupValue("alternating", m_settings.m_alternating);
+
+        // exportModelFile
+        m_cfg.lookupValue("modelExportFile", m_settings.m_modelExportFile);
+
+        // exportModelAfterRun
+        if(!m_exportModelAfterRunSet)
+            m_cfg.lookupValue("exportModelAfterRun", m_settings.m_exportModelAfterRun);
+
+        // seed
+        m_cfg.lookupValue("seed", m_settings.m_seed);
+
+        // initialBoundingBox
+        try
+        {
+            libconfig::Setting &initBB_setting = m_cfg.lookup("initialBoundingBox");
+
+            for(int i = 0; i < 4; i++)
+            {
+                m_settings.m_initialBoundingBox.push_back(initBB_setting[i]);
+            }
+        }
+        catch(const libconfig::SettingNotFoundException &nfex)
+        {
+            // Ignore
+        }
+    }
+
+    return SUCCESS;
 }
 
-int Config::configure(Main* main) {
-	ImAcq* imAcq = main->imAcq;
+int Config::configure(Main *main)
+{
+    ImAcq *imAcq = main->imAcq;
 
-	// imAcq
-	imAcq->method = m_settings.m_method;
-	imAcq->imgPath = (m_settings.m_imagePath.empty()) ? NULL : m_settings.m_imagePath.c_str();
-	imAcq->lastFrame = m_settings.m_lastFrame;
-	imAcq->currentFrame = m_settings.m_startFrame;
-	imAcq->camNo = m_settings.m_camNo;
-	imAcq->fps = m_settings.m_fps;
+    // imAcq
+    imAcq->method = m_settings.m_method;
+    imAcq->imgPath = (m_settings.m_imagePath.empty()) ? NULL : m_settings.m_imagePath.c_str();
+    imAcq->lastFrame = m_settings.m_lastFrame;
+    imAcq->currentFrame = m_settings.m_startFrame;
+    imAcq->camNo = m_settings.m_camNo;
+    imAcq->fps = m_settings.m_fps;
 
-	// main
-	main->tld->trackerEnabled = m_settings.m_trackerEnabled;
-	main->showOutput = m_settings.m_showOutput;
-	main->printResults = (m_settings.m_printResults.empty()) ? NULL : m_settings.m_printResults.c_str();
-	main->saveDir = (m_settings.m_outputDir.empty()) ? NULL : m_settings.m_outputDir.c_str();
-	main->threshold = m_settings.m_threshold;
-	main->showForeground = m_settings.m_showForeground;
-	main->showNotConfident = m_settings.m_showNotConfident;
-	main->tld->alternating = m_settings.m_alternating;
-	main->tld->learningEnabled = m_settings.m_learningEnabled;
-	main->selectManually = m_settings.m_selectManually;
-	main->exportModelAfterRun = m_settings.m_exportModelAfterRun;
-	main->modelExportFile = m_settings.m_modelExportFile.c_str();
-	main->loadModel = m_settings.m_loadModel;
-	main->modelPath = (m_settings.m_modelPath.empty()) ? NULL : m_settings.m_modelPath.c_str();
-	main->seed = m_settings.m_seed;
-	if(m_settings.m_initialBoundingBox.size() > 0) {
-		main->initialBB = new int[4];
-		for(int i = 0; i < 4; i++) {
-			main->initialBB[i] = m_settings.m_initialBoundingBox[i];
-		}
-	}
+    // main
+    main->tld->trackerEnabled = m_settings.m_trackerEnabled;
+    main->showOutput = m_settings.m_showOutput;
+    main->printResults = (m_settings.m_printResults.empty()) ? NULL : m_settings.m_printResults.c_str();
+    main->saveDir = (m_settings.m_outputDir.empty()) ? NULL : m_settings.m_outputDir.c_str();
+    main->threshold = m_settings.m_threshold;
+    main->showForeground = m_settings.m_showForeground;
+    main->showNotConfident = m_settings.m_showNotConfident;
+    main->tld->alternating = m_settings.m_alternating;
+    main->tld->learningEnabled = m_settings.m_learningEnabled;
+    main->selectManually = m_settings.m_selectManually;
+    main->exportModelAfterRun = m_settings.m_exportModelAfterRun;
+    main->modelExportFile = m_settings.m_modelExportFile.c_str();
+    main->loadModel = m_settings.m_loadModel;
+    main->modelPath = (m_settings.m_modelPath.empty()) ? NULL : m_settings.m_modelPath.c_str();
+    main->seed = m_settings.m_seed;
 
-	DetectorCascade* detectorCascade = main->tld->detectorCascade;
-	detectorCascade->varianceFilter->enabled = m_settings.m_varianceFilterEnabled;
-	detectorCascade->ensembleClassifier->enabled = m_settings.m_ensembleClassifierEnabled;
-	detectorCascade->nnClassifier->enabled = m_settings.m_nnClassifierEnabled;
+    if(m_settings.m_initialBoundingBox.size() > 0)
+    {
+        main->initialBB = new int[4];
 
-	// classifier
-	detectorCascade->useShift = m_settings.m_useProportionalShift;
-	detectorCascade->shift = m_settings.m_proportionalShift;
-	detectorCascade->minScale = m_settings.m_minScale;
-	detectorCascade->maxScale = m_settings.m_maxScale;
-	detectorCascade->minSize = m_settings.m_minSize;
-	detectorCascade->numTrees = m_settings.m_numTrees;
-	detectorCascade->numFeatures = m_settings.m_numFeatures;
-	detectorCascade->nnClassifier->thetaTP = m_settings.m_thetaP;
-	detectorCascade->nnClassifier->thetaFP = m_settings.m_thetaN;
+        for(int i = 0; i < 4; i++)
+        {
+            main->initialBB[i] = m_settings.m_initialBoundingBox[i];
+        }
+    }
 
-	return SUCCESS;
+    DetectorCascade *detectorCascade = main->tld->detectorCascade;
+    detectorCascade->varianceFilter->enabled = m_settings.m_varianceFilterEnabled;
+    detectorCascade->ensembleClassifier->enabled = m_settings.m_ensembleClassifierEnabled;
+    detectorCascade->nnClassifier->enabled = m_settings.m_nnClassifierEnabled;
+
+    // classifier
+    detectorCascade->useShift = m_settings.m_useProportionalShift;
+    detectorCascade->shift = m_settings.m_proportionalShift;
+    detectorCascade->minScale = m_settings.m_minScale;
+    detectorCascade->maxScale = m_settings.m_maxScale;
+    detectorCascade->minSize = m_settings.m_minSize;
+    detectorCascade->numTrees = m_settings.m_numTrees;
+    detectorCascade->numFeatures = m_settings.m_numFeatures;
+    detectorCascade->nnClassifier->thetaTP = m_settings.m_thetaP;
+    detectorCascade->nnClassifier->thetaFP = m_settings.m_thetaN;
+
+    return SUCCESS;
 }
 
 /*
@@ -415,59 +467,77 @@ int Config::configure(Main* main) {
  */
 #ifndef __GNUC__
 
-#define NULL	0
-#define EOF	(-1)
-#define ERR(s, c)	if(opterr){\
-	char errbuf[2];\
-	errbuf[0] = c; errbuf[1] = '\n';\
-	fputs(argv[0], stderr);\
-	fputs(s, stderr);\
-	fputc(c, stderr);}
+#define NULL    0
+#define EOF (-1)
+#define ERR(s, c)   if(opterr){\
+    char errbuf[2];\
+    errbuf[0] = c; errbuf[1] = '\n';\
+    fputs(argv[0], stderr);\
+    fputs(s, stderr);\
+    fputc(c, stderr);}
 
 int opterr = 1;
 int optind = 1;
 int optopt;
 char *optarg;
 
-int getopt(int argc, char **argv, char *opts) {
-	static int sp = 1;
-	register int c;
-	register char *cp;
+int getopt(int argc, char **argv, char *opts)
+{
+    static int sp = 1;
+    register int c;
+    register char *cp;
 
-	if (sp == 1)
-		if (optind >= argc || argv[optind][0] != '-' || argv[optind][1] == '\0')
-			return (EOF);
-		else if (strcmp(argv[optind], "--") == NULL) {
-			optind++;
-			return (EOF);
-		}
-	optopt = c = argv[optind][sp];
-	if (c == ':' || (cp = strchr(opts, c)) == NULL) {
-		ERR(": illegal option -- ", c);
-		if (argv[optind][++sp] == '\0') {
-			optind++;
-			sp = 1;
-		}
-		return ('?');
-	}
-	if (*++cp == ':') {
-		if (argv[optind][sp + 1] != '\0')
-			optarg = &argv[optind++][sp + 1];
-		else if (++optind >= argc) {
-			ERR(": option requires an argument -- ", c);
-			sp = 1;
-			return ('?');
-		} else
-			optarg = argv[optind++];
-		sp = 1;
-	} else {
-		if (argv[optind][++sp] == '\0') {
-			sp = 1;
-			optind++;
-		}
-		optarg = NULL;
-	}
-	return (c);
+    if(sp == 1)
+        if(optind >= argc || argv[optind][0] != '-' || argv[optind][1] == '\0')
+            return (EOF);
+        else if(strcmp(argv[optind], "--") == NULL)
+        {
+            optind++;
+            return (EOF);
+        }
+
+    optopt = c = argv[optind][sp];
+
+    if(c == ':' || (cp = strchr(opts, c)) == NULL)
+    {
+        ERR(": illegal option -- ", c);
+
+        if(argv[optind][++sp] == '\0')
+        {
+            optind++;
+            sp = 1;
+        }
+
+        return ('?');
+    }
+
+    if(*++cp == ':')
+    {
+        if(argv[optind][sp + 1] != '\0')
+            optarg = &argv[optind++][sp + 1];
+        else if(++optind >= argc)
+        {
+            ERR(": option requires an argument -- ", c);
+            sp = 1;
+            return ('?');
+        }
+        else
+            optarg = argv[optind++];
+
+        sp = 1;
+    }
+    else
+    {
+        if(argv[optind][++sp] == '\0')
+        {
+            sp = 1;
+            optind++;
+        }
+
+        optarg = NULL;
+    }
+
+    return (c);
 }
 
 #endif  /* __GNUC__ */

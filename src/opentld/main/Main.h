@@ -31,59 +31,63 @@
 #include "ImAcq.h"
 #include "Gui.h"
 
-enum Retval {
-	PROGRAM_EXIT = 0,
-	SUCCESS = 1
+enum Retval
+{
+    PROGRAM_EXIT = 0,
+    SUCCESS = 1
 };
 
-class Main {
+class Main
+{
 public:
-	tld::TLD * tld;
-	ImAcq * imAcq;
-	tld::Gui * gui;
-	bool showOutput;
-	const char * printResults;
-	const char * saveDir;
-	double threshold;
-	bool showForeground;
-	bool showNotConfident;
-	bool selectManually;
-	int * initialBB;
-	bool reinit;
-	bool exportModelAfterRun;
-	bool loadModel;
-	const char * modelPath;
-	const char * modelExportFile;
-	int seed;
+    tld::TLD *tld;
+    ImAcq *imAcq;
+    tld::Gui *gui;
+    bool showOutput;
+    const char *printResults;
+    const char *saveDir;
+    double threshold;
+    bool showForeground;
+    bool showNotConfident;
+    bool selectManually;
+    int *initialBB;
+    bool reinit;
+    bool exportModelAfterRun;
+    bool loadModel;
+    const char *modelPath;
+    const char *modelExportFile;
+    int seed;
 
-	Main() {
-		tld = new tld::TLD();
-		showOutput = 1;
-		printResults = NULL;
-		saveDir = ".";
-		threshold = 0.5;
-		showForeground = 0;
+    Main()
+    {
+        tld = new tld::TLD();
+        showOutput = 1;
+        printResults = NULL;
+        saveDir = ".";
+        threshold = 0.5;
+        showForeground = 0;
 
-		selectManually = 0;
+        selectManually = 0;
 
-		initialBB = NULL;
-		showNotConfident = true;
+        initialBB = NULL;
+        showNotConfident = true;
 
-		reinit = 0;
+        reinit = 0;
 
-		loadModel = false;
+        loadModel = false;
 
-		exportModelAfterRun = false;
-		modelExportFile = "model";
-		seed = 0;
-	}
+        exportModelAfterRun = false;
+        modelExportFile = "model";
+        seed = 0;
+    }
 
-	~Main() {
-		delete tld;
-		imAcqFree(imAcq);
-	}
+    ~Main()
+    {
+        delete tld;
+        imAcqFree(imAcq);
+    }
 
-	void doWork();
+    void doWork();
 };
 
 #endif /* MAIN_H_ */
