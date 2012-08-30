@@ -28,6 +28,10 @@ cmake_minimum_required(VERSION 2.6)
 
 find_package(OpenCV REQUIRED)
 
+if(BUILD_QOPENTLD)
+    find_package(Qt4 REQUIRED)
+endif(BUILD_QOPENTLD)
+
 #-------------------------------------------------------------------------------
 #version
 set(TLD_VERSION_MAJOR 1)
@@ -42,6 +46,8 @@ if(NOT CMAKE_BUILD_TYPE)
         "Choose the type of build, options are: None Debug Release RelWithDebInfo MinSizeRel."
         FORCE)
 endif(NOT CMAKE_BUILD_TYPE)
+
+option(BUILD_QOPENTLD "Build with Qt-config-dialog." OFF)
 
 if(WIN32)
 	add_definitions(-DLIBCONFIGXX_STATIC -DLIBCONFIG_STATIC) #Needed when linking libconfig statically

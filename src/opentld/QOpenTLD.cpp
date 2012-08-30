@@ -18,13 +18,16 @@
 */
 
 /**
-  * @author Georg Nebehay
+  * @author Clemens Korner
   */
+
+#include <cstdio>
 
 #include "Main.h"
 #include "Config.h"
 #include "ImAcq.h"
 #include "Gui.h"
+#include "ConfigDialog.h"
 
 using tld::Config;
 using tld::Gui;
@@ -34,18 +37,21 @@ int main(int argc, char **argv)
 {
 
     Main *main = new Main();
-    Config config;
     ImAcq *imAcq = imAcqAlloc();
     Gui *gui = new Gui();
+    Settings *settings = new Settings();
 
     main->gui = gui;
     main->imAcq = imAcq;
 
-    if(config.init(argc, argv) == PROGRAM_EXIT)
+    if(!getSettingsFromConfigDialog(argc, argv, settings))
     {
         return EXIT_FAILURE;
     }
 
+    fprintf(stdout, "OpenTLD appeares soon...\n");
+
+    Config config(*settings);
     config.configure(main);
 
     srand(main->seed);

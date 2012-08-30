@@ -9,8 +9,9 @@ include_directories(main
     ../3rdparty/libconfig
     ${OpenCV_INCLUDE_DIRS})
 
-add_executable(opentld
-    OpenTLD.cpp
+#-------------------------------------------------------------------------------
+# main
+add_library(main
     main/Config.cpp
     main/Gui.cpp
     main/Main.cpp
@@ -20,7 +21,37 @@ add_executable(opentld
     main/Main.h
     main/Settings.h)
 
-target_link_libraries(opentld libopentld cvblobs libconfig ${OpenCV_LIBS})
+target_link_libraries(main libopentld cvblobs libconfig ${OpenCV_LIBS})
+
+#-------------------------------------------------------------------------------
+# opentld
+add_executable(opentld
+    OpenTLD.cpp)
+
+target_link_libraries(opentld main libopentld cvblobs libconfig ${OpenCV_LIBS})
 
 install(TARGETS opentld DESTINATION bin)
+
+#-------------------------------------------------------------------------------
+# qopentld
+if(BUILD_QOPENTLD)
+    include_directories(qopentld
+        ${CMAKE_CURRENT_BINARY_DIR})
+
+    include(${QT_USE_FILE})
+    add_definitions(${QT_DEFINITIONS})
+
+    set(QOPENTLD_SOURCES QOpenTLD.cpp qopentld/ConfigDialog.cpp)
+
+    set(QOPENTLD_HEADERS qopentld/ConfigDialog.h)
+    set(QOPENTLD_FORMS qopentld/ConfigDialog.ui)
+    QT4_WRAP_CPP(QOPENTLD_HEADERS_MOC ${QOPENTLD_HEADERS})
+    QT4_WRAP_UI(QOPENTLD_FORMS_HEADERS ${QOPENTLD_FORMS})
+    set(QOPENTLD_SOURCES ${QOPENTLD_SOURCES} ${QOPENTLD_HEADERS_MOC} ${QOPENTLD_FORMS_HEADERS})
+
+    add_executable(qopentld ${QOPENTLD_SOURCES})
+    target_link_libraries(qopentld main libopentld cvblobs libconfig ${OpenCV_LIBS} ${QT_LIBRARIES})
+
+    install(TARGETS qopentld DESTINATION bin)
+endif(BUILD_QOPENTLD)
 

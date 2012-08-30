@@ -43,6 +43,8 @@ public:
      */
     Config();
 
+    Config(Settings &settings);
+
     /**
      * Destructor
      */

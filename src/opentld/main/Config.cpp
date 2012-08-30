@@ -71,6 +71,11 @@ Config::Config() :
 {
 }
 
+Config::Config(Settings &settings) :
+    m_settings(settings)
+{
+}
+
 Config::~Config()
 {
 }

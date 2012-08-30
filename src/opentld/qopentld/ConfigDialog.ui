@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>QtConfigGUI</class>
- <widget class="QDialog" name="QtConfigGUI">
+ <class>ConfigDialog</class>
+ <widget class="QDialog" name="QOpenTLD">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>TLDConfigGUI</string>
+   <string>QOpenTLD</string>
   </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
@@ -499,8 +499,8 @@
            <rect>
             <x>0</x>
             <y>0</y>
-            <width>193</width>
-            <height>246</height>
+            <width>400</width>
+            <height>299</height>
            </rect>
           </property>
           <layout class="QGridLayout" name="gridLayout">
