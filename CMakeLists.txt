@@ -48,6 +48,7 @@ if(NOT CMAKE_BUILD_TYPE)
 endif(NOT CMAKE_BUILD_TYPE)
 
 option(BUILD_QOPENTLD "Build with Qt-config-dialog." OFF)
+option(USE_SYSTEM_LIBS "Use the installed version of libconfig++." OFF)
 
 if(WIN32)
 	add_definitions(-DLIBCONFIGXX_STATIC -DLIBCONFIG_STATIC) #Needed when linking libconfig statically
@@ -67,7 +68,11 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib)
 #-------------------------------------------------------------------------------
 #add subdirectories
 add_subdirectory(src/3rdparty/cvblobs)
-add_subdirectory(src/3rdparty/libconfig)
+
+if(NOT USE_SYSTEM_LIBS)
+    add_subdirectory(src/3rdparty/libconfig)
+endif(NOT USE_SYSTEM_LIBS)
+
 add_subdirectory(src/libopentld)
 add_subdirectory(src/opentld)
 

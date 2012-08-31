@@ -6,8 +6,11 @@ include_directories(main
     ../libopentld/mftracker
     ../libopentld/tld
     ../3rdparty/cvblobs
-    ../3rdparty/libconfig
     ${OpenCV_INCLUDE_DIRS})
+
+if(NOT USE_SYSTEM_LIBS)
+    include_directories(../3rdparty/libconfig)
+endif(NOT USE_SYSTEM_LIBS)
 
 #-------------------------------------------------------------------------------
 # main
@@ -21,14 +24,14 @@ add_library(main
     main/Main.h
     main/Settings.h)
 
-target_link_libraries(main libopentld cvblobs libconfig ${OpenCV_LIBS})
+target_link_libraries(main libopentld cvblobs config++ ${OpenCV_LIBS})
 
 #-------------------------------------------------------------------------------
 # opentld
 add_executable(opentld
     OpenTLD.cpp)
 
-target_link_libraries(opentld main libopentld cvblobs libconfig ${OpenCV_LIBS})
+target_link_libraries(opentld main libopentld cvblobs config++ ${OpenCV_LIBS})
 
 install(TARGETS opentld DESTINATION bin)
 
@@ -46,13 +49,13 @@ if(BUILD_QOPENTLD)
     set(QOPENTLD_FORMS qopentld/ConfigDialog.ui)
     set(QOPENTLD_RCS ../../res/rcs.qrc)
 
-    QT4_ADD_RESOURCES(QOPENTLD_RCS_HEADERS ${QOPENTLD_RCS})        
+    QT4_ADD_RESOURCES(QOPENTLD_RCS_CPP ${QOPENTLD_RCS})
     QT4_WRAP_CPP(QOPENTLD_HEADERS_MOC ${QOPENTLD_HEADERS})
     QT4_WRAP_UI(QOPENTLD_FORMS_HEADERS ${QOPENTLD_FORMS})
-    set(QOPENTLD_SOURCES ${QOPENTLD_SOURCES} ${QOPENTLD_RCS_HEADERS} ${QOPENTLD_HEADERS_MOC} ${QOPENTLD_FORMS_HEADERS})
+    set(QOPENTLD_SOURCES ${QOPENTLD_SOURCES} ${QOPENTLD_RCS_CPP} ${QOPENTLD_HEADERS_MOC} ${QOPENTLD_FORMS_HEADERS})
 
     add_executable(qopentld ${QOPENTLD_SOURCES})
-    target_link_libraries(qopentld main libopentld cvblobs libconfig ${OpenCV_LIBS} ${QT_LIBRARIES})
+    target_link_libraries(qopentld main libopentld cvblobs config++ ${OpenCV_LIBS} ${QT_LIBRARIES})
 
     install(TARGETS qopentld DESTINATION bin)
 endif(BUILD_QOPENTLD)
