@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>QOpenTLD</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="../../../res/rcs.qrc">
+    <normaloff>:/res/pic/opentld.png</normaloff>:/res/pic/opentld.png</iconset>
+  </property>
   <property name="sizeGripEnabled">
    <bool>false</bool>
   </property>
@@ -639,6 +643,8 @@
   <tabstop>buttonBox</tabstop>
   <tabstop>lineEdit_modelPath</tabstop>
  </tabstops>
- <resources/>
+ <resources>
+  <include location="../../../res/rcs.qrc"/>
+ </resources>
  <connections/>
 </ui>

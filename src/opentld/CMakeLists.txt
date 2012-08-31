@@ -42,12 +42,14 @@ if(BUILD_QOPENTLD)
     add_definitions(${QT_DEFINITIONS})
 
     set(QOPENTLD_SOURCES QOpenTLD.cpp qopentld/ConfigDialog.cpp)
-
     set(QOPENTLD_HEADERS qopentld/ConfigDialog.h)
     set(QOPENTLD_FORMS qopentld/ConfigDialog.ui)
+    set(QOPENTLD_RCS ../../res/rcs.qrc)
+
+    QT4_ADD_RESOURCES(QOPENTLD_RCS_HEADERS ${QOPENTLD_RCS})        
     QT4_WRAP_CPP(QOPENTLD_HEADERS_MOC ${QOPENTLD_HEADERS})
     QT4_WRAP_UI(QOPENTLD_FORMS_HEADERS ${QOPENTLD_FORMS})
-    set(QOPENTLD_SOURCES ${QOPENTLD_SOURCES} ${QOPENTLD_HEADERS_MOC} ${QOPENTLD_FORMS_HEADERS})
+    set(QOPENTLD_SOURCES ${QOPENTLD_SOURCES} ${QOPENTLD_RCS_HEADERS} ${QOPENTLD_HEADERS_MOC} ${QOPENTLD_FORMS_HEADERS})
 
     add_executable(qopentld ${QOPENTLD_SOURCES})
     target_link_libraries(qopentld main libopentld cvblobs libconfig ${OpenCV_LIBS} ${QT_LIBRARIES})
