@@ -35,7 +35,7 @@ endif(BUILD_QOPENTLD)
 #-------------------------------------------------------------------------------
 #version
 set(TLD_VERSION_MAJOR 1)
-set(TLD_VERSION_MINOR 2)
+set(TLD_VERSION_MINOR 3)
 set(TLD_VERSION_PATCH 0)
 set(TLD_VERSION ${TLD_VERSION_MAJOR}.${TLD_VERSION_MINOR}.${TLD_VERSION_PATCH})
 

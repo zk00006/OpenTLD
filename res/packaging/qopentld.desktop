@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=QOpenTLD
+Comment=Tracking-Learning-Detection
+Exec=qopentld
+Icon=opentld.png
+Terminal=false
+Categories=Education;Science;

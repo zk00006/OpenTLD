@@ -6,7 +6,9 @@ Build-Depends: debhelper (>= 8.0.0),
                cmake,
                libcv-dev,
                libopencv-dev,
-               libhighgui-dev
+               libhighgui-dev,
+               libconfig++8-dev,
+               libqt4-dev
 Standards-Version: 3.9.3
 Homepage: https://github.com/gnebehay/OpenTLD
 #Vcs-Git: git://github.com/gnebehay/OpenTLD.git
