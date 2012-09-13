@@ -1,5 +1,5 @@
 <RCC>
     <qresource prefix="/res">
-        <file>pic/opentld.png</file>
+        <file>img/opentld.png</file>
     </qresource>
 </RCC>

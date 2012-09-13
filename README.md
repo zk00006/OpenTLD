@@ -3,16 +3,18 @@
 
 This is a C++ implementation of OpenTLD that was originally published in MATLAB by Zdenek Kalal. OpenTLD is used for tracking objects in video streams. What makes this algorithm outstanding is that it does not make use of any training data. This implementation is based solely on open source libraries, meaning that you do not need any commercial products to compile or run it.
 
-The easiest way to get started is to download the precompiled binaries that are available for Windows and Ubuntu 10.04. You can get a .deb package here:
-http://dl.dropbox.com/u/8715460/tld.deb
-and a windows installer file here:
-http://dl.dropbox.com/u/8715460/tld.zip
+The easiest way to get started is to download the precompiled binaries that are available for [Windows](http://dl.dropbox.com/u/8715460/tld.zip) and [Ubuntu 12.04](https://github.com/gnebehay/OpenTLD/downloads).  
+There is also a [PPA](https://launchpad.net/~opentld/+archive/ppa) available for Ubuntu 12.04. You just have to execute these commands:
+```
+sudo add-apt-repository ppa:opentld/ppa
+sudo apt-get update
+sudo apt-get install opentld
+```
 
 If you have a webcam attached to your PC, you can simply execute opentld (on Ubuntu) or opentld.exe (on Windows) in order to
 try it out. For other configuration options, please see below.
 
-A documentation of the internals as well as other possibly helpful information is contained in this master thesis:
-http://gnebehay.github.com/OpenTLD/gnebehay_thesis_msc.pdf
+A documentation of the internals as well as other possibly helpful information is contained in this [master thesis](https://github.com/downloads/gnebehay/OpenTLD/gnebehay_thesis_msc.pdf).
 
  Usage
 =======
@@ -38,13 +40,13 @@ __usage__
 __option arguments__  
 `[-a <startFrameNumber>]` video starts at the frameNumber _startFrameNumber_  
 `[-b <x,y,w,h>]` Initial bounding box  
-`[-d <device>]` select input device: _device_=(IMGS|CAM|VID)  
-	IMGS: capture from images
-	CAM: capture from connected camera
-	VID: capture from a video
+`[-d <device>]` select input device: _device_=(IMGS|CAM|VID)
+	_IMGS_: capture from images
+	_CAM_: capture from connected camera
+	_VID_: capture from a video
 `[-e <path>]` export model after run to _path_  
 `[-f]` shows foreground  
-`[-i <path>]` _path_ to the images or to the video. 
+`[-i <path>]` _path_ to the images or to the video.  
 `[-h]` shows help  
 `[-m <path>]` if specified load a model from _path_. An initialBoundingBox must be specified or selectManually must be true.  
 `[-n <number>]` Specifies the video device to use (defaults to 0). Useful to select a different camera when multiple cameras are connected.   
@@ -66,6 +68,8 @@ Dependencies
 
 * OpenCV & OpenCV highgui >= 2.0
 * CMake >= 2.6
+* libconfig++ (optional)
+* Qt4 (optional)
 
 Compiling
 ---------
@@ -97,8 +101,8 @@ Use CMake to build the project. You can use "cmake-gui", if you need a graphical
 	* make
 	* ./opentld
 
-Generate Package
-----------------
+Package
+-------
 
 * Debian package
 	* Navigate with the terminal into the root dictionary of OpenTLD (OpenTLD/)
