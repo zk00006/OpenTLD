@@ -74,6 +74,7 @@ If you need help look at [Running CMake](http://www.cmake.org/cmake/help/running
 You can use `cmake-gui`, if you need a graphical user interface.
 
 Use CMake to build the project. You can use "cmake-gui", if you need a graphical user interface.
+
 __Gui__  
 * Specify the source path (root path of the dictionary) and the binary path (where to build the program, out
 	  of source build recommended)
