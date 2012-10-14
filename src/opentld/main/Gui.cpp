@@ -126,38 +126,29 @@ int getBBFromUser(IplImage *img, CvRect &rect, Gui *gui)
             return PROGRAM_EXIT;
         }
 
-#ifdef __unix__
-
-        if((key == '\n') && (bb->x != -1) && (bb->y != -1))
+        if(((key == '\n') || (key == '\r') || (key == '\r\n')) && (bb->x != -1) && (bb->y != -1))
         {
-#endif
-#if defined _WIN32 || defined __APPLE__
-
-            if((key == '\r') && (bb->x != -1) && (bb->y != -1))
-            {
-#endif
-                correctBB = true;
-            }
+            correctBB = true;
         }
-
-        if(rect.width < 0)
-        {
-            rect.x += rect.width;
-            rect.width = abs(rect.width);
-        }
-
-        if(rect.height < 0)
-        {
-            rect.y += rect.height;
-            rect.height = abs(rect.height);
-        }
-
-        cvSetMouseCallback(window_name.c_str(), NULL, NULL);
-
-        cvReleaseImage(&img0);
-        cvReleaseImage(&img1);
-
-        return SUCCESS;
     }
 
+    if(rect.width < 0)
+    {
+        rect.x += rect.width;
+        rect.width = abs(rect.width);
+    }
+
+    if(rect.height < 0)
+    {
+        rect.y += rect.height;
+        rect.height = abs(rect.height);
+    }
+
+    cvSetMouseCallback(window_name.c_str(), NULL, NULL);
+
+    cvReleaseImage(&img0);
+    cvReleaseImage(&img1);
+
+    return SUCCESS;
+}
 }
