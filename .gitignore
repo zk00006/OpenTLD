@@ -1,0 +1,11 @@
+CMakeLists.txt.user
+.cproject
+.project
+CMakeCache.txt
+CMakeFiles
+Makefile
+OpenTLDConfig.cmake
+TODO
+cmake_install.cmake
+*.a
+

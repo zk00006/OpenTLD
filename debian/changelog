@@ -1,0 +1,12 @@
+opentld (1.3.0) precise; urgency=low
+
+  * New Qt-Config-Dialog
+  * several fixes
+
+ -- Clemens Korner <clemens.corny@gmail.com>  Wed, 12 Sep 2012 15:42:26 +0200
+
+opentld (0.1.2) precise; urgency=low
+
+  * Initial Release.
+
+ -- Georg Nebehay <georg.nebehay.fl@ait.ac.at>  Sat, 28 Apr 2012 12:31:36 +0200

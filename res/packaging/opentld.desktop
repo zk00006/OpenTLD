@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=OpenTLD
+Comment=Tracking-Learning-Detection
+Exec=opentld
+Icon=opentld.png
+Terminal=false
+Categories=Education;Science;

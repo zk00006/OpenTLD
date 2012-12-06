@@ -1,0 +1,73 @@
+=head1 NAME
+
+OpenTLD - an object tracking program.
+
+=head1 SYNOPSIS
+
+B<opentld> [B<-a> <startFrameNumber>] [B<-b> <x,y,w,h>] [B<-d> <device>] [B<-e>
+<path>] [B<-f>] [B<-i> <path>] [B<-h>] [B<-m> <path>] [B<-n> <number>] [B<-p>
+<path>] [B<-s>] [B<-t> <theta>] [B<-z> <lastFrameNumber>] [<configfile>]
+
+=head1 DESCRIPTION
+
+B<OpenTLD> is a C++ implementation of OpenTLD that was originally published in
+MATLAB by Zdenek Kalal. OpenTLD is used for tracking objects in video streams.
+What makes this algorithm outstanding is that it does not make use of any
+training data. This implementation is based solely on open source libraries,
+meaning that you do not need any commercial products to compile or run it.
+
+If you have a webcam attached to your PC, you can simply execute opentld in order to
+try it out.
+
+=head1 OPTIONS
+
+B<-a> <startFrameNumber>
+      video starts at the frameNumber <startFrameNumber>
+
+B<-b> <x,y,w,h>
+      initial bounding box
+
+B<-d> <device>
+      select input device: <device>=(IMGS|CAM|VID)
+      IMGS: capture from images
+      CAM: capture from connected camera
+      VID: capture from a video
+
+B<-e> <path>
+      export model after run to <path>
+
+B<-f>
+      shows foreground
+
+B<-i> <path>
+      <path> to the images or to the video
+
+B<-h>
+      shows help
+
+B<-m> <path>
+      if specified load a model from <path>. An initialBoundingBox must be
+      specified or selectManually must be true.
+
+B<-n> <number>
+      Specifies the video device to use (defaults to 0). Useful to
+      select a different camera when multiple cameras are connected.
+
+B<-p> <path>
+      prints results into the file <path>
+
+B<-s>
+      if set, user can select initial bounding box
+
+B<-t> <theta>
+      threshold for determining positive results
+
+B<-z> <lastFrameNumber>
+      video ends at the frameNumber <lastFrameNumber>. If
+      <lastFrameNumber> is 0 or the option argument isn't specified
+      means all frames are taken.
+
+<configfile>
+      path to config file
+
+=cut

@@ -1,0 +1,31 @@
+Source: opentld
+Section: science
+Priority: optional
+Maintainer: Georg Nebehay <georg.nebehay.fl@ait.ac.at>
+Build-Depends: debhelper (>= 8.0.0),
+               cmake,
+               libcv-dev,
+               libopencv-dev,
+               libhighgui-dev,
+               libconfig++8-dev,
+               libqt4-dev
+Standards-Version: 3.9.3
+Homepage: https://github.com/gnebehay/OpenTLD
+#Vcs-Git: git://github.com/gnebehay/OpenTLD.git
+#Vcs-Browser: https://github.com/gnebehay/OpenTLD.git;a=summary
+
+Package: opentld
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: C++ implementation of OpenTLD
+ This is a C++ implementation of OpenTLD that was originally published in
+ MATLAB by Zdenek Kalal.
+ .
+ OpenTLD is used for tracking objects in video streams. What makes this
+ algorithm outstanding is that it does not make use of any training data. This
+ implementation is based solely on open source libraries, meaning that you do
+ not need any commercial products to compile or run it.
+ .
+ If you have a webcam attached to your PC, you can simply execute opentld in
+ order to try it out.
+

@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/res">
+        <file>img/opentld.png</file>
+    </qresource>
+</RCC>
