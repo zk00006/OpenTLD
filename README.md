@@ -113,6 +113,7 @@ Navigate with the terminal to the build directory
 * `easy_install numpy`
 * `brew install cmake`
 * `brew install opencv`
+* `cmake` create the makefile 
 * `make` build the project
 
 # Debian package
