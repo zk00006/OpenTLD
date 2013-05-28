@@ -34,6 +34,13 @@ In case you use TLD in an academic work, please cite the following paper:
  year = {2010}
 } 
 
+@article{Kalal2012,
+ author = {Kalal, Z and Mikolajczyk, K and Matas, J},
+ journal = {Pattern Analysis and Machine Intelligence},
+ title {Tracking-learning-detection},
+ year = {2012}
+}
+
 
 ----------------------------------------------------------------------------
 
