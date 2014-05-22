@@ -5,7 +5,7 @@ TLD is an algorithm for tracking of unknown objects in unconstrained video strea
 
 1. License
 
-This source code is released under the GPL license version 3.0.  For alternative licensing options contact the main author:  zdenek.kalal@gmail.com.
+This source code is released under the GPL license version 3.0.  
 
 2. Project website
 
@@ -44,4 +44,4 @@ In case you use TLD in an academic work, please cite the following paper:
 
 ----------------------------------------------------------------------------
 
-(c) 2011 Zdenek Kalal, zdenek.kalal@gmail.com
+(c) 2011 Zdenek Kalal
