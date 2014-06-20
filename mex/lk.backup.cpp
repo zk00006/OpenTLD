@@ -16,8 +16,8 @@
 // along with TLD.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "mex.h" 
-#include "cv.h"
-#include "highgui.h"
+#include <opencv/cv.h>
+//#include "highgui.h"
 
 IplImage *grey1 = 0, *grey0 = 0, *pyramid1 = 0, *pyramid0 = 0;
 

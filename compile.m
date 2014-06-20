@@ -1,4 +1,5 @@
 % Copyright 2011 Zdenek Kalal
+% Copyright 2013 Alois Schloegl
 %
 % This file is part of TLD.
 %
@@ -64,24 +65,25 @@ end
 if isunix
     disp('Unix');
     
-    include = ' -I/usr/local/include/opencv/ -I/usr/local/include/';
-    libpath = '/usr/local/lib/';
+    %include = ' -I/usr/include/opencv/ -I/usr/local/include/';
+    %libpath = '/usr/lib/';
     
-    files = dir([libpath 'libopencv*.so.2.2']);
+    %files = dir([libpath 'libopencv*.so.2.2']);
     
-    lib = [];
-    for i = 1:length(files),
-        lib = [lib ' ' libpath files(i).name];
-    end
+    %lib = [];
+    %for i = 1:length(files),
+    %    lib = [lib ' ' libpath files(i).name];
+    %end
     
-    eval(['mex lk.cpp -O' include lib]);
+    %eval(['mex lk.cpp -O' include lib]);
     mex -O -c tld.cpp
     mex -O fern.cpp tld.o
     mex -O linkagemex.cpp
     mex -O bb_overlap.cpp
     mex -O warp.cpp
     mex -O distance.cpp
-    
+    mex -O lk.cpp -lml -lcv -lcxcore
+
 end
 
 
